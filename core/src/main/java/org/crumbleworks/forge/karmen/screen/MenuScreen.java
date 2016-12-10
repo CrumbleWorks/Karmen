@@ -56,13 +56,21 @@ public class MenuScreen implements Screen {
     
     private void initLampAnimation(String textureFileName) {
         Texture texture = new Texture(Gdx.files.internal(textureFileName));
-        TextureRegion[] textureRegions = new TextureRegion[48];
+
+        int rows = 8;
+        int cols = 6;
         
+        TextureRegion[] textureRegions = new TextureRegion[rows * cols];
+
         int width = 32;
         int height = 64;
         
-        for(int i = 0; i < textureRegions.length; i++) {
-            textureRegions[i] = new TextureRegion(texture, i * width, i * height, width, height);
+        TextureRegion[][] tempTextureRegions = TextureRegion.split(texture, width, height);
+        int index = 0;
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                textureRegions[index++] = tempTextureRegions[i][j];
+            }
         }
 
         lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
@@ -236,13 +244,13 @@ public class MenuScreen implements Screen {
     }
     
     private void drawLamp(float delta) {
-        lampAnimationStateTime += Gdx.graphics.getDeltaTime();
+        lampAnimationStateTime += delta;
         TextureRegion animationFrame = lampAnimation.getKeyFrame(lampAnimationStateTime, true);
         game.getBatch().begin();
-        game.getBatch().draw(animationFrame, 50, 50, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
+        game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 200, Karmen.SCREEN_HEIGHT / 16, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
         game.getBatch().end();
     }
-
+    
     @Override
     public void resize(int width, int height) {
 
