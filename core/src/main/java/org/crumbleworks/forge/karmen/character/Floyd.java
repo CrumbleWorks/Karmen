@@ -19,7 +19,7 @@ public class Floyd {
     private Vector2 position;
     private Vector2 size;
     private Vector2 velocity;
-    
+
     public static final float MAX_SPEED = 1f;
     
     private static final int FRAME_WIDTH = 16;
@@ -29,27 +29,28 @@ public class Floyd {
     private Texture texture;
     private TextureRegion[] textureRegions;
     
-    private boolean grounded;
-    private Facing facing;
-    private Action action;
-    
-    private boolean fistDone;
-    private boolean kickDone;
-    
     private Animation stillFrontAnimation;
     private Animation stillSideAnimation;
-    private Animation runAnimation;
-    private Animation jumpFrontAnimation;
-    private Animation jumpSideAnimation;
+    private Animation jumpFrontUpAnimation;
+    private Animation jumpFrontDownAnimation;
     private Animation blockFrontAnimation;
-    private Animation blockSideAnimation;
+    private Animation runAnimation;
     private Animation kickAnimation;
     private Animation fistAnimation;
+    private Animation jumpSideUpAnimation;
+    private Animation jumpSideDownAnimation;
+    private Animation jumpSideMoveAnimation;
+    private Animation jumpKickAnimation;
+    private Animation blockSideAnimation;
     
-//    private Animation walkLeftAnimation;
-//    private Animation walkRightAnimation;
-    
+    /* INFO ON FLOYD STATE */
     private Animation currentAnimation;
+    private Facing facing;
+    
+    boolean isRunning = false;
+    boolean inAir = false;
+    boolean isBlocking = false;
+    /* END INFO ON FLOYD STATE */
     
     private float stateTime;
     private float animationSpeed;
@@ -63,17 +64,12 @@ public class Floyd {
         
         textureRegions = new TextureRegion[28];
         
-        grounded = true;
-        facing = Facing.FRONT;
-        action = Action.FLOYDING;
-        
-        fistDone = true;
-        kickDone = true;
-        
         animationSpeed = 0.25f;
         
         initTextureRegions(textureFileName);
         initAnimations();
+        
+        currentAnimation = stillFrontAnimation;
         
         sprite = new Sprite();
         sprite.setTexture(texture);
@@ -93,51 +89,67 @@ public class Floyd {
     }
     
     private void initAnimations() {
-        stillFrontAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()], textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]), PlayMode.LOOP);
-        stillSideAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()], textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]), PlayMode.LOOP);
-        runAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()], textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]), PlayMode.LOOP);
-        jumpFrontAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()], textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]), PlayMode.NORMAL);
-        jumpSideAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()], textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]), PlayMode.NORMAL);
-        blockFrontAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.BLOCK_FRONT_A.ordinal()], textureRegions[FloydFrameType.BLOCK_FRONT_B.ordinal()]), PlayMode.LOOP);
-        blockSideAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()], textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]), PlayMode.LOOP);
-        kickAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]), PlayMode.NORMAL);
-        fistAnimation = new Animation(animationSpeed, Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]), PlayMode.NORMAL);
+        stillFrontAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()],
+                           textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]),
+                PlayMode.LOOP);
+        
+        stillSideAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()],
+                           textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]),
+                PlayMode.LOOP);
+        
+        jumpFrontUpAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()]),
+                PlayMode.NORMAL);
+        
+        jumpFrontDownAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        blockFrontAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.BLOCK_FRONT_A.ordinal()],
+                           textureRegions[FloydFrameType.BLOCK_FRONT_B.ordinal()]),
+                PlayMode.LOOP);
+        
+        runAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()],
+                           textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]),
+                PlayMode.LOOP);
+        
+        kickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]),
+                PlayMode.NORMAL);
+        
+        fistAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]),
+                PlayMode.NORMAL);
+        
+        jumpSideUpAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                PlayMode.NORMAL);
+
+        jumpSideDownAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        jumpSideMoveAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A_AIR.ordinal()],
+                           textureRegions[FloydFrameType.MOVE_SIDE_B_AIR.ordinal()]),
+                PlayMode.LOOP);
+        
+        jumpKickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                PlayMode.NORMAL);
+                
+        blockSideAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()],
+                           textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]),
+                PlayMode.LOOP);
     }
     
     public void update() {
-        if(facing == Facing.LEFT || facing == Facing.RIGHT) {
-            if(action == Action.RUN) {
-                currentAnimation = runAnimation;
-            }
-            else if(action == Action.BLOCK) {
-                currentAnimation = blockSideAnimation;
-            }
-            else if(action == Action.KICK && !kickDone) {
-                currentAnimation = kickAnimation;
-                kickDone = true;
-            }
-            else if(action == Action.FIST && !fistDone) {
-                currentAnimation = fistAnimation;
-                fistDone = true;
-            }
-            else if(!grounded) {
-                currentAnimation = jumpSideAnimation;
-            }
-            else {
-                currentAnimation = stillSideAnimation;
-            }
-        }
-        else if(facing == Facing.FRONT) {
-            if(action == Action.FLOYDING) {
-                currentAnimation = stillFrontAnimation;
-            }
-            else if(action == Action.BLOCK) {
-                currentAnimation = blockFrontAnimation;
-            }
-            else if(!grounded) {
-                currentAnimation = jumpFrontAnimation;
-            }
-        }
+        
     }
     
     public void draw() {
@@ -146,40 +158,107 @@ public class Floyd {
         
         if(facing == Facing.LEFT && !currentAnimationFrame.isFlipX()) {
             currentAnimationFrame.flip(true, false);
-        }
-        else if(facing == Facing.RIGHT && currentAnimationFrame.isFlipX()) {
+        } else if(facing == Facing.RIGHT && currentAnimationFrame.isFlipX()) {
             currentAnimationFrame.flip(true, false);
         }
 
         game.getBatch().draw(currentAnimationFrame, position.x, position.y, size.x, size.y);
     }
 
-    public void setGrounded(boolean grounded) {
-        this.grounded = grounded;
-    }
-
-    public void setFacing(Facing facing) {
-        this.facing = facing;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
-    }
-
-    public boolean isFistDone() {
-        return fistDone;
+    /* ***********************************************************************
+     * STUFF FLOYD CAN DO IF YOU MAKE HIM DO IT
+     */
+    
+    /* RUNNING */
+    public static enum Direction {
+        RIGHT, LEFT;
     }
     
-    public void setFistDone(boolean fistDone) {
-        this.fistDone = fistDone;
+    public void startRunning(Direction dir) {
+        if(!inAir) {
+            isRunning = true;
+            currentAnimation = runAnimation;
+            if(dir == Direction.RIGHT) {
+                facing = Facing.RIGHT;
+            } else {
+                facing = Facing.LEFT;
+            }
+        }
     }
     
-    public boolean isKickDone() {
-        return kickDone;
-    }
-
-    public void setKickDone(boolean kickDone) {
-        this.kickDone = kickDone;
+    public void stopRunning() {
+        if(!inAir) {
+            isRunning = false;
+            currentAnimation = stillSideAnimation;
+        }
     }
     
+    public boolean isRunning() {
+        return isRunning;
+    }
+    
+    /* STARING */
+    public void stare() {
+        if(inAir) {
+            //TODO logic for deciding if jump up/down
+            currentAnimation = jumpFrontUpAnimation;
+        } else {
+            currentAnimation = stillFrontAnimation;
+        }
+        facing = Facing.FRONT;
+    }
+    
+    /* JUMPING */
+    public void jump() {
+        if(!inAir && !isBlocking) {
+            //TODO FALLING LOGIC
+            currentAnimation = jumpFrontUpAnimation;
+            inAir = true;
+        }
+    }
+    
+    public boolean inAir() {
+        return inAir;
+    }
+    
+    /* PUNCHING */
+    public void punch() {
+        if(!inAir) {
+            currentAnimation = fistAnimation;
+        }
+    }
+    
+    /* KICKING */
+    public void kick() {
+        if(inAir) {
+            currentAnimation = jumpKickAnimation;
+        } else {
+            currentAnimation = kickAnimation;
+        }
+    }
+    
+    /* BLOCKING */
+    public void startBlocking() {
+        if(!inAir) {
+            if(facing == Facing.FRONT) {
+                currentAnimation = blockFrontAnimation;
+            } else {
+                currentAnimation = blockSideAnimation;
+            }
+            isBlocking = true;
+        }
+    }
+    
+    public void stopBlocking() {
+        if(facing == Facing.FRONT) {
+            currentAnimation = stillFrontAnimation;
+        } else {
+            currentAnimation = stillSideAnimation;
+        }
+        isBlocking = false;
+    }
+    
+    public boolean isBlocking() {
+        return isBlocking;
+    }
 }

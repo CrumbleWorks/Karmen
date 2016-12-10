@@ -1,7 +1,8 @@
 package org.crumbleworks.forge.karmen.character;
 
+import org.crumbleworks.forge.karmen.character.Floyd.Direction;
+
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 
 public class FloydInputAdapter extends InputAdapter {
@@ -16,43 +17,38 @@ public class FloydInputAdapter extends InputAdapter {
     public boolean keyDown(int keyCode) {
         if(keyCode == Keys.A) {
             // left
-            floyd.setFacing(Facing.LEFT);
-            floyd.setAction(Action.RUN);
+            floyd.startRunning(Direction.LEFT);
             return true;
         }
         if(keyCode == Keys.D) {
             // right
-            floyd.setFacing(Facing.RIGHT);
-            floyd.setAction(Action.RUN);
+            floyd.startRunning(Direction.RIGHT);
             return true;
         }
         if(keyCode == Keys.S) {
             // right
-            floyd.setFacing(Facing.FRONT);
-            floyd.setAction(Action.FLOYDING);
+            floyd.stare();
             return true;
         }
         if(keyCode == Keys.SPACE) {
             // jump
-            floyd.setGrounded(false);
+            floyd.jump();
             return true;
         }
         
-        if(keyCode == Keys.J && floyd.isFistDone()) {
+        if(keyCode == Keys.J) {
             // fist
-            floyd.setAction(Action.FIST);
-            floyd.setFistDone(false);
+            floyd.punch();
             return true;
         }
         if(keyCode == Keys.K) {
             // block
-            floyd.setAction(Action.BLOCK);
+            floyd.startBlocking();
             return true;
         }
-        if(keyCode == Keys.L && floyd.isKickDone()) {
+        if(keyCode == Keys.L) {
             // kick
-            floyd.setAction(Action.KICK);
-            floyd.setKickDone(false);
+            floyd.kick();
             return true;
         }
         
@@ -63,35 +59,17 @@ public class FloydInputAdapter extends InputAdapter {
     public boolean keyUp(int keyCode) {
         if(keyCode == Keys.A) {
             // left
-            floyd.setAction(Action.FLOYDING);
+            floyd.stopRunning();
             return true;
         }
         if(keyCode == Keys.D) {
             // right
-            floyd.setAction(Action.FLOYDING);
-            return true;
-        }
-        if(keyCode == Keys.SPACE) {
-            // jump
-            floyd.setGrounded(true);
-            return true;
-        }
-        
-        if(keyCode == Keys.J && !floyd.isFistDone()) {
-            // fist
-            floyd.setAction(Action.FLOYDING);
-            floyd.setFistDone(true);
+            floyd.stopRunning();
             return true;
         }
         if(keyCode == Keys.K) {
             // block
-            floyd.setAction(Action.FLOYDING);
-            return true;
-        }
-        if(keyCode == Keys.L && !floyd.isKickDone()) {
-            // kick
-            floyd.setAction(Action.FLOYDING);
-            floyd.setKickDone(true);
+            floyd.stopBlocking();
             return true;
         }
         
