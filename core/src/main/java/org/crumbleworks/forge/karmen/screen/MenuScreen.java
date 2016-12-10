@@ -12,9 +12,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class MenuScreen implements Screen {
     
@@ -25,6 +30,10 @@ public class MenuScreen implements Screen {
     
     private List<MenuButton> buttons;
     private int selectedButton;
+    
+    private Animation lampAnimation;
+    private float lampAnimationStateTime;
+    private float lampFrameDuration;
 
     public MenuScreen(Karmen game) {
         this.game = game;
@@ -39,6 +48,24 @@ public class MenuScreen implements Screen {
             add(new MenuButton("QUIT", 'Q', NeonColors.Blue, false));
         }};
         selectedButton = 0;
+        
+        lampFrameDuration = 0.25f;
+        lampAnimationStateTime = 0f;
+        initLampAnimation("gfx/Lamp.png");
+    }
+    
+    private void initLampAnimation(String textureFileName) {
+        Texture texture = new Texture(Gdx.files.internal(textureFileName));
+        TextureRegion[] textureRegions = new TextureRegion[48];
+        
+        int width = 32;
+        int height = 64;
+        
+        for(int i = 0; i < textureRegions.length; i++) {
+            textureRegions[i] = new TextureRegion(texture, i * width, i * height, width, height);
+        }
+
+        lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
     }
 
     @Override
@@ -58,6 +85,8 @@ public class MenuScreen implements Screen {
         
         drawTitle();
         drawButtons();
+        drawLamp(delta);
+        
         checkInput();
     }
     
@@ -88,7 +117,7 @@ public class MenuScreen implements Screen {
         }
         
         if((selectedButton == 0) && Gdx.input.isKeyJustPressed(Keys.ENTER)) {
-            game.startGame();
+            game.setScreen(game.playScreen);
         }
     }
     
@@ -204,6 +233,14 @@ public class MenuScreen implements Screen {
         shapeRenderer.rect(0, 0, width, height);
     
         shapeRenderer.end();
+    }
+    
+    private void drawLamp(float delta) {
+        lampAnimationStateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion animationFrame = lampAnimation.getKeyFrame(lampAnimationStateTime, true);
+        game.getBatch().begin();
+        game.getBatch().draw(animationFrame, 50, 50, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
+        game.getBatch().end();
     }
 
     @Override
