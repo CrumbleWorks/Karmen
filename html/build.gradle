@@ -60,8 +60,8 @@ task addSource << {
 tasks.compileGwt.dependsOn(addSource)
 tasks.draftCompileGwt.dependsOn(addSource)
 
-sourceCompatibility = 1.6
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceCompatibility = 1.8
+sourceSets.main.java.srcDirs = [ "src/main/java", "src/main/resources", "src/main/webapp", "src/test/java", "src/test/resources" ]
 
 
 eclipse.project {
