@@ -2,7 +2,6 @@ package org.crumbleworks.forge.karmen.screen;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.util.NeonColors;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.sun.glass.ui.Menu;
 
 public class MenuScreen implements Screen {
     
@@ -24,8 +22,6 @@ public class MenuScreen implements Screen {
     
     private OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
-    
-    private static ShapeRenderer debugRenderer;
     
     private List<MenuButton> buttons;
     private int selectedButton;
@@ -36,8 +32,6 @@ public class MenuScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Karmen.SCREEN_WIDTH, Karmen.SCREEN_HEIGHT);
         shapeRenderer = new ShapeRenderer();
-        
-        debugRenderer = new ShapeRenderer();
         
         buttons = new ArrayList<MenuButton>() {{
             add(new MenuButton("PLAY", 'P', NeonColors.Yellow, true));
@@ -62,13 +56,12 @@ public class MenuScreen implements Screen {
 
 //        drawGrid();
         
-        game.getBatch().begin();
-        game.getFontLarge().setColor(NeonColors.Orange);
-        game.getFontLarge().draw(game.getBatch(), "NEWCOMER NINJA PARTY HATER", 50, Karmen.SCREEN_HEIGHT - 100);
-        game.getBatch().end();
-        
+        drawTitle();
         drawButtons();
-        
+        checkInput();
+    }
+    
+    private void checkInput() {
         if(Gdx.input.isKeyJustPressed(Keys.LEFT)) {
             buttons.get(selectedButton).selected = false;
             if(selectedButton == 0) {
@@ -78,6 +71,8 @@ public class MenuScreen implements Screen {
                 selectedButton--;
             }
             buttons.get(selectedButton).selected = true;
+            buttons.get(selectedButton).on = true;
+            buttons.get(selectedButton).nextDraw = System.currentTimeMillis() - MenuButton.DRAW_PAUSE;
         }
         else if(Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
             buttons.get(selectedButton).selected = false;
@@ -88,41 +83,20 @@ public class MenuScreen implements Screen {
                 selectedButton++;
             }
             buttons.get(selectedButton).selected = true;
+            buttons.get(selectedButton).on = true;
+            buttons.get(selectedButton).nextDraw = System.currentTimeMillis() - MenuButton.DRAW_PAUSE;
+        }
+        
+        if((selectedButton == 0) && Gdx.input.isKeyJustPressed(Keys.ENTER)) {
+            game.startGame();
         }
     }
     
-    private void drawGrid() {
-        int verticalMiddleSectionHeight = Karmen.SCREEN_HEIGHT / 2;
-        int topAndBottomSectionHeight = (Karmen.SCREEN_HEIGHT - verticalMiddleSectionHeight) / 2;
-        
-        int verticalMiddleSectionBottom = topAndBottomSectionHeight;
-        int verticalMiddleSectionTop = verticalMiddleSectionBottom + verticalMiddleSectionHeight;
-        
-        int horizontalSectionWidth = Karmen.SCREEN_WIDTH / 2;
-        
-        Vector2 verticalMiddleSectionBottomStartVector = new Vector2(0, verticalMiddleSectionBottom);
-        Vector2 verticalMiddleSectionBottomEndVector = new Vector2(Karmen.SCREEN_WIDTH, verticalMiddleSectionBottom);
-        Vector2 verticalMiddleSectionTopStartVector = new Vector2(0, verticalMiddleSectionTop);
-        Vector2 verticalMiddleSectionTopEndVector = new Vector2(Karmen.SCREEN_WIDTH, verticalMiddleSectionTop);
-        
-        Vector2 horizontalMiddleStartVector = new Vector2(horizontalSectionWidth, 0);
-        Vector2 horizontalMiddleEndVector = new Vector2(horizontalSectionWidth, Karmen.SCREEN_HEIGHT);
-        
-        debugRenderer.setProjectionMatrix(camera.combined);
-        debugRenderer.begin(ShapeType.Line);
-        
-        debugRenderer.setColor(Color.PINK);
-        debugRenderer.line(verticalMiddleSectionBottomStartVector, verticalMiddleSectionBottomEndVector);
-        debugRenderer.line(verticalMiddleSectionTopStartVector, verticalMiddleSectionTopEndVector);
-        debugRenderer.line(horizontalMiddleStartVector, horizontalMiddleEndVector);
-        
-        debugRenderer.setColor(Color.OLIVE);
-        debugRenderer.line(100, 0, 100, Karmen.SCREEN_HEIGHT);
-        debugRenderer.line(300, 0, 300, Karmen.SCREEN_HEIGHT);
-        debugRenderer.line(500, 0, 500, Karmen.SCREEN_HEIGHT);
-        debugRenderer.line(700, 0, 700, Karmen.SCREEN_HEIGHT);
-        
-        debugRenderer.end();
+    private void drawTitle() {
+        game.getBatch().begin();
+        game.getFontLarge().setColor(NeonColors.Orange);
+        game.getFontLarge().draw(game.getBatch(), "NEWCOMER NINJA PARTY HATER", 50, Karmen.SCREEN_HEIGHT - 100);
+        game.getBatch().end();
     }
     
     private void drawButtons() {
@@ -179,19 +153,6 @@ public class MenuScreen implements Screen {
         }
     }
 
-    private void drawRectangle(Vector2 origin, int width, int height, Color color, float rotation) {
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeType.Filled);
-        shapeRenderer.setColor(color);
-        
-        shapeRenderer.identity();
-        shapeRenderer.translate(origin.x, origin.y, 0);
-        shapeRenderer.rotate(0, 0, 1, rotation);
-        shapeRenderer.rect(0, 0, width, height);
-
-        shapeRenderer.end();
-    }
-    
     private void drawButtonLabel(MenuButton button, Vector2 buttonOrigin) {
         float labelOffsetX = 50f;
         float labelOffsetY = 50f;
@@ -230,12 +191,21 @@ public class MenuScreen implements Screen {
                 }
             }
         }
-        
-//        shapeRenderer.line(buttonXPos, buttonYPos - labelYOffset, buttonXPos + 10, buttonYPos - labelYOffset);
-//        
-//        shapeRenderer.end();
     }
     
+    private void drawRectangle(Vector2 origin, int width, int height, Color color, float rotation) {
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setColor(color);
+        
+        shapeRenderer.identity();
+        shapeRenderer.translate(origin.x, origin.y, 0);
+        shapeRenderer.rotate(0, 0, 1, rotation);
+        shapeRenderer.rect(0, 0, width, height);
+    
+        shapeRenderer.end();
+    }
+
     @Override
     public void resize(int width, int height) {
 

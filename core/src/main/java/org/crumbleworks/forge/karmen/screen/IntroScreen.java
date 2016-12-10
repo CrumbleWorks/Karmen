@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 
 public class IntroScreen implements Screen {
@@ -24,8 +22,6 @@ public class IntroScreen implements Screen {
     private Texture crumbleWorksLogo;
     private Texture libGdxLogo;
     
-    private static ShapeRenderer debugRenderer;
-
     public IntroScreen(final Karmen game) {
         this.game = game;
         
@@ -34,8 +30,6 @@ public class IntroScreen implements Screen {
         
         crumbleWorksLogo = new Texture("gfx/GrpLogo32x32.png");
         libGdxLogo = new Texture("gfx/libGdxLogo.png");
-        
-        debugRenderer = new ShapeRenderer();
     }
 
     @Override
@@ -65,34 +59,6 @@ public class IntroScreen implements Screen {
         
         game.getBatch().end();
         
-    }
-    
-    private void drawGrid() {
-        int verticalMiddleSectionHeight = Karmen.SCREEN_HEIGHT / 2;
-        int topAndBottomSectionHeight = (Karmen.SCREEN_HEIGHT - verticalMiddleSectionHeight) / 2;
-        
-        int verticalMiddleSectionBottom = topAndBottomSectionHeight;
-        int verticalMiddleSectionTop = verticalMiddleSectionBottom + verticalMiddleSectionHeight;
-        
-        int horizontalSectionWidth = Karmen.SCREEN_WIDTH / 2;
-        
-        Vector2 verticalMiddleSectionBottomStartVector = new Vector2(0, verticalMiddleSectionBottom);
-        Vector2 verticalMiddleSectionBottomEndVector = new Vector2(Karmen.SCREEN_WIDTH, verticalMiddleSectionBottom);
-        Vector2 verticalMiddleSectionTopStartVector = new Vector2(0, verticalMiddleSectionTop);
-        Vector2 verticalMiddleSectionTopEndVector = new Vector2(Karmen.SCREEN_WIDTH, verticalMiddleSectionTop);
-        
-        Vector2 horizontalMiddleStartVector = new Vector2(horizontalSectionWidth, 0);
-        Vector2 horizontalMiddleEndVector = new Vector2(horizontalSectionWidth, Karmen.SCREEN_HEIGHT);
-        
-        debugRenderer.setProjectionMatrix(camera.combined);
-        debugRenderer.begin(ShapeType.Line);
-        
-        debugRenderer.setColor(Color.PINK);
-        debugRenderer.line(verticalMiddleSectionBottomStartVector, verticalMiddleSectionBottomEndVector);
-        debugRenderer.line(verticalMiddleSectionTopStartVector, verticalMiddleSectionTopEndVector);
-        debugRenderer.line(horizontalMiddleStartVector, horizontalMiddleEndVector);
-        
-        debugRenderer.end();
     }
     
     private Vector2 getMiddleOfLeftLogoBox() {
