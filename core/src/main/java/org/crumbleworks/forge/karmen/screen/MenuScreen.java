@@ -2,11 +2,13 @@ package org.crumbleworks.forge.karmen.screen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.util.NeonColors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +28,7 @@ public class MenuScreen implements Screen {
     private static ShapeRenderer debugRenderer;
     
     private List<MenuButton> buttons;
+    private int selectedButton;
 
     public MenuScreen(Karmen game) {
         this.game = game;
@@ -41,6 +44,7 @@ public class MenuScreen implements Screen {
             add(new MenuButton("ABOUT", 'A', NeonColors.Pink, false));
             add(new MenuButton("QUIT", 'Q', NeonColors.Blue, false));
         }};
+        selectedButton = 0;
     }
 
     @Override
@@ -64,6 +68,27 @@ public class MenuScreen implements Screen {
         game.getBatch().end();
         
         drawButtons();
+        
+        if(Gdx.input.isKeyJustPressed(Keys.LEFT)) {
+            buttons.get(selectedButton).selected = false;
+            if(selectedButton == 0) {
+                selectedButton = buttons.size() - 1;
+            }
+            else {
+                selectedButton--;
+            }
+            buttons.get(selectedButton).selected = true;
+        }
+        else if(Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
+            buttons.get(selectedButton).selected = false;
+            if(selectedButton == (buttons.size() - 1)) {
+                selectedButton = 0;
+            }
+            else {
+                selectedButton++;
+            }
+            buttons.get(selectedButton).selected = true;
+        }
     }
     
     private void drawGrid() {
