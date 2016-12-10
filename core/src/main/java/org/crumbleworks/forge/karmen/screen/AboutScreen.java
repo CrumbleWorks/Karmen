@@ -72,7 +72,13 @@ public class AboutScreen implements Screen {
             float fontY = relatvieCreditPosition - (i * creditLinesOffset);
             
             arialFont.draw(game.getBatch(), creditLines.get(i), fontX, fontY, Karmen.SCREEN_WIDTH / 2, Align.center, true);
+            
+            if((i == (creditLines.size() - 1)) && fontY > Karmen.SCREEN_HEIGHT + creditLinesOffset) {
+                game.setScreen(game.menuScreen);
+            }
         }
+        
+        arialFont.draw(game.getBatch(), "PRESS Q TO SKIP", Karmen.SCREEN_WIDTH - 150, 25);
         
         game.getBatch().end();
         
@@ -100,7 +106,7 @@ public class AboutScreen implements Screen {
 
     @Override
     public void dispose() {
-        
+        arialFont.dispose();
     }
 
 }
