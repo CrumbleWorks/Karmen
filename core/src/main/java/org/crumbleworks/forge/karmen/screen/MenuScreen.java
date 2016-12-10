@@ -34,9 +34,9 @@ public class MenuScreen implements Screen {
         shapeRenderer = new ShapeRenderer();
         
         buttons = new ArrayList<MenuButton>() {{
-            add(new MenuButton("PLAY", 'P', NeonColors.Yellow, true));
-            add(new MenuButton("ABOUT", 'A', NeonColors.Pink, false));
-            add(new MenuButton("QUIT", 'Q', NeonColors.Blue, false));
+            add(new MenuButton("PLAY", 'P', NeonColors.Yellow, true, ()->{game.setScreen(game.playScreen);}));
+            add(new MenuButton("ABOUT", 'A', NeonColors.Pink, false, ()->{game.setScreen(game.aboutScreen);}));
+            add(new MenuButton("QUIT", 'Q', NeonColors.Blue, false, ()->{Gdx.app.exit();}));
         }};
         selectedButton = 0;
     }
@@ -87,8 +87,9 @@ public class MenuScreen implements Screen {
             buttons.get(selectedButton).nextDraw = System.currentTimeMillis() - MenuButton.DRAW_PAUSE;
         }
         
-        if((selectedButton == 0) && Gdx.input.isKeyJustPressed(Keys.ENTER)) {
-            game.setScreen(game.playScreen);
+        //chk for input
+        if(Gdx.input.isKeyJustPressed(Keys.ENTER)) {
+            buttons.get(selectedButton).callback.run();
         }
     }
     
@@ -240,7 +241,7 @@ public class MenuScreen implements Screen {
         
         final String text;
         final char key; //key to call this button
-        //TODO add func interface var containing function to call when clicked
+        final Runnable callback;
         final Color color;
         
         /* render information */
@@ -248,11 +249,12 @@ public class MenuScreen implements Screen {
         boolean on;
         long nextDraw = System.currentTimeMillis() + DRAW_PAUSE;
 
-        public MenuButton(String text, char key, Color color, boolean selected) {
+        public MenuButton(String text, char key, Color color, boolean selected, Runnable callback) {
             this.text = text;
             this.key = key;
             this.color = color;
             this.on = true;
+            this.callback = callback;
             this.selected = selected;
         }
     }

@@ -7,6 +7,7 @@ import org.crumbleworks.forge.karmen.character.FloydInputAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 
 public class PlayScreen implements Screen {
@@ -43,6 +44,15 @@ public class PlayScreen implements Screen {
         floyd.draw();
         
         game.getBatch().end();
+        
+        checkInput();
+    }
+    
+    private void checkInput() {
+        //chk for input
+        if(Gdx.input.isKeyJustPressed(Keys.Q)) {
+            game.setScreen(game.menuScreen);
+        }
     }
 
     @Override

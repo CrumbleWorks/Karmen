@@ -21,9 +21,9 @@ public class IntroScreen implements Screen {
     private long currTime = System.currentTimeMillis();
     private boolean flashing = false;
     private int flashCount = 0;
-    private final long flash = currTime + 3200;
-    private final long redEyes = currTime + 5500;
-    private final long introEnd = currTime + 7000;
+    private final long flash = currTime + 800;
+    private final long redEyes = currTime + 1800;
+    private final long introEnd = currTime + 3800;
     
     private boolean displayGDX = false;
     

@@ -1,5 +1,6 @@
 package org.crumbleworks.forge.karmen;
 
+import org.crumbleworks.forge.karmen.screen.AboutScreen;
 import org.crumbleworks.forge.karmen.screen.IntroScreen;
 import org.crumbleworks.forge.karmen.screen.MenuScreen;
 import org.crumbleworks.forge.karmen.screen.PlayScreen;
@@ -25,6 +26,7 @@ public class Karmen extends Game {
 	public Screen introScreen;
 	public Screen menuScreen;
 	public Screen playScreen;
+	public Screen aboutScreen;
 	
 	@Override
 	public void create() {
@@ -36,6 +38,7 @@ public class Karmen extends Game {
 		introScreen = new IntroScreen(this);
 		menuScreen = new MenuScreen(this);
 		playScreen = new PlayScreen(this);
+		aboutScreen = new AboutScreen(this);
 		
 		setScreen(introScreen);
 	}
