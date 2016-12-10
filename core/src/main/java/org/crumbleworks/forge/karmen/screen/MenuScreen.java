@@ -65,15 +65,15 @@ public class MenuScreen implements Screen {
     private void initLampAnimation(String textureFileName) {
         Texture texture = new Texture(textureFileName);
 
-        int rows = 8;
-        int cols = 6;
-        
-        TextureRegion[] textureRegions = new TextureRegion[rows * cols];
-
         int width = 32;
         int height = 64;
         
         TextureRegion[][] tempTextureRegions = TextureRegion.split(texture, width, height);
+        
+        int rows = tempTextureRegions.length;
+        int cols = tempTextureRegions[0].length;
+        
+        TextureRegion[] textureRegions = new TextureRegion[rows * cols];
         int index = 0;
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < cols; j++) {
