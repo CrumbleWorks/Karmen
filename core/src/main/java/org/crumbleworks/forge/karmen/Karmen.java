@@ -5,13 +5,12 @@ import org.crumbleworks.forge.karmen.screen.IntroScreen;
 import org.crumbleworks.forge.karmen.screen.MenuScreen;
 import org.crumbleworks.forge.karmen.screen.PlayScreen;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import javafx.print.PageLayout;
 
 public class Karmen extends Game {
 	
@@ -30,6 +29,8 @@ public class Karmen extends Game {
 	
 	@Override
 	public void create() {
+	    Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO REMOVE FOR RELAIS
+	    
 		batch = new SpriteBatch();
 		
 		fontMedium = new BitmapFont(Gdx.files.internal("fnt/NNPH_30.fnt"));
