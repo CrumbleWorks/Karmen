@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public class IntroScreen implements Screen {
@@ -17,9 +18,19 @@ public class IntroScreen implements Screen {
     
     private final Karmen game;
     
+    private long currTime = System.currentTimeMillis();
+    private boolean flashing = false;
+    private int flashCount = 0;
+    private final long flash = currTime + 3200;
+    private final long redEyes = currTime + 5500;
+    private final long introEnd = currTime + 7000;
+    
+    private boolean displayGDX = false;
+    
     private OrthographicCamera camera;
     
-    private Texture crumbleWorksLogo;
+    private int regionIndex = 0;
+    private TextureRegion[] crumbleWorksLogoRegions;
     private Texture libGdxLogo;
     
     public IntroScreen(final Karmen game) {
@@ -28,7 +39,12 @@ public class IntroScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Karmen.SCREEN_WIDTH, Karmen.SCREEN_HEIGHT);
         
-        crumbleWorksLogo = new Texture("gfx/GrpLogo32x32.png");
+        Texture crumbleWorksLogos = new Texture("gfx/GrpLogo3x32x32.png");
+        crumbleWorksLogoRegions = new TextureRegion[]{
+                new TextureRegion(crumbleWorksLogos, 0, 0, 32, 32),
+                new TextureRegion(crumbleWorksLogos, 32, 0, 32, 32),
+                new TextureRegion(crumbleWorksLogos, 64, 0, 32, 32)
+        }; 
         libGdxLogo = new Texture("gfx/libGdxLogo.png");
     }
 
@@ -39,7 +55,8 @@ public class IntroScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        //RENDER
+        Gdx.gl.glClearColor(1, 0.92f, 0.92f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         camera.update();
@@ -51,13 +68,46 @@ public class IntroScreen implements Screen {
         Vector2 middleOfRightLogoBox = getMiddleOfRightLogoBox();
         
         game.getBatch().begin();
-        game.getBatch().draw(crumbleWorksLogo, middleOfLeftLogoBox.x - ((crumbleWorksLogo.getWidth() * CRUMBLEWORKS_LOGO_SCALE) / 2), middleOfLeftLogoBox.y - ((crumbleWorksLogo.getHeight() * CRUMBLEWORKS_LOGO_SCALE) / 2), crumbleWorksLogo.getWidth() * CRUMBLEWORKS_LOGO_SCALE, crumbleWorksLogo.getHeight() * CRUMBLEWORKS_LOGO_SCALE);
+        game.getBatch().draw(
+                crumbleWorksLogoRegions[regionIndex],
+                middleOfLeftLogoBox.x - ((crumbleWorksLogoRegions[regionIndex].getRegionWidth() * CRUMBLEWORKS_LOGO_SCALE) / 2),
+                middleOfLeftLogoBox.y - ((crumbleWorksLogoRegions[regionIndex].getRegionHeight() * CRUMBLEWORKS_LOGO_SCALE) / 2),
+                crumbleWorksLogoRegions[regionIndex].getRegionWidth() * CRUMBLEWORKS_LOGO_SCALE,
+                crumbleWorksLogoRegions[regionIndex].getRegionHeight() * CRUMBLEWORKS_LOGO_SCALE
+                );
         
-        game.getFontMedium().setColor(Color.BLACK);
-        game.getFontMedium().draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2) + 100);
-        game.getBatch().draw(libGdxLogo, middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2), libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE, libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE);
+        if(displayGDX) {
+            game.getFontMedium().setColor(Color.BLACK);
+            game.getFontMedium().draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2) + 100);
+            game.getBatch().draw(libGdxLogo, middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2), libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE, libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE);
+        }
         
         game.getBatch().end();
+
+        //LOGIC
+        currTime = System.currentTimeMillis();
+        if(currTime >= introEnd) { //zeit abarbeiten gross bis kleinstes
+            game.setScreen(game.menuScreen);
+        } else if(currTime >= redEyes) {
+            regionIndex = 2;
+            displayGDX = true;
+        } else if(currTime >= flash) {
+            if(!flashing) {
+                regionIndex = 1;
+                flashing = true;
+            } else {
+                regionIndex = 0;
+                if(flashCount > 5) {
+                    //hide for 5 frames
+                    flashing = false;
+                    flashCount = 0;
+                } else {
+                    flashCount++;
+                }
+            }
+        }
+            
+        
         
     }
     
@@ -107,7 +157,6 @@ public class IntroScreen implements Screen {
 
     @Override
     public void dispose() {
-        crumbleWorksLogo.dispose();
         libGdxLogo.dispose();
     }
 

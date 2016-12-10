@@ -22,13 +22,9 @@ public class Karmen extends Game {
 	private BitmapFont fontMedium;
 	private BitmapFont fontLarge;
 	
-	private Screen introScreen;
-	private Screen menuScreen;
-	private Screen playScreen;
-	
-	private boolean playing;
-	
-	private final long introEnd = System.currentTimeMillis() + 0;
+	public Screen introScreen;
+	public Screen menuScreen;
+	public Screen playScreen;
 	
 	@Override
 	public void create() {
@@ -53,11 +49,6 @@ public class Karmen extends Game {
 //		batch.end();
 		
 		super.render();
-		
-		if(!playing && (System.currentTimeMillis() > introEnd)) {
-		    setScreen(menuScreen);
-		}
-		
 	}
 	
 	@Override
@@ -82,9 +73,8 @@ public class Karmen extends Game {
         return fontLarge;
     }
 
-    public void startGame() {
-        playing = true;
-        setScreen(playScreen);
+    public void changeScreen(Screen nextScreen) {
+        setScreen(nextScreen);
     }
 	
 }

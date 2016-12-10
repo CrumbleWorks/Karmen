@@ -88,7 +88,7 @@ public class MenuScreen implements Screen {
         }
         
         if((selectedButton == 0) && Gdx.input.isKeyJustPressed(Keys.ENTER)) {
-            game.startGame();
+            game.setScreen(game.playScreen);
         }
     }
     

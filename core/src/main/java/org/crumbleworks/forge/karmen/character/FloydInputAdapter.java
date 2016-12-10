@@ -1,6 +1,7 @@
 package org.crumbleworks.forge.karmen.character;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 
 public class FloydInputAdapter extends InputAdapter {
@@ -37,9 +38,10 @@ public class FloydInputAdapter extends InputAdapter {
             return true;
         }
         
-        if(keyCode == Keys.J) {
+        if(keyCode == Keys.J && floyd.isFistDone()) {
             // fist
             floyd.setAction(Action.FIST);
+            floyd.setFistDone(false);
             return true;
         }
         if(keyCode == Keys.K) {
@@ -47,9 +49,10 @@ public class FloydInputAdapter extends InputAdapter {
             floyd.setAction(Action.BLOCK);
             return true;
         }
-        if(keyCode == Keys.L) {
+        if(keyCode == Keys.L && floyd.isKickDone()) {
             // kick
             floyd.setAction(Action.KICK);
+            floyd.setKickDone(false);
             return true;
         }
         
@@ -74,9 +77,10 @@ public class FloydInputAdapter extends InputAdapter {
             return true;
         }
         
-        if(keyCode == Keys.J) {
+        if(keyCode == Keys.J && !floyd.isFistDone()) {
             // fist
             floyd.setAction(Action.FLOYDING);
+            floyd.setFistDone(true);
             return true;
         }
         if(keyCode == Keys.K) {
@@ -84,9 +88,10 @@ public class FloydInputAdapter extends InputAdapter {
             floyd.setAction(Action.FLOYDING);
             return true;
         }
-        if(keyCode == Keys.L) {
+        if(keyCode == Keys.L && !floyd.isKickDone()) {
             // kick
             floyd.setAction(Action.FLOYDING);
+            floyd.setKickDone(true);
             return true;
         }
         
