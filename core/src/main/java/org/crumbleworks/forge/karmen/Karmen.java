@@ -11,8 +11,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import javafx.print.PageLayout;
-
 public class Karmen extends Game {
 	
     public static final int SCREEN_WIDTH = 800;
