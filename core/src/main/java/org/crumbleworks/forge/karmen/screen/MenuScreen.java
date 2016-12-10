@@ -34,6 +34,10 @@ public class MenuScreen implements Screen {
     private Animation lampAnimation;
     private float lampAnimationStateTime;
     private float lampFrameDuration;
+    
+    private Animation floydAnimation;
+    private float floydAnimationStateTime;
+    private float floydFrameDuration;
 
     public MenuScreen(Karmen game) {
         this.game = game;
@@ -52,10 +56,14 @@ public class MenuScreen implements Screen {
         lampFrameDuration = 0.25f;
         lampAnimationStateTime = 0f;
         initLampAnimation("gfx/Lamp.png");
+        
+        floydFrameDuration = 0.25f;
+        floydAnimationStateTime = 0f;
+        initLoydAnimation("gfx/Hero_7x4_16x32_CHARAKTER.png");
     }
     
     private void initLampAnimation(String textureFileName) {
-        Texture texture = new Texture(Gdx.files.internal(textureFileName));
+        Texture texture = new Texture(textureFileName);
 
         int rows = 8;
         int cols = 6;
@@ -73,7 +81,22 @@ public class MenuScreen implements Screen {
             }
         }
 
-        lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
+        lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP_RANDOM);
+    }
+    
+    private void initLoydAnimation(String textureFileName) {
+        TextureRegion[] textureRegions;
+
+        int width = 16;
+        int height = 32;
+        
+        Texture floydTexture = new Texture(textureFileName);
+        textureRegions = new TextureRegion[] {
+            new TextureRegion(floydTexture, 32, 0, width, height),
+            new TextureRegion(floydTexture, 48, 0, width, height),
+        };
+        
+        floydAnimation = new Animation(floydFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
     }
 
     @Override
@@ -94,6 +117,7 @@ public class MenuScreen implements Screen {
         drawTitle();
         drawButtons();
         drawLamp(delta);
+        drawFloyd(delta);
         
         checkInput();
     }
@@ -250,6 +274,20 @@ public class MenuScreen implements Screen {
         game.getBatch().begin();
         game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 200, Karmen.SCREEN_HEIGHT / 16, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
         game.getBatch().end();
+    }
+    
+    private void drawFloyd(float delta) {
+        floydAnimationStateTime += delta;
+        
+        TextureRegion animationFrame = floydAnimation.getKeyFrame(floydAnimationStateTime, true);
+        if(!animationFrame.isFlipX()) {
+            animationFrame.flip(true, false);
+        }
+        
+        game.getBatch().begin();
+        game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 125, Karmen.SCREEN_HEIGHT / 15, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
+        game.getBatch().end();
+        
     }
     
     @Override
