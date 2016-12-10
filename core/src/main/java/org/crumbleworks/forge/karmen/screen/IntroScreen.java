@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 
 public class IntroScreen implements Screen {
@@ -31,8 +32,8 @@ public class IntroScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Karmen.SCREEN_WIDTH, Karmen.SCREEN_HEIGHT);
         
-        crumbleWorksLogo = new Texture("GrpLogo32x32.png");
-        libGdxLogo = new Texture("libGdxLogo.png");
+        crumbleWorksLogo = new Texture("gfx/GrpLogo32x32.png");
+        libGdxLogo = new Texture("gfx/libGdxLogo.png");
         
         debugRenderer = new ShapeRenderer();
     }
@@ -50,7 +51,7 @@ public class IntroScreen implements Screen {
         camera.update();
         game.getBatch().setProjectionMatrix(camera.combined);
 
-        drawGrid();
+//        drawGrid();
         
         Vector2 middleOfLeftLogoBox = getMiddleOfLeftLogoBox();
         Vector2 middleOfRightLogoBox = getMiddleOfRightLogoBox();
@@ -58,8 +59,8 @@ public class IntroScreen implements Screen {
         game.getBatch().begin();
         game.getBatch().draw(crumbleWorksLogo, middleOfLeftLogoBox.x - ((crumbleWorksLogo.getWidth() * CRUMBLEWORKS_LOGO_SCALE) / 2), middleOfLeftLogoBox.y - ((crumbleWorksLogo.getHeight() * CRUMBLEWORKS_LOGO_SCALE) / 2), crumbleWorksLogo.getWidth() * CRUMBLEWORKS_LOGO_SCALE, crumbleWorksLogo.getHeight() * CRUMBLEWORKS_LOGO_SCALE);
         
-        game.getFont().setColor(Color.BLACK);
-        game.getFont().draw(game.getBatch(), "powered by", middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2) + 80);
+        game.getFontMedium().setColor(Color.BLACK);
+        game.getFontMedium().draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2) + 100);
         game.getBatch().draw(libGdxLogo, middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2), libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE, libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE);
         
         game.getBatch().end();
@@ -84,7 +85,7 @@ public class IntroScreen implements Screen {
         Vector2 horizontalMiddleEndVector = new Vector2(horizontalSectionWidth, Karmen.SCREEN_HEIGHT);
         
         debugRenderer.setProjectionMatrix(camera.combined);
-        debugRenderer.begin(ShapeRenderer.ShapeType.Line);
+        debugRenderer.begin(ShapeType.Line);
         
         debugRenderer.setColor(Color.PINK);
         debugRenderer.line(verticalMiddleSectionBottomStartVector, verticalMiddleSectionBottomEndVector);
