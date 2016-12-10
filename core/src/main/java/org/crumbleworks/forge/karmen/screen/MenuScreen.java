@@ -205,9 +205,6 @@ public class MenuScreen implements Screen {
                 }
             }
         }
-        else {
-            drawRectangle(new Vector2(buttonXPos, underlinePosY), labelWidth, labelHeight, NeonColors.Orange, 0f);
-        }
         
 //        shapeRenderer.line(buttonXPos, buttonYPos - labelYOffset, buttonXPos + 10, buttonYPos - labelYOffset);
 //        
