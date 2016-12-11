@@ -1,6 +1,7 @@
 package org.crumbleworks.forge.karmen.screen;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.character.AnimationConstants;
 import org.crumbleworks.forge.karmen.character.Floyd;
 import org.crumbleworks.forge.karmen.character.FloydInputAdapter;
 
@@ -9,6 +10,10 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.utils.Array;
 
 public class PlayScreen implements Screen {
 
@@ -18,6 +23,9 @@ public class PlayScreen implements Screen {
     
     private InputMultiplexer inputMultiplexer;
     
+    private Animation danceFloorAnimation;
+    private float danceFloorAnimationStateTime;
+    
 //    private PlayScreenDebugRenderer renderer;
     
     public PlayScreen(final Karmen game) {
@@ -26,8 +34,10 @@ public class PlayScreen implements Screen {
         
         inputMultiplexer = new InputMultiplexer(new FloydInputAdapter(floyd));
 //        renderer = new PlayScreenDebugRenderer();
+        
+        danceFloorAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH, Array.with(game.getTextureLibrary().getDanceFloorRegions()), PlayMode.LOOP);
     }
-
+    
     @Override
     public void show() {
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -40,13 +50,26 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.getBatch().begin();
         
+        drawDanceFloor(delta);
         floyd.update(delta);
+        
 //        renderer.drawGrid(game.getCamera());
         
         
         game.getBatch().end();
         
         checkInput();
+    }
+    
+    private void drawDanceFloor(float delta) {
+        danceFloorAnimationStateTime += delta;
+        TextureRegion currentAnimationFrame = danceFloorAnimation.getKeyFrame(danceFloorAnimationStateTime);
+        
+        int danceFloorOffset = 2;
+        float danceFloorBottomLeftX = (Karmen.SCREEN_WIDTH / 16) + danceFloorOffset;
+        float danceFloorBottomLeftY = 100;
+        
+        game.getBatch().draw(currentAnimationFrame, danceFloorBottomLeftX, danceFloorBottomLeftY, currentAnimationFrame.getRegionWidth() * 4, currentAnimationFrame.getRegionHeight() * 4);
     }
     
     private void checkInput() {

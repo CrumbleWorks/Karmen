@@ -58,7 +58,7 @@ public class MenuScreen implements Screen {
         
         floydFrameDuration = 0.25f;
         floydAnimationStateTime = 0f;
-        initLoydAnimation();
+        initFloydAnimation();
         
         music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Menumusic (Loop).ogg"));
         music.setLooping(true);
@@ -84,7 +84,7 @@ public class MenuScreen implements Screen {
         lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP_RANDOM);
     }
     
-    private void initLoydAnimation() {
+    private void initFloydAnimation() {
         TextureRegion[] textureRegions;
 
         int width = 16;
