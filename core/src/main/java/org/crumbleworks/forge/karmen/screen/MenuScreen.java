@@ -60,7 +60,7 @@ public class MenuScreen implements Screen {
         floydAnimationStateTime = 0f;
         initFloydAnimation();
         
-        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Menumusic (Loop).ogg"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/music/Menumusic (Loop).ogg"));
         music.setLooping(true);
     }
     
@@ -101,6 +101,7 @@ public class MenuScreen implements Screen {
     @Override
     public void show() {
         music.play();
+        game.getSoundLibrary().getLightSound().play();
     }
 
     @Override
@@ -289,7 +290,8 @@ public class MenuScreen implements Screen {
     public void resize(int width, int height) {}
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
     public void resume() {}

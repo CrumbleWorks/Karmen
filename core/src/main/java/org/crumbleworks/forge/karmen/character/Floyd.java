@@ -219,6 +219,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!doll.game().getSoundLibrary().getBlockSound().isPlaying()) {
+                doll.game().getSoundLibrary().getBlockSound().play();
+            }
         }
     }
     
@@ -246,6 +250,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!doll.game().getSoundLibrary().getBlockSound().isPlaying()) {
+                doll.game().getSoundLibrary().getBlockSound().play();
+            }
         }
     }
     
@@ -273,6 +281,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!doll.game().getSoundLibrary().getBlockSound().isPlaying()) {
+                doll.game().getSoundLibrary().getBlockSound().play();
+            }
         }
     }
     
@@ -286,6 +298,7 @@ public class Floyd extends StatefulDoll {
         
         private long returnTime;
         private float stateTime;
+        private boolean soundPlayed;
         
         private State previousState;
         
@@ -303,6 +316,7 @@ public class Floyd extends StatefulDoll {
             this.previousState = previousState;
             stateTime = 0f;
             returnTime = AnimationConstants.DUR_MS_PUNCH;
+            soundPlayed = false;
         }
 
         @Override
@@ -321,6 +335,11 @@ public class Floyd extends StatefulDoll {
             if(returnTime <= 0) {
                 Gdx.app.debug("FLOYD", "> returning to " + previousState.name());
                 doll.set(previousState);
+            }
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getPunchSound().play();
+                soundPlayed = true;
             }
         }
     }
@@ -349,6 +368,7 @@ public class Floyd extends StatefulDoll {
         
         private long returnTime;
         private float stateTime;
+        private boolean soundPlayed;
         
         private State previousState;
         
@@ -366,6 +386,7 @@ public class Floyd extends StatefulDoll {
             this.previousState = previousState;
             stateTime = 0f;
             returnTime = AnimationConstants.DUR_MS_KICK;
+            soundPlayed = false;
         }
 
         @Override
@@ -384,6 +405,12 @@ public class Floyd extends StatefulDoll {
             if(returnTime <= 0) {
                 Gdx.app.debug("FLOYD", "> returning to " + previousState.name());
                 doll.set(previousState);
+            }
+            
+            if(!soundPlayed) {
+                System.out.println(debugName + " play kickSound");
+                doll.game().getSoundLibrary().getKickSound().play();
+                soundPlayed = true;
             }
         }
     }
@@ -412,11 +439,13 @@ public class Floyd extends StatefulDoll {
                 PlayMode.NORMAL);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
             Gdx.app.debug("FLOYD", "init JumpFront");
             stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -430,7 +459,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-            doll.game().getSoundLibrary().getJumpSound().play();
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getJumpSound().play();
+                soundPlayed = true;
+            }
         }
     }
     
@@ -444,11 +476,13 @@ public class Floyd extends StatefulDoll {
                 PlayMode.NORMAL);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
             Gdx.app.debug("FLOYD", "init JumpRight");
             stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -462,7 +496,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-            doll.game().getSoundLibrary().getJumpSound().play();
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getJumpSound().play();
+                soundPlayed = true;
+            }
         }
     }
     
@@ -472,11 +509,13 @@ public class Floyd extends StatefulDoll {
                 PlayMode.NORMAL);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
             Gdx.app.debug("FLOYD", "init JumpKickRight");
             stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -489,6 +528,11 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getKickSound().play();
+                soundPlayed = true;
+            }
         }
     }
     
@@ -507,67 +551,13 @@ public class Floyd extends StatefulDoll {
              PlayMode.LOOP);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
             Gdx.app.debug("FLOYD", "init ArcJumpRight");
             stateTime = 0f;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-        }
-    }
-    
-    static class FloydArcKickRight implements Behaviour {
-        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init ArcKickRight");
-            stateTime = 0f;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-        }
-    }
-    
-    static class FloydJumpLeft implements Behaviour {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
-                PlayMode.NORMAL);
-
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init JumpLeft");
-            stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -581,21 +571,26 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-            doll.game().getSoundLibrary().getJumpSound().play();
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getJumpSound().play();
+                soundPlayed = true;
+            }
         }
     }
     
-    static class FloydJumpKickLeft implements Behaviour {
+    static class FloydArcKickRight implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
                 PlayMode.NORMAL);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init JumpKickLeft");
+            Gdx.app.debug("FLOYD", "init ArcKickRight");
             stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -608,6 +603,81 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getKickSound().play();
+                soundPlayed = true;
+            }
+        }
+    }
+    
+    static class FloydJumpLeft implements Behaviour {
+        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
+                PlayMode.NORMAL);
+
+        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+        private boolean soundPlayed;
+
+        @Override
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpLeft");
+            stateTime = 0f;
+            soundPlayed = false;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getJumpSound().play();
+                soundPlayed = true;
+            }
+        }
+    }
+    
+    static class FloydJumpKickLeft implements Behaviour {
+        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+        private boolean soundPlayed;
+
+        @Override
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpKickLeft");
+            stateTime = 0f;
+            soundPlayed = false;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getKickSound().play();
+                soundPlayed = true;
+            }
         }
     }
     
@@ -626,11 +696,13 @@ public class Floyd extends StatefulDoll {
              PlayMode.LOOP);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
             Gdx.app.debug("FLOYD", "init ArcJumpLeft");
             stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -643,6 +715,11 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getJumpSound().play();
+                soundPlayed = true;
+            }
         }
     }
     
@@ -652,11 +729,13 @@ public class Floyd extends StatefulDoll {
                 PlayMode.NORMAL);
         
         private float stateTime;
+        private boolean soundPlayed;
 
         @Override
         public void init(State previousState) {
             Gdx.app.debug("FLOYD", "init ArcKickLeft");
             stateTime = 0f;
+            soundPlayed = false;
         }
 
         @Override
@@ -669,6 +748,11 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getKickSound().play();
+                soundPlayed = true;
+            }
         }
     }
 }
