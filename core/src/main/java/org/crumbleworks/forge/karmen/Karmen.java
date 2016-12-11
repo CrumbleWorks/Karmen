@@ -31,7 +31,7 @@ public class Karmen extends Game {
 
     private BitmapFont fontMedium;
     private BitmapFont fontLarge;
-    private BitmapFont debugFont;
+    private BitmapFont fontArial;
 
     private TextureLibrary texureLibrary;
     private SoundLibrary soundLibrary;
@@ -59,7 +59,7 @@ public class Karmen extends Game {
 
         fontMedium = new BitmapFont(Gdx.files.internal("fnt/NNPH_30.fnt"));
         fontLarge = new BitmapFont(Gdx.files.internal("fnt/NNPH_40.fnt"));
-        debugFont = new BitmapFont();
+        fontArial = new BitmapFont();
 
         texureLibrary = new TextureLibrary();
         soundLibrary = new SoundLibrary();
@@ -111,8 +111,8 @@ public class Karmen extends Game {
         frameCount++;
         
         batch.begin();
-        debugFont.setColor(Color.RED);
-        debugFont.draw(batch, "FPS: " + fps, 10, 20);
+        fontArial.setColor(Color.RED);
+        fontArial.draw(batch, "FPS: " + fps, 10, 20);
         batch.end();
     }
 
@@ -145,6 +145,10 @@ public class Karmen extends Game {
 
     public BitmapFont getFontLarge() {
         return fontLarge;
+    }
+    
+    public BitmapFont getArial() {
+        return fontArial;
     }
 
     public TextureLibrary getTextureLibrary() {

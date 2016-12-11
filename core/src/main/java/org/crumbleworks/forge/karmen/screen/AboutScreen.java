@@ -94,6 +94,13 @@ public class AboutScreen implements Screen {
         checkInput();
     }
     
+    private void checkInput() {
+        //chk for input
+        if(Gdx.input.isKeyJustPressed(Keys.Q)) {
+            game.setScreen(game.menuScreen);
+        }
+    }
+    
     private void drawCredits() {
         arialFont.setColor(NeonColors.Orange);
         
@@ -132,13 +139,6 @@ public class AboutScreen implements Screen {
 //    private Animation getRandomExplosionAnimation() {
 //        return explosionAnimations.get(new Random().nextInt(explosionAnimations.size()));
 //    }
-    
-    private void checkInput() {
-        //chk for input
-        if(Gdx.input.isKeyJustPressed(Keys.Q)) {
-            game.setScreen(game.menuScreen);
-        }
-    }
 
     @Override
     public void resize(int width, int height) {}

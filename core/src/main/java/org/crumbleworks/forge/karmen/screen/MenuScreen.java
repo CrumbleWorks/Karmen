@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class MenuScreen implements Screen {
+public class MenuScreen extends KarmenScreen {
     
     private final Karmen game;
     
@@ -41,6 +41,12 @@ public class MenuScreen implements Screen {
     private Music music;
 
     public MenuScreen(Karmen game) {
+        super(game,
+                keys,
+                func,
+                texDef,
+                texAct);
+        
         this.game = game;
         
         shapeRenderer = new ShapeRenderer();
@@ -58,7 +64,7 @@ public class MenuScreen implements Screen {
         
         floydFrameDuration = 0.25f;
         floydAnimationStateTime = 0f;
-        initLoydAnimation();
+        initFloydAnimation();
         
         music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Menumusic (Loop).ogg"));
         music.setLooping(true);
@@ -84,7 +90,7 @@ public class MenuScreen implements Screen {
         lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP_RANDOM);
     }
     
-    private void initLoydAnimation() {
+    private void initFloydAnimation() {
         TextureRegion[] textureRegions;
 
         int width = 16;
@@ -97,14 +103,11 @@ public class MenuScreen implements Screen {
         
         floydAnimation = new Animation(floydFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
     }
+    
+    /* ******************************************************************** */
 
     @Override
-    public void show() {
-        music.play();
-    }
-
-    @Override
-    public void render(float delta) {
+    void krender(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
@@ -117,7 +120,12 @@ public class MenuScreen implements Screen {
         
         checkInput();
     }
-    
+
+    @Override
+    public void show() {
+        music.play();
+    }
+
     private void checkInput() {
         if(Gdx.input.isKeyJustPressed(Keys.LEFT)) {
             buttons.get(selectedButton).selected = false;
@@ -286,21 +294,9 @@ public class MenuScreen implements Screen {
     }
     
     @Override
-    public void resize(int width, int height) {}
-
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
     public void hide() {
         music.stop();
     }
-
-    @Override
-    public void dispose() {}
     
     /*
      * INNER SHTUFF
