@@ -41,9 +41,16 @@ public class Karmen extends Game {
     public Screen playScreen;
     public Screen aboutScreen;
 
+    //DEBUG FLAG
+    public static final boolean isDebug = true; //TODO turn off
+
     @Override
     public void create() {
-        Gdx.app.setLogLevel(Application.LOG_DEBUG); // TODO REMOVE FOR RELAIS
+        if(isDebug) {
+            Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        } else {
+            Gdx.app.setLogLevel(Application.LOG_INFO);
+        }
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Karmen.SCREEN_WIDTH, Karmen.SCREEN_HEIGHT);
@@ -81,7 +88,6 @@ public class Karmen extends Game {
         }
     }
     
-    public static final boolean isDebug = true; //TODO turn off
     private ShapeRenderer debugShaper;
     
     private long oneSecondMillis = 1000;
