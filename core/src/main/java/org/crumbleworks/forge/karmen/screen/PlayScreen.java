@@ -3,7 +3,6 @@ package org.crumbleworks.forge.karmen.screen;
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.character.Floyd;
 import org.crumbleworks.forge.karmen.character.FloydInputAdapter;
-import org.crumbleworks.forge.karmen.util.PlayScreenDebugRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;

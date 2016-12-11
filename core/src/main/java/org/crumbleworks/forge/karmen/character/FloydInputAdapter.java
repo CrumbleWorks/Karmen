@@ -49,15 +49,15 @@ public class FloydInputAdapter extends InputAdapter {
     @Override
     public boolean keyUp(int keyCode) {
         if(keyCode == Keys.A) {
-            floyd.stop();
+            floyd.stopLeft();
             return true;
         }
         if(keyCode == Keys.D) {
-            floyd.stop();
+            floyd.stopRight();
             return true;
         }
         if(keyCode == Keys.K) {
-            floyd.stop();
+            floyd.stopBlock();
             return true;
         }
         
