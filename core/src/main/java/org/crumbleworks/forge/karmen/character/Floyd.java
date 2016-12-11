@@ -43,6 +43,8 @@ public class Floyd extends StatefulDoll {
             put(State.BLOCK_RIGHT, new FloydBlockRight());
             put(State.KICK_RIGHT, new FloydKickRight());
             put(State.KICK_LEFT, new FloydKickLeft());
+            put(State.PUNCH_RIGHT, new FloydPunchRight());
+            put(State.PUNCH_LEFT, new FloydPunchLeft());
             put(State.JUMP_FRONT, new FloydJumpFront());
             put(State.JUMP_RIGHT, new FloydJumpRight());
             put(State.JUMP_KICK_RIGHT, new FloydJumpKickRight());
