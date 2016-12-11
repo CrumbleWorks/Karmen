@@ -28,7 +28,7 @@ public class IntroScreen implements Screen {
         if(Karmen.isDebug) {
             flash = currTime + 100;
             redEyes = currTime + 200;
-            introEnd = currTime + 300;
+            introEnd = currTime + 600;
         } else {
             flash = currTime + 800;
             redEyes = currTime + 1800;
