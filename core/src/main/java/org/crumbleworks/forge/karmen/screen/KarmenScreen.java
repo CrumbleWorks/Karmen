@@ -3,8 +3,8 @@ package org.crumbleworks.forge.karmen.screen;
 import org.crumbleworks.forge.karmen.Karmen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,12 +14,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  */
 public abstract class KarmenScreen implements Screen {
     
-    private final int TEXTURE_WH = 8;
+    private final int TEXTURE_WH = 32;
     
     private final Karmen game;
     
     //screen commands
     private final int[] keys;
+    private final String[] lbl;
     private final Runnable[] func;
     private final Texture[] texDef;
     private final Texture[] texAct;
@@ -36,10 +37,11 @@ public abstract class KarmenScreen implements Screen {
      * @param texDef
      * @param texAct
      */
-    public KarmenScreen(Karmen game, int[] keys, Runnable[] func, Texture[] texDef, Texture[] texAct) {
+    public KarmenScreen(Karmen game, int[] keys, String[] lbl, Runnable[] func, Texture[] texDef, Texture[] texAct) {
         this.game = game;
         
         this.keys = keys;
+        this.lbl = lbl;
         this.func = func;
         this.texDef = texDef;
         this.texAct = texAct;
@@ -64,17 +66,17 @@ public abstract class KarmenScreen implements Screen {
         SpriteBatch batch = game.getBatch();
         BitmapFont font = game.getArial();
         
-        final int ELEMENT_BOX_LENGTH = 16;
-        final int ELEMENT_BOX_OFFSET = 7;
-        final int SCREEN_BORDER_PADDING = 2;
+        final int ELEMENT_BOX_LENGTH = 64;
+        final int ELEMENT_BOX_HEIGHT = 32;
+        final int ELEMENT_BOX_OFFSET = 33;
+        final int SCREEN_BORDER_PADDING = 4;
         
-        final int SCREEN_WIDTH = Gdx.graphics.getWidth();
+        final int SCREEN_WIDTH = Karmen.SCREEN_WIDTH;
         int elementCursor = keys.length * ELEMENT_BOX_LENGTH + SCREEN_BORDER_PADDING;
         
         batch.begin();
-        for(int i = 0 ; i < keys[i] ; i++) {
-            //name
-            font.draw(batch, "" + Keys.toString(keys[i]), SCREEN_WIDTH - elementCursor, SCREEN_BORDER_PADDING);
+        
+        for(int i = 0 ; i < keys.length ; i++) {
             //symbol
             Texture texTmp = null;
             if(act[i]) {
@@ -82,7 +84,11 @@ public abstract class KarmenScreen implements Screen {
             } else {
                 texTmp = texDef[i];
             }
-            batch.draw(texTmp, SCREEN_WIDTH - elementCursor + ELEMENT_BOX_OFFSET , SCREEN_BORDER_PADDING, TEXTURE_WH, TEXTURE_WH);
+            batch.draw(texTmp, SCREEN_WIDTH - elementCursor , SCREEN_BORDER_PADDING, TEXTURE_WH, TEXTURE_WH);
+
+            //name
+            font.setColor(Color.WHITE);
+            font.draw(batch, "" + lbl[i], SCREEN_WIDTH - elementCursor + ELEMENT_BOX_OFFSET, ELEMENT_BOX_HEIGHT - SCREEN_BORDER_PADDING);
             
             elementCursor -= ELEMENT_BOX_LENGTH;
         }
@@ -92,6 +98,7 @@ public abstract class KarmenScreen implements Screen {
     private void checkInput() {
         for(int i = 0; keys.length > i; i++) {
             if(Gdx.input.isKeyJustPressed(keys[i])) {
+                act[i] = !act[i];
                 func[i].run();
             }
         }

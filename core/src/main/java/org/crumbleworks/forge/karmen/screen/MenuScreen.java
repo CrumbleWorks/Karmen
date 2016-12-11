@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.util.NeonColors;
+import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -42,10 +43,12 @@ public class MenuScreen extends KarmenScreen {
 
     public MenuScreen(Karmen game) {
         super(game,
-                keys,
-                func,
-                texDef,
-                texAct);
+                new int[]{Keys.M},
+                new String[]{"M"},
+                new Runnable[]{()->{/*TODO TOGGLE_MUTE*/}},
+                new Texture[]{game.getTextureLibrary().OPT_NOTE},
+                new Texture[]{game.getTextureLibrary().OPT_NOTE_STRIKE}
+             );
         
         this.game = game;
         
