@@ -27,25 +27,17 @@ public class IntroScreen implements Screen {
     
     private boolean displayGDX = false;
     
-    private OrthographicCamera camera;
-    
     private int regionIndex = 0;
     private TextureRegion[] crumbleWorksLogoRegions;
-    private Texture libGdxLogo;
     
     public IntroScreen(final Karmen game) {
         this.game = game;
         
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Karmen.SCREEN_WIDTH, Karmen.SCREEN_HEIGHT);
-        
-        Texture crumbleWorksLogos = new Texture("gfx/GrpLogo3x32x32.png");
         crumbleWorksLogoRegions = new TextureRegion[]{
-                new TextureRegion(crumbleWorksLogos, 0, 0, 32, 32),
-                new TextureRegion(crumbleWorksLogos, 32, 0, 32, 32),
-                new TextureRegion(crumbleWorksLogos, 64, 0, 32, 32)
+                new TextureRegion(game.getTextureLibrary().getCrumbleWorksLogo(), 0, 0, 32, 32),
+                new TextureRegion(game.getTextureLibrary().getCrumbleWorksLogo(), 32, 0, 32, 32),
+                new TextureRegion(game.getTextureLibrary().getCrumbleWorksLogo(), 64, 0, 32, 32)
         }; 
-        libGdxLogo = new Texture("gfx/libGdxLogo.png");
     }
 
     @Override
@@ -59,9 +51,6 @@ public class IntroScreen implements Screen {
         Gdx.gl.glClearColor(1, 0.92f, 0.92f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
-        camera.update();
-        game.getBatch().setProjectionMatrix(camera.combined);
-
 //        drawGrid();
         
         Vector2 middleOfLeftLogoBox = getMiddleOfLeftLogoBox();
@@ -74,12 +63,15 @@ public class IntroScreen implements Screen {
                 middleOfLeftLogoBox.y - ((crumbleWorksLogoRegions[regionIndex].getRegionHeight() * CRUMBLEWORKS_LOGO_SCALE) / 2),
                 crumbleWorksLogoRegions[regionIndex].getRegionWidth() * CRUMBLEWORKS_LOGO_SCALE,
                 crumbleWorksLogoRegions[regionIndex].getRegionHeight() * CRUMBLEWORKS_LOGO_SCALE
-                );
+        );
         
         if(displayGDX) {
+            int libGdxLogoWidth = game.getTextureLibrary().getLibGdxLogo().getWidth();
+            int libGdxLogoHeight = game.getTextureLibrary().getLibGdxLogo().getHeight();
+            
             game.getFontMedium().setColor(Color.BLACK);
-            game.getFontMedium().draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2) + 100);
-            game.getBatch().draw(libGdxLogo, middleOfRightLogoBox.x - ((libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE) / 2), libGdxLogo.getWidth() * LIBGDX_LOGO_SCALE, libGdxLogo.getHeight() * LIBGDX_LOGO_SCALE);
+            game.getFontMedium().draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogoWidth * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogoHeight * LIBGDX_LOGO_SCALE) / 2) + 100);
+            game.getBatch().draw(game.getTextureLibrary().getLibGdxLogo(), middleOfRightLogoBox.x - ((libGdxLogoWidth * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogoHeight * LIBGDX_LOGO_SCALE) / 2), libGdxLogoWidth * LIBGDX_LOGO_SCALE, libGdxLogoHeight * LIBGDX_LOGO_SCALE);
         }
         
         game.getBatch().end();
@@ -106,9 +98,6 @@ public class IntroScreen implements Screen {
                 }
             }
         }
-            
-        
-        
     }
     
     private Vector2 getMiddleOfLeftLogoBox() {
@@ -136,28 +125,18 @@ public class IntroScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-        
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
-        libGdxLogo.dispose();
-    }
+    public void dispose() {}
 
 }

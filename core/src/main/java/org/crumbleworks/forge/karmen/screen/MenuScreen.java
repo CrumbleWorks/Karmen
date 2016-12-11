@@ -11,8 +11,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,7 +23,6 @@ public class MenuScreen implements Screen {
     
     private final Karmen game;
     
-    private OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     
     private List<MenuButton> buttons;
@@ -42,8 +39,6 @@ public class MenuScreen implements Screen {
     public MenuScreen(Karmen game) {
         this.game = game;
         
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Karmen.SCREEN_WIDTH, Karmen.SCREEN_HEIGHT);
         shapeRenderer = new ShapeRenderer();
         
         buttons = new ArrayList<MenuButton>() {{
@@ -55,20 +50,18 @@ public class MenuScreen implements Screen {
         
         lampFrameDuration = 0.25f;
         lampAnimationStateTime = 0f;
-        initLampAnimation("gfx/Lamp.png");
+        initLampAnimation();
         
         floydFrameDuration = 0.25f;
         floydAnimationStateTime = 0f;
-        initLoydAnimation("gfx/Hero_7x4_16x32_CHARAKTER.png");
+        initLoydAnimation();
     }
     
-    private void initLampAnimation(String textureFileName) {
-        Texture texture = new Texture(textureFileName);
-
+    private void initLampAnimation() {
         int width = 32;
         int height = 64;
         
-        TextureRegion[][] tempTextureRegions = TextureRegion.split(texture, width, height);
+        TextureRegion[][] tempTextureRegions = TextureRegion.split(game.getTextureLibrary().getLampTexture(), width, height);
         
         int rows = tempTextureRegions.length;
         int cols = tempTextureRegions[0].length;
@@ -84,16 +77,15 @@ public class MenuScreen implements Screen {
         lampAnimation = new Animation(lampFrameDuration, Array.with(textureRegions), PlayMode.LOOP_RANDOM);
     }
     
-    private void initLoydAnimation(String textureFileName) {
+    private void initLoydAnimation() {
         TextureRegion[] textureRegions;
 
         int width = 16;
         int height = 32;
         
-        Texture floydTexture = new Texture(textureFileName);
         textureRegions = new TextureRegion[] {
-            new TextureRegion(floydTexture, 32, 0, width, height),
-            new TextureRegion(floydTexture, 48, 0, width, height),
+            new TextureRegion(game.getTextureLibrary().getFloydTexture(), 32, 0, width, height),
+            new TextureRegion(game.getTextureLibrary().getFloydTexture(), 48, 0, width, height),
         };
         
         floydAnimation = new Animation(floydFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
@@ -109,9 +101,6 @@ public class MenuScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
-        camera.update();
-        game.getBatch().setProjectionMatrix(camera.combined);
-
 //        drawGrid();
         
         drawTitle();
@@ -244,7 +233,6 @@ public class MenuScreen implements Screen {
                 else {
                     button.on = true;
                     button.nextDraw += MenuButton.DRAW_PAUSE;
-                    
                 }
             }
             else {
@@ -256,7 +244,7 @@ public class MenuScreen implements Screen {
     }
     
     private void drawRectangle(Vector2 origin, int width, int height, Color color, float rotation) {
-        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(game.getCamera().combined);
         shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setColor(color);
         
@@ -271,6 +259,7 @@ public class MenuScreen implements Screen {
     private void drawLamp(float delta) {
         lampAnimationStateTime += delta;
         TextureRegion animationFrame = lampAnimation.getKeyFrame(lampAnimationStateTime, true);
+        
         game.getBatch().begin();
         game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 200, Karmen.SCREEN_HEIGHT / 16, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
         game.getBatch().end();
