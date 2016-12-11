@@ -69,7 +69,7 @@ public class MenuScreen extends KarmenScreen {
         floydAnimationStateTime = 0f;
         initFloydAnimation();
         
-        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Menumusic (Loop).ogg"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/music/Menumusic (Loop).ogg"));
         music.setLooping(true);
     }
     
@@ -122,11 +122,6 @@ public class MenuScreen extends KarmenScreen {
         drawFloyd(delta);
         
         checkInput();
-    }
-
-    @Override
-    public void show() {
-        music.play();
     }
 
     private void checkInput() {
@@ -294,6 +289,12 @@ public class MenuScreen extends KarmenScreen {
         game.getBatch().begin();
         game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 125, Karmen.SCREEN_HEIGHT / 15, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
         game.getBatch().end();
+    }
+
+    @Override
+    public void show() {
+        music.play();
+        game.getSoundLibrary().getLightSound().play();
     }
     
     @Override
