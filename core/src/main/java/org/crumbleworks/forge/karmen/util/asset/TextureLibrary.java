@@ -11,6 +11,7 @@ public class TextureLibrary {
     private Texture lampTexture;
     private Texture floydTexture;
     private Texture explosionTexture;
+    private Texture danceFloorTexture;
     
     public TextureLibrary() {
         crumbleWorksLogo = loadTexture("gfx/GrpLogo3x32x32.png");
@@ -18,6 +19,7 @@ public class TextureLibrary {
         lampTexture = loadTexture("gfx/Lamp.png");
         floydTexture = loadTexture("gfx/Hero_9x4_16x32_CHARAKTER.png");
         explosionTexture = loadTexture("gfx/effects/explosion.png");
+        danceFloorTexture = loadTexture("gfx/dance_floor_animation.png");
     }
     
     private Texture loadTexture(String textureFileName) {
@@ -40,6 +42,10 @@ public class TextureLibrary {
         return floydTexture;
     }
     
+    public Texture getDanceFloorTexture() {
+        return danceFloorTexture;
+    }
+    
     /* REGIONS */
     
     public TextureRegion[] getFloydRegions() {
@@ -55,6 +61,27 @@ public class TextureLibrary {
         return regions;
     }
     
+    public TextureRegion[] getDanceFloorRegions() {
+        int FRAME_WIDTH = 174;
+        int FRAME_HEIGHT = 36;
+        
+        TextureRegion[][] tempTextureRegions = TextureRegion.split(getDanceFloorTexture(), FRAME_WIDTH, FRAME_HEIGHT);
+        
+        int rows = tempTextureRegions.length;
+        int cols = tempTextureRegions[0].length;
+        
+        TextureRegion[] textureRegions = new TextureRegion[rows * cols];
+        
+        int frameIndex = 0;
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                textureRegions[frameIndex++] = tempTextureRegions[i][j];
+            }
+        }
+        
+        return textureRegions;
+    }
+    
     public Texture getExplosionTexture() {
         return explosionTexture;
     }
@@ -65,6 +92,7 @@ public class TextureLibrary {
         lampTexture.dispose();
         floydTexture.dispose();
         explosionTexture.dispose();
+        danceFloorTexture.dispose();
     }
     
 }
