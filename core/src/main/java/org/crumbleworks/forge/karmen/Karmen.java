@@ -56,7 +56,7 @@ public class Karmen extends Game {
         playScreen = new PlayScreen(this);
         aboutScreen = new AboutScreen(this);
 
-        setScreen(playScreen);
+        setScreen(introScreen);
     }
 
     @Override

@@ -19,7 +19,7 @@ public class PlayScreen implements Screen {
     
     private InputMultiplexer inputMultiplexer;
     
-    private PlayScreenDebugRenderer renderer;
+//    private PlayScreenDebugRenderer renderer;
     
     public PlayScreen(final Karmen game) {
         this.game = game;
@@ -28,7 +28,7 @@ public class PlayScreen implements Screen {
         inputMultiplexer = new InputMultiplexer(new FloydInputAdapter(floyd));
         Gdx.input.setInputProcessor(inputMultiplexer);
         
-        renderer = new PlayScreenDebugRenderer();
+//        renderer = new PlayScreenDebugRenderer();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PlayScreen implements Screen {
         game.getBatch().begin();
         
         floyd.update(delta);
-        renderer.drawGrid(game.getCamera());
+//        renderer.drawGrid(game.getCamera());
         
         
         game.getBatch().end();
