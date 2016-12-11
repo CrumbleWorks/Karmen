@@ -10,12 +10,14 @@ public class TextureLibrary {
     private Texture libGdxLogo;
     private Texture lampTexture;
     private Texture floydTexture;
+    private Texture explosionTexture;
     
     public TextureLibrary() {
         crumbleWorksLogo = loadTexture("gfx/GrpLogo3x32x32.png");
         libGdxLogo = loadTexture("gfx/libGdxLogo.png");
         lampTexture = loadTexture("gfx/Lamp.png");
         floydTexture = loadTexture("gfx/Hero_7x4_16x32_CHARAKTER.png");
+        explosionTexture = loadTexture("gfx/effects/explosion.png");
     }
     
     private Texture loadTexture(String textureFileName) {
@@ -53,11 +55,16 @@ public class TextureLibrary {
         return regions;
     }
     
+    public Texture getExplosionTexture() {
+        return explosionTexture;
+    }
+    
     public void dispose() {
         crumbleWorksLogo.dispose();
         libGdxLogo.dispose();
         lampTexture.dispose();
         floydTexture.dispose();
+        explosionTexture.dispose();
     }
     
 }
