@@ -25,15 +25,12 @@ public class PlayScreen implements Screen {
         this.floyd = new Floyd(Karmen.SCREEN_WIDTH / 2, 50, 64, 128, game);
         
         inputMultiplexer = new InputMultiplexer(new FloydInputAdapter(floyd));
-        Gdx.input.setInputProcessor(inputMultiplexer);
-        
 //        renderer = new PlayScreenDebugRenderer();
     }
 
     @Override
     public void show() {
-        // TODO Auto-generated method stub
-
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
@@ -79,8 +76,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
-
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override
