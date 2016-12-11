@@ -7,7 +7,7 @@ public class NeonColors {
     private static final float DEFAULT_ALPHA = 1;
     private static final float MAX_COLOR_VALUE = 255;
     
-    public static final Color Yellow = convert(170, 255, 0);
+    public static final Color Green = convert(170, 255, 0);
     public static final Color Orange = convert(255, 170, 0);
     public static final Color Pink = convert(255, 0, 170);
     public static final Color Purple = convert(170, 0, 255);

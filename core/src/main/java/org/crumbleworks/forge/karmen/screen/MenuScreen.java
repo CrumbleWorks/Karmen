@@ -9,6 +9,7 @@ import org.crumbleworks.forge.karmen.util.NeonColors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -35,6 +36,8 @@ public class MenuScreen implements Screen {
     private Animation floydAnimation;
     private float floydAnimationStateTime;
     private float floydFrameDuration;
+    
+    private Music music;
 
     public MenuScreen(Karmen game) {
         this.game = game;
@@ -42,7 +45,7 @@ public class MenuScreen implements Screen {
         shapeRenderer = new ShapeRenderer();
         
         buttons = new ArrayList<MenuButton>() {{
-            add(new MenuButton("PLAY", 'P', NeonColors.Yellow, true, ()->{game.setScreen(game.playScreen);}));
+            add(new MenuButton("PLAY", 'P', NeonColors.Green, true, ()->{game.setScreen(game.playScreen);}));
             add(new MenuButton("ABOUT", 'A', NeonColors.Pink, false, ()->{game.setScreen(game.aboutScreen);}));
             add(new MenuButton("QUIT", 'Q', NeonColors.Blue, false, ()->{Gdx.app.exit();}));
         }};
@@ -55,6 +58,9 @@ public class MenuScreen implements Screen {
         floydFrameDuration = 0.25f;
         floydAnimationStateTime = 0f;
         initLoydAnimation();
+        
+        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Rolemu_-_Neoishiki.mp3"));
+        music.setLooping(true);
     }
     
     private void initLampAnimation() {
@@ -93,7 +99,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
-
+//        music.play();
     }
 
     @Override
@@ -276,33 +282,24 @@ public class MenuScreen implements Screen {
         game.getBatch().begin();
         game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 125, Karmen.SCREEN_HEIGHT / 15, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
         game.getBatch().end();
-        
     }
     
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
     public void hide() {
-
+//        music.stop();
     }
 
     @Override
-    public void dispose() {
-
-    }
+    public void dispose() {}
     
     /*
      * INNER SHTUFF

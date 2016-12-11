@@ -55,11 +55,16 @@ public class TextureLibrary {
         return regions;
     }
     
+    public Texture getExplosionTexture() {
+        return explosionTexture;
+    }
+    
     public void dispose() {
         crumbleWorksLogo.dispose();
         libGdxLogo.dispose();
         lampTexture.dispose();
         floydTexture.dispose();
+        explosionTexture.dispose();
     }
     
 }

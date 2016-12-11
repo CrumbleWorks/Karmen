@@ -71,6 +71,7 @@ project(":core") {
 
 
     dependencies {
+		compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"

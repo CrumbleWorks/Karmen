@@ -350,6 +350,8 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            doll.game().getSoundLibrary().getRandomFistSound().play();
         }
     }
     
@@ -376,6 +378,8 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            doll.game().getSoundLibrary().getRandomFistSound().play();
         }
     }
     

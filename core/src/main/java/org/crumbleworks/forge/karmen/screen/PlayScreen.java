@@ -5,9 +5,9 @@ import org.crumbleworks.forge.karmen.character.Floyd;
 import org.crumbleworks.forge.karmen.character.FloydInputAdapter;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 
 public class PlayScreen implements Screen {
@@ -18,12 +18,16 @@ public class PlayScreen implements Screen {
     
     private InputMultiplexer inputMultiplexer;
     
+//    private PlayScreenDebugRenderer renderer;
+    
     public PlayScreen(final Karmen game) {
         this.game = game;
-        this.floyd = new Floyd(Karmen.SCREEN_WIDTH / 2, 50, 128, 256, game);
+        this.floyd = new Floyd(Karmen.SCREEN_WIDTH / 2, 50, 64, 128, game);
         
         inputMultiplexer = new InputMultiplexer(new FloydInputAdapter(floyd));
         Gdx.input.setInputProcessor(inputMultiplexer);
+        
+//        renderer = new PlayScreenDebugRenderer();
     }
 
     @Override
@@ -40,6 +44,8 @@ public class PlayScreen implements Screen {
         game.getBatch().begin();
         
         floyd.update(delta);
+//        renderer.drawGrid(game.getCamera());
+        
         
         game.getBatch().end();
         
