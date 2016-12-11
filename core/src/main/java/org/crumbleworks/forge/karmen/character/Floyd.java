@@ -1,6 +1,11 @@
 package org.crumbleworks.forge.karmen.character;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.character.StatefulDoll.Behaviour;
+import org.crumbleworks.forge.karmen.character.StatefulDoll.State;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,259 +16,681 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class Floyd {
-
-    private final Karmen game;
-    
-    private Vector2 position;
-    private Vector2 size;
-    private Vector2 velocity;
+public class Floyd extends StatefulDoll {
 
     public static final float MAX_SPEED = 1f;
     
     private static final int FRAME_WIDTH = 16;
     private static final int FRAME_HEIGHT = 32;
     
-    private Sprite sprite;
-    private Texture texture;
-    private TextureRegion[] textureRegions;
-    
-    private Animation stillFrontAnimation;
-    private Animation stillSideAnimation;
-    private Animation jumpFrontUpAnimation;
-    private Animation jumpFrontDownAnimation;
-    private Animation blockFrontAnimation;
-    private Animation runAnimation;
-    private Animation kickAnimation;
-    private Animation fistAnimation;
-    private Animation jumpSideUpAnimation;
-    private Animation jumpSideDownAnimation;
-    private Animation jumpSideMoveAnimation;
-    private Animation jumpKickAnimation;
-    private Animation blockSideAnimation;
-    
-    /* INFO ON FLOYD STATE */
-    private Animation currentAnimation;
-    private Facing facing;
-    
-    boolean isRunning = false;
-    boolean inAir = false;
-    boolean isBlocking = false;
-    /* END INFO ON FLOYD STATE */
-    
-    private float stateTime;
-    private float animationSpeed;
-    
-    public Floyd(int x, int y, int width, int height, String textureFileName, final Karmen game) {
-        this.game = game;
-        
-        position = new Vector2(x, y);
-        size = new Vector2(width, height);
-        velocity = new Vector2(0f, 0f);
-        
-        textureRegions = new TextureRegion[28];
-        
-        animationSpeed = 0.25f;
-        
-        initTextureRegions(textureFileName);
-        initAnimations();
-        
-        currentAnimation = stillFrontAnimation;
-        
-        sprite = new Sprite();
-        sprite.setTexture(texture);
-        sprite.setPosition(position.x, position.y);
-        sprite.setSize(size.x, size.y);
-        sprite.setOrigin(size.x / 2, size.y / 2);
-        
-        stateTime = 0f;
-    }
-    
-    private void initTextureRegions(String textureFileName) {
-        texture = new Texture(Gdx.files.internal(textureFileName));
+    private static Texture texture;
+    private static TextureRegion[] textureRegions = new TextureRegion[28];
+    static {
+        texture = new Texture(Gdx.files.internal("gfx/Hero_7x4_16x32_CHARAKTER.png"));
         
         for(FloydFrameType type : FloydFrameType.values()) {
             textureRegions[type.ordinal()] = new TextureRegion(texture, type.getX() * FRAME_WIDTH, type.getY() * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
         }
     }
-    
-    private void initAnimations() {
-        stillFrontAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()],
-                           textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]),
-                PlayMode.LOOP);
-        
-        stillSideAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()],
-                           textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]),
-                PlayMode.LOOP);
-        
-        jumpFrontUpAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()]),
-                PlayMode.NORMAL);
-        
-        jumpFrontDownAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        blockFrontAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.BLOCK_FRONT_A.ordinal()],
-                           textureRegions[FloydFrameType.BLOCK_FRONT_B.ordinal()]),
-                PlayMode.LOOP);
-        
-        runAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()],
-                           textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]),
-                PlayMode.LOOP);
-        
-        kickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]),
-                PlayMode.NORMAL);
-        
-        fistAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]),
-                PlayMode.NORMAL);
-        
-        jumpSideUpAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
-                PlayMode.NORMAL);
 
-        jumpSideDownAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        jumpSideMoveAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A_AIR.ordinal()],
-                           textureRegions[FloydFrameType.MOVE_SIDE_B_AIR.ordinal()]),
-                PlayMode.LOOP);
-        
-        jumpKickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
-                PlayMode.NORMAL);
-                
-        blockSideAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()],
-                           textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]),
-                PlayMode.LOOP);
+    private static float animationSpeed = 0.25f;
+    
+    public Floyd(int x, int y, int width, int height, final Karmen game) {
+        super(game,
+              new PSV(new Vector2(x, y), new Vector2(width, height), new Vector2(0f, 0f)),
+              State.STILL_FRONT,
+              initBehaviours());
     }
     
-    public void update() {
-        
-    }
-    
-    public void draw() {
-        stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentAnimationFrame = currentAnimation.getKeyFrame(stateTime);
-        
-        if(facing == Facing.LEFT && !currentAnimationFrame.isFlipX()) {
-            currentAnimationFrame.flip(true, false);
-        } else if(facing == Facing.RIGHT && currentAnimationFrame.isFlipX()) {
-            currentAnimationFrame.flip(true, false);
-        }
-
-        game.getBatch().draw(currentAnimationFrame, position.x, position.y, size.x, size.y);
+    private static Map<State, Behaviour> initBehaviours() {
+        return new HashMap<State, Behaviour>() {{
+            put(State.STILL_FRONT, new FloydStillFront());
+            put(State.STILL_RIGHT, new FloydStillRight());
+            put(State.STILL_LEFT, new FloydStillLeft());
+            put(State.RUN_RIGHT, new FloydRunRight());
+            put(State.RUN_LEFT, new FloydRunLeft());
+            put(State.BLOCK_FRONT, new FloydBlockFront());
+            put(State.BLOCK_LEFT, new FloydBlockLeft());
+            put(State.BLOCK_RIGHT, new FloydBlockRight());
+            put(State.KICK_RIGHT, new FloydKickRight());
+            put(State.KICK_LEFT, new FloydKickLeft());
+            put(State.JUMP_FRONT, new FloydJumpFront());
+            put(State.JUMP_RIGHT, new FloydJumpRight());
+            put(State.JUMP_KICK_RIGHT, new FloydJumpKickRight());
+            put(State.ARC_JUMP_RIGHT, new FloydArcJumpRight());
+            put(State.ARC_KICK_RIGHT, new FloydArcKickRight());
+            put(State.JUMP_LEFT, new FloydJumpLeft());
+            put(State.JUMP_KICK_LEFT, new FloydJumpKickLeft());
+            put(State.ARC_JUMP_LEFT, new FloydArcJumpLeft());
+            put(State.ARC_KICK_LEFT, new FloydArcKickLeft());
+        }};
     }
 
     /* ***********************************************************************
-     * STUFF FLOYD CAN DO IF YOU MAKE HIM DO IT
+     * BEHAVIOURS
      */
     
-    /* RUNNING */
-    public static enum Direction {
-        RIGHT, LEFT;
+    static class FloydStillFront implements Behaviour {
+        private static final Animation stillFrontAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()],
+                           textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]),
+             PlayMode.LOOP);
+        
+        private float stateTime;
+        
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = stillFrontAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
     }
     
-    public void startRunning(Direction dir) {
-        if(!inAir) {
-            isRunning = true;
-            currentAnimation = runAnimation;
-            if(dir == Direction.RIGHT) {
-                facing = Facing.RIGHT;
-            } else {
-                facing = Facing.LEFT;
+    static class FloydStillRight implements Behaviour {
+        private static final Animation stillSideAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()],
+                        textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]),
+             PlayMode.LOOP);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = stillSideAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydStillLeft implements Behaviour {
+        private static final Animation stillSideAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()],
+                        textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]),
+             PlayMode.LOOP);
+        static {
+            for(TextureRegion frame : stillSideAnimation.getKeyFrames()) {
+                frame.flip(true, false);
             }
         }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = stillSideAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
     }
     
-    public void stopRunning() {
-        if(!inAir) {
-            isRunning = false;
-            if(facing == Facing.FRONT) {
-                currentAnimation = stillFrontAnimation;
-            } else {
-                currentAnimation = stillSideAnimation;
+    static class FloydRunRight implements Behaviour {
+        private static final Animation runAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]),
+             PlayMode.LOOP);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = runAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydRunLeft implements Behaviour {
+        private static final Animation runAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]),
+             PlayMode.LOOP);
+        static {
+            for(TextureRegion frame : runAnimation.getKeyFrames()) {
+                frame.flip(true, false);
             }
         }
-    }
-    
-    public boolean isRunning() {
-        return isRunning;
-    }
-    
-    /* STARING */
-    public void stare() {
-        if(inAir) {
-            //TODO logic for deciding if jump up/down
-            currentAnimation = jumpFrontUpAnimation;
-        } else if(!isBlocking) {
-            return;
-        } else {
-            currentAnimation = stillFrontAnimation;
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
         }
-        facing = Facing.FRONT;
-    }
-    
-    /* JUMPING */
-    public void jump() {
-        if(!inAir && !isBlocking) {
-            //TODO FALLING LOGIC
-            currentAnimation = jumpFrontUpAnimation;
-            inAir = true;
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = runAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
         }
     }
     
-    public boolean inAir() {
-        return inAir;
-    }
-    
-    /* PUNCHING */
-    public void punch() {
-        if(!inAir) {
-            currentAnimation = fistAnimation;
+    static class FloydBlockFront implements Behaviour {
+        private static final Animation blockFrontAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.BLOCK_FRONT_A.ordinal()],
+                        textureRegions[FloydFrameType.BLOCK_FRONT_B.ordinal()]),
+             PlayMode.LOOP);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = blockFrontAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
         }
     }
     
-    /* KICKING */
-    public void kick() {
-        if(inAir) {
-            currentAnimation = jumpKickAnimation;
-        } else {
-            currentAnimation = kickAnimation;
+    static class FloydBlockRight implements Behaviour {
+        private static final Animation blockSideAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()],
+                        textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]),
+             PlayMode.LOOP);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = blockSideAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
         }
     }
     
-    /* BLOCKING */
-    public void startBlocking() {
-        if(!inAir) {
-            if(facing == Facing.FRONT) {
-                currentAnimation = blockFrontAnimation;
-            } else {
-                currentAnimation = blockSideAnimation;
+    static class FloydBlockLeft implements Behaviour {
+        private static final Animation blockSideAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()],
+                        textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]),
+             PlayMode.LOOP);
+        static {
+            for(TextureRegion frame : blockSideAnimation.getKeyFrames()) {
+                frame.flip(true, false);
             }
-            isBlocking = true;
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = blockSideAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
         }
     }
     
-    public void stopBlocking() {
-        if(facing == Facing.FRONT) {
-            currentAnimation = stillFrontAnimation;
-        } else {
-            currentAnimation = stillSideAnimation;
+    static class FloydPunchRight implements Behaviour {
+        private static final Animation fistAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
         }
-        isBlocking = false;
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = fistAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
     }
     
-    public boolean isBlocking() {
-        return isBlocking;
+    static class FloydPunchLeft implements Behaviour {
+        private static final Animation fistAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]),
+                PlayMode.NORMAL);
+        static {
+            for(TextureRegion frame : fistAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = fistAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydKickRight implements Behaviour {
+        private static final Animation kickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = kickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydKickLeft implements Behaviour {
+        private static final Animation kickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]),
+                PlayMode.NORMAL);
+        static {
+            for(TextureRegion frame : kickAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = kickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydJumpFront implements Behaviour {
+        private static final Animation animUp = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private static final Animation animDown = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = animUp.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydJumpRight implements Behaviour {
+        private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                PlayMode.NORMAL);
+
+        private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydJumpKickRight implements Behaviour {
+        private static final Animation jumpKickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydArcJumpRight implements Behaviour {
+        private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                PlayMode.NORMAL);
+
+        private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private static final Animation jumpSideMoveAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A_AIR.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_B_AIR.ordinal()]),
+             PlayMode.LOOP);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydArcKickRight implements Behaviour {
+        private static final Animation jumpKickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydJumpLeft implements Behaviour {
+        private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                PlayMode.NORMAL);
+
+        private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        static {
+            for(TextureRegion frame : jumpSideUpAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+
+            for(TextureRegion frame : jumpSideDownAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydJumpKickLeft implements Behaviour {
+        private static final Animation jumpKickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                PlayMode.NORMAL);
+        
+        static {
+            for(TextureRegion frame : jumpKickAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydArcJumpLeft implements Behaviour {
+        private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                PlayMode.NORMAL);
+
+        private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private static final Animation jumpSideMoveAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A_AIR.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_B_AIR.ordinal()]),
+             PlayMode.LOOP);
+        
+        static {
+            for(TextureRegion frame : jumpSideUpAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+
+            for(TextureRegion frame : jumpSideDownAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+
+            for(TextureRegion frame : jumpSideMoveAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydArcKickLeft implements Behaviour {
+        private static final Animation jumpKickAnimation = new Animation(animationSpeed,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                PlayMode.NORMAL);
+        
+        static {
+            for(TextureRegion frame : jumpKickAnimation.getKeyFrames()) {
+                frame.flip(true, false);
+            }
+        }
+        
+        private float stateTime;
+
+        @Override
+        public void init() {
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
     }
 }

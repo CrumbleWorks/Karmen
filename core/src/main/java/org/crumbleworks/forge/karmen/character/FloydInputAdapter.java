@@ -1,7 +1,5 @@
 package org.crumbleworks.forge.karmen.character;
 
-import org.crumbleworks.forge.karmen.character.Floyd.Direction;
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 
@@ -16,38 +14,31 @@ public class FloydInputAdapter extends InputAdapter {
     @Override
     public boolean keyDown(int keyCode) {
         if(keyCode == Keys.A) {
-            // left
-            floyd.startRunning(Direction.LEFT);
+            floyd.goLeft();
             return true;
         }
         if(keyCode == Keys.D) {
-            // right
-            floyd.startRunning(Direction.RIGHT);
+            floyd.goRight();
             return true;
         }
         if(keyCode == Keys.S) {
-            // right
-            floyd.stare();
+            floyd.face();
             return true;
         }
         if(keyCode == Keys.SPACE) {
-            // jump
             floyd.jump();
             return true;
         }
         
         if(keyCode == Keys.J) {
-            // fist
             floyd.punch();
             return true;
         }
         if(keyCode == Keys.K) {
-            // block
-            floyd.startBlocking();
+            floyd.block();
             return true;
         }
         if(keyCode == Keys.L) {
-            // kick
             floyd.kick();
             return true;
         }
@@ -58,18 +49,15 @@ public class FloydInputAdapter extends InputAdapter {
     @Override
     public boolean keyUp(int keyCode) {
         if(keyCode == Keys.A) {
-            // left
-            floyd.stopRunning();
+            floyd.stop();
             return true;
         }
         if(keyCode == Keys.D) {
-            // right
-            floyd.stopRunning();
+            floyd.stop();
             return true;
         }
         if(keyCode == Keys.K) {
-            // block
-            floyd.stopBlocking();
+            floyd.stop();
             return true;
         }
         

@@ -20,7 +20,7 @@ public class PlayScreen implements Screen {
     
     public PlayScreen(final Karmen game) {
         this.game = game;
-        this.floyd = new Floyd(Karmen.SCREEN_WIDTH / 2, 50, 128, 256, "gfx/Hero_7x4_16x32_CHARAKTER.png", game);
+        this.floyd = new Floyd(Karmen.SCREEN_WIDTH / 2, 50, 128, 256, game);
         
         inputMultiplexer = new InputMultiplexer(new FloydInputAdapter(floyd));
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -35,13 +35,11 @@ public class PlayScreen implements Screen {
     @Override
     public void render(float delta) {
         
-        floyd.update();
-        
         Gdx.gl.glClearColor(1, 0.9f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.getBatch().begin();
         
-        floyd.draw();
+        floyd.update(delta);
         
         game.getBatch().end();
         
