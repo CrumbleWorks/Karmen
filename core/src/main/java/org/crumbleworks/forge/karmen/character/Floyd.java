@@ -343,17 +343,29 @@ public class Floyd extends StatefulDoll {
      * KICK
      */
     
-    static class FloydKickRight implements Behaviour {
-        private static final Animation kickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R.ordinal()]),
-                PlayMode.NORMAL);
+    static abstract class FloydKick implements Behaviour {
+        private final Animation kickAnimation;
+        private final String debugName;
         
+        private long returnTime;
         private float stateTime;
+        
+        private State previousState;
+        
+        FloydKick(FloydFrameType animation, String debugName) {
+            kickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[animation.ordinal()]),
+                    PlayMode.NORMAL);
+            this.debugName = debugName;
+        }
 
         @Override
         public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init KickRight");
+            Gdx.app.debug("FLOYD", "init " + debugName);
+            
+            this.previousState = previousState;
             stateTime = 0f;
+            returnTime = AnimationConstants.DUR_MS_KICK;
         }
 
         @Override
@@ -367,35 +379,26 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-            doll.game().getSoundLibrary().getRandomFistSound().play();
+            //logic
+            returnTime -= Calc.gdxDeltaToMillis(delta);
+            if(returnTime <= 0) {
+                Gdx.app.debug("FLOYD", "> returning to " + previousState.name());
+                doll.set(previousState);
+            }
         }
     }
     
-    static class FloydKickLeft implements Behaviour {
-        private static final Animation kickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L.ordinal()]),
-                PlayMode.NORMAL);
+    static class FloydKickRight extends FloydKick {
         
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init KickLeft");
-            stateTime = 0f;
+        FloydKickRight() {
+            super(FloydFrameType.KICK_SIDE_R, "KickRight");
         }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = kickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            doll.game().getSoundLibrary().getRandomFistSound().play();
+    }
+    
+    static class FloydKickLeft extends FloydKick {
+        
+        FloydKickLeft() {
+            super(FloydFrameType.KICK_SIDE_L, "KickLeft");
         }
     }
     
