@@ -10,12 +10,14 @@ public class TextureLibrary {
     private Texture libGdxLogo;
     private Texture lampTexture;
     private Texture floydTexture;
+    private Texture explosionTexture;
     
     public TextureLibrary() {
         crumbleWorksLogo = loadTexture("gfx/GrpLogo3x32x32.png");
         libGdxLogo = loadTexture("gfx/libGdxLogo.png");
         lampTexture = loadTexture("gfx/Lamp.png");
-        floydTexture = loadTexture("gfx/Hero_7x4_16x32_CHARAKTER.png");
+        floydTexture = loadTexture("gfx/Hero_9x4_16x32_CHARAKTER.png");
+        explosionTexture = loadTexture("gfx/effects/explosion.png");
     }
     
     private Texture loadTexture(String textureFileName) {
@@ -44,7 +46,7 @@ public class TextureLibrary {
         int FRAME_WIDTH = 16;
         int FRAME_HEIGHT = 32;
         
-        TextureRegion[] regions = new TextureRegion[28];
+        TextureRegion[] regions = new TextureRegion[36];
         
         for(FloydFrameType type : FloydFrameType.values()) {
             regions[type.ordinal()] = new TextureRegion(getFloydTexture(), type.getX() * FRAME_WIDTH, type.getY() * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);

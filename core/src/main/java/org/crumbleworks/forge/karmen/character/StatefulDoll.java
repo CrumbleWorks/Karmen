@@ -27,7 +27,10 @@ public abstract class StatefulDoll {
     }
     
     private static enum Action {
-        LEFT, RIGHT, BLOCK, STOP, FACE, JUMP, PUNCH, KICK;
+        LEFT, STOP_LEFT, 
+        RIGHT, STOP_RIGHT, 
+        BLOCK, STOP_BLOCK,
+        FACE, JUMP, PUNCH, KICK;
     }
     
     /**
@@ -69,7 +72,7 @@ public abstract class StatefulDoll {
 
             /* RUNNING */
             put(State.RUN_RIGHT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_RIGHT);
+                put(Action.STOP_RIGHT, State.STILL_RIGHT);
                 put(Action.BLOCK, State.BLOCK_RIGHT);
                 put(Action.PUNCH, State.PUNCH_RIGHT);
                 put(Action.KICK, State.KICK_RIGHT);
@@ -77,7 +80,7 @@ public abstract class StatefulDoll {
             }});
 
             put(State.RUN_LEFT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_LEFT);
+                put(Action.STOP_LEFT, State.STILL_LEFT);
                 put(Action.BLOCK, State.BLOCK_LEFT);
                 put(Action.KICK, State.KICK_LEFT);
                 put(Action.PUNCH, State.PUNCH_LEFT);
@@ -86,32 +89,28 @@ public abstract class StatefulDoll {
 
             /* BLOCKS */
             put(State.BLOCK_FRONT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_FRONT);
+                put(Action.STOP_BLOCK, State.STILL_FRONT);
             }});
 
             put(State.BLOCK_RIGHT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_RIGHT);
+                put(Action.STOP_BLOCK, State.STILL_RIGHT);
             }});
 
             put(State.BLOCK_LEFT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_LEFT);
+                put(Action.STOP_BLOCK, State.STILL_LEFT);
             }});
 
             /* FIGHTING */
             put(State.PUNCH_RIGHT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_RIGHT);
             }});
 
             put(State.KICK_RIGHT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_RIGHT);
             }});
 
             put(State.PUNCH_LEFT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_LEFT);
             }});
 
             put(State.KICK_LEFT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.STILL_LEFT);
             }});
 
             /* AIR FRONT*/
@@ -128,7 +127,6 @@ public abstract class StatefulDoll {
             }});
 
             put(State.JUMP_KICK_RIGHT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.JUMP_RIGHT);
             }});
 
             put(State.ARC_JUMP_RIGHT, new HashMap<Action, State>() {{
@@ -137,7 +135,6 @@ public abstract class StatefulDoll {
             }});
 
             put(State.ARC_KICK_RIGHT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.ARC_JUMP_RIGHT);
             }});
 
             /* AIR LEFT */
@@ -148,7 +145,6 @@ public abstract class StatefulDoll {
             }});
 
             put(State.JUMP_KICK_LEFT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.JUMP_LEFT);
             }});
 
             put(State.ARC_JUMP_LEFT, new HashMap<Action, State>() {{
@@ -157,7 +153,6 @@ public abstract class StatefulDoll {
             }});
 
             put(State.ARC_KICK_LEFT, new HashMap<Action, State>() {{
-                put(Action.STOP, State.ARC_JUMP_LEFT);
             }});
         }};
     }
@@ -225,6 +220,10 @@ public abstract class StatefulDoll {
         set(Action.LEFT);
     }
     
+    public void stopLeft() {
+        set(Action.STOP_LEFT);
+    }
+    
     /** SINGLE */
     public void face() {
         set(Action.FACE);
@@ -233,6 +232,10 @@ public abstract class StatefulDoll {
     /** CONTINUOUS */
     public void goRight() {
         set(Action.RIGHT);
+    }
+    
+    public void stopRight() {
+        set(Action.STOP_RIGHT);
     }
     
     /** SINGLE */
@@ -250,14 +253,13 @@ public abstract class StatefulDoll {
         set(Action.BLOCK);
     }
     
+    public void stopBlock() {
+        set(Action.STOP_BLOCK);
+    }
+    
     /** SINGLE */
     public void kick() {
         set(Action.KICK);
-    }
-    
-    /** STOP doing CONTINUOUS action */
-    public void stop() {
-        set(Action.STOP);
     }
     
     /* ***********************************************************************

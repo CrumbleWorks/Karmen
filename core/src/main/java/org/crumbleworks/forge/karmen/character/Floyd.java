@@ -4,15 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.crumbleworks.forge.karmen.Karmen;
-import org.crumbleworks.forge.karmen.character.StatefulDoll.Behaviour;
-import org.crumbleworks.forge.karmen.character.StatefulDoll.State;
 import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -91,8 +88,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydStillRight implements Behaviour {
         private static final Animation stillSideAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()],
-                        textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.STILL_SIDE_RA.ordinal()],
+                        textureRegions[FloydFrameType.STILL_SIDE_RB.ordinal()]),
              PlayMode.LOOP);
         
         private float stateTime;
@@ -118,14 +115,9 @@ public class Floyd extends StatefulDoll {
     
     static class FloydStillLeft implements Behaviour {
         private static final Animation stillSideAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.STILL_SIDE_A.ordinal()],
-                        textureRegions[FloydFrameType.STILL_SIDE_B.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.STILL_SIDE_LA.ordinal()],
+                        textureRegions[FloydFrameType.STILL_SIDE_LB.ordinal()]),
              PlayMode.LOOP);
-        static {
-            for(TextureRegion frame : stillSideAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -150,8 +142,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydRunRight implements Behaviour {
         private static final Animation runAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_RB.ordinal()]),
              PlayMode.LOOP);
         
         private float stateTime;
@@ -177,14 +169,9 @@ public class Floyd extends StatefulDoll {
     
     static class FloydRunLeft implements Behaviour {
         private static final Animation runAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_B.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_LB.ordinal()]),
              PlayMode.LOOP);
-        static {
-            for(TextureRegion frame : runAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -236,8 +223,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydBlockRight implements Behaviour {
         private static final Animation blockSideAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()],
-                        textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_RA.ordinal()],
+                        textureRegions[FloydFrameType.BLOCK_SIDE_RB.ordinal()]),
              PlayMode.LOOP);
         
         private float stateTime;
@@ -263,14 +250,9 @@ public class Floyd extends StatefulDoll {
     
     static class FloydBlockLeft implements Behaviour {
         private static final Animation blockSideAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_A.ordinal()],
-                        textureRegions[FloydFrameType.BLOCK_SIDE_B.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_LA.ordinal()],
+                        textureRegions[FloydFrameType.BLOCK_SIDE_LB.ordinal()]),
              PlayMode.LOOP);
-        static {
-            for(TextureRegion frame : blockSideAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -295,7 +277,7 @@ public class Floyd extends StatefulDoll {
     
     static class FloydPunchRight implements Behaviour {
         private static final Animation fistAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.PUNCH_SIDE_R.ordinal()]),
                 PlayMode.NORMAL);
         
         private float stateTime;
@@ -321,13 +303,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydPunchLeft implements Behaviour {
         private static final Animation fistAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.FIST_SIDE.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.PUNCH_SIDE_L.ordinal()]),
                 PlayMode.NORMAL);
-        static {
-            for(TextureRegion frame : fistAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -352,7 +329,7 @@ public class Floyd extends StatefulDoll {
     
     static class FloydKickRight implements Behaviour {
         private static final Animation kickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R.ordinal()]),
                 PlayMode.NORMAL);
         
         private float stateTime;
@@ -378,13 +355,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydKickLeft implements Behaviour {
         private static final Animation kickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L.ordinal()]),
                 PlayMode.NORMAL);
-        static {
-            for(TextureRegion frame : kickAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -439,11 +411,11 @@ public class Floyd extends StatefulDoll {
     
     static class FloydJumpRight implements Behaviour {
         private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RUP.ordinal()]),
                 PlayMode.NORMAL);
 
         private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RDOWN.ordinal()]),
                 PlayMode.NORMAL);
         
         private float stateTime;
@@ -469,7 +441,7 @@ public class Floyd extends StatefulDoll {
     
     static class FloydJumpKickRight implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
                 PlayMode.NORMAL);
         
         private float stateTime;
@@ -495,16 +467,16 @@ public class Floyd extends StatefulDoll {
     
     static class FloydArcJumpRight implements Behaviour {
         private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RUP.ordinal()]),
                 PlayMode.NORMAL);
 
         private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RDOWN.ordinal()]),
                 PlayMode.NORMAL);
         
         private static final Animation jumpSideMoveAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A_AIR.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_B_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA_AIR.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_RB_AIR.ordinal()]),
              PlayMode.LOOP);
         
         private float stateTime;
@@ -530,7 +502,7 @@ public class Floyd extends StatefulDoll {
     
     static class FloydArcKickRight implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
                 PlayMode.NORMAL);
         
         private float stateTime;
@@ -556,22 +528,12 @@ public class Floyd extends StatefulDoll {
     
     static class FloydJumpLeft implements Behaviour {
         private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
                 PlayMode.NORMAL);
 
         private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
                 PlayMode.NORMAL);
-        
-        static {
-            for(TextureRegion frame : jumpSideUpAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-
-            for(TextureRegion frame : jumpSideDownAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -596,14 +558,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydJumpKickLeft implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
                 PlayMode.NORMAL);
-        
-        static {
-            for(TextureRegion frame : jumpKickAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -628,31 +584,17 @@ public class Floyd extends StatefulDoll {
     
     static class FloydArcJumpLeft implements Behaviour {
         private static final Animation jumpSideUpAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_UP.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
                 PlayMode.NORMAL);
 
         private static final Animation jumpSideDownAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_DOWN.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
                 PlayMode.NORMAL);
         
         private static final Animation jumpSideMoveAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_A_AIR.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_B_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA_AIR.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_LB_AIR.ordinal()]),
              PlayMode.LOOP);
-        
-        static {
-            for(TextureRegion frame : jumpSideUpAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-
-            for(TextureRegion frame : jumpSideDownAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-
-            for(TextureRegion frame : jumpSideMoveAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
@@ -677,14 +619,8 @@ public class Floyd extends StatefulDoll {
     
     static class FloydArcKickLeft implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_AIR.ordinal()]),
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
                 PlayMode.NORMAL);
-        
-        static {
-            for(TextureRegion frame : jumpKickAnimation.getKeyFrames()) {
-                frame.flip(true, false);
-            }
-        }
         
         private float stateTime;
 
