@@ -6,6 +6,7 @@ import java.util.Map;
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.character.StatefulDoll.Behaviour;
 import org.crumbleworks.forge.karmen.character.StatefulDoll.State;
+import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -70,7 +71,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
         
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init StillFront");
             stateTime = 0f;
         }
 
@@ -96,7 +98,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init StillRight");
             stateTime = 0f;
         }
 
@@ -127,7 +130,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init StillLeft");
             stateTime = 0f;
         }
 
@@ -153,7 +157,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init RunRight");
             stateTime = 0f;
         }
 
@@ -184,7 +189,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init RunLeft");
             stateTime = 0f;
         }
 
@@ -210,7 +216,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init BlockFront");
             stateTime = 0f;
         }
 
@@ -236,7 +243,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init BlockRight");
             stateTime = 0f;
         }
 
@@ -267,7 +275,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init BlockLeft");
             stateTime = 0f;
         }
 
@@ -292,7 +301,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init PunchRight");
             stateTime = 0f;
         }
 
@@ -322,7 +332,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init PunchLeft");
             stateTime = 0f;
         }
 
@@ -347,7 +358,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init KickRight");
             stateTime = 0f;
         }
 
@@ -377,7 +389,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init KickLeft");
             stateTime = 0f;
         }
 
@@ -406,7 +419,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpFront");
             stateTime = 0f;
         }
 
@@ -435,7 +449,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpRight");
             stateTime = 0f;
         }
 
@@ -460,7 +475,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpKickRight");
             stateTime = 0f;
         }
 
@@ -494,7 +510,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init ArcJumpRight");
             stateTime = 0f;
         }
 
@@ -519,7 +536,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init ArcKickRight");
             stateTime = 0f;
         }
 
@@ -558,7 +576,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpLeft");
             stateTime = 0f;
         }
 
@@ -589,7 +608,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init JumpKickLeft");
             stateTime = 0f;
         }
 
@@ -637,7 +657,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init ArcJumpLeft");
             stateTime = 0f;
         }
 
@@ -668,7 +689,8 @@ public class Floyd extends StatefulDoll {
         private float stateTime;
 
         @Override
-        public void init() {
+        public void init(State previousState) {
+            Gdx.app.debug("FLOYD", "init ArcKickLeft");
             stateTime = 0f;
         }
 

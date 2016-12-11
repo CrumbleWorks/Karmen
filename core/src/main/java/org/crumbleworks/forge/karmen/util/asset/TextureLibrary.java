@@ -1,7 +1,5 @@
 package org.crumbleworks.forge.karmen.util.asset;
 
-import org.crumbleworks.forge.karmen.character.FloydFrameType;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

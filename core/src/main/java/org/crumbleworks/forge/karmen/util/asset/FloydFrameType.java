@@ -1,6 +1,4 @@
-package org.crumbleworks.forge.karmen.character;
-
-import org.crumbleworks.forge.karmen.util.asset.FrameType;
+package org.crumbleworks.forge.karmen.util.asset;
 
 public enum FloydFrameType implements FrameType {
     

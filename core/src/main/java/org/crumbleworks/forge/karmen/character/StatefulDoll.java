@@ -203,13 +203,17 @@ public abstract class StatefulDoll {
         return psv;
     }
     
-    private void set(Action action) {
-        Behaviour newBehaviour = behaviours.get(stateMap.get(behaviourToState.get(currentBehaviour.getClass())).get(action));
+    protected void set(State state) {
+        Behaviour newBehaviour = behaviours.get(state);
         
         if(newBehaviour != null) {
-            currentBehaviour = behaviours.get(stateMap.get(behaviourToState.get(currentBehaviour.getClass())).get(action));
-            currentBehaviour.init();
+            newBehaviour.init(state);
+            currentBehaviour = newBehaviour;
         }
+    }
+    
+    private void set(Action action) {
+        set(stateMap.get(behaviourToState.get(currentBehaviour.getClass())).get(action));
     }
     
     /* ***********************************************************************
@@ -261,7 +265,7 @@ public abstract class StatefulDoll {
      */
     
     public static interface Behaviour {
-        abstract void init();
+        abstract void init(State previousState);
         abstract void update(StatefulDoll doll, float delta);
     }
 }
