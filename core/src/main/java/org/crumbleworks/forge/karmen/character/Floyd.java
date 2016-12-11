@@ -4,18 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class Floyd extends StatefulDoll {
 
+    /* DURATIONS */
+    private static final int durPunch = 600;
+    private static final int durKick = 600;
+    
     private static final float animationSpeed = 0.25f;
     private static TextureRegion[] textureRegions;
     
@@ -277,57 +282,72 @@ public class Floyd extends StatefulDoll {
         }
     }
     
-    static class FloydPunchRight implements Behaviour {
-        private static final Animation fistAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.PUNCH_SIDE_R.ordinal()]),
-                PlayMode.NORMAL);
+    /* ***********************************************************************
+     * PUNCH
+     */
+    
+    static abstract class FloydPunch implements Behaviour {
+        private final Animation punchAnimation;
+        private final String debugName;
         
+        private long returnTime;
         private float stateTime;
+        
+        private State previousState;
+        
+        FloydPunch(FloydFrameType animation, String debugName) {
+            punchAnimation = new Animation(animationSpeed,
+                    Array.with(textureRegions[animation.ordinal()]),
+                    PlayMode.NORMAL);
+            this.debugName = debugName;
+        }
 
         @Override
         public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init PunchRight");
+            Gdx.app.debug("FLOYD", "init " + debugName);
+            
+            this.previousState = previousState;
             stateTime = 0f;
+            returnTime = TimeUtils.millis() + durPunch;
         }
 
         @Override
         public void update(StatefulDoll doll, float delta) {
             stateTime += delta;
-            TextureRegion currentAnimationFrame = fistAnimation.getKeyFrame(stateTime);
+            TextureRegion currentAnimationFrame = punchAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
                     currentAnimationFrame,
                     doll.psv().position.x,
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
+            
+            //logic
+            returnTime -= Calc.gdxDeltaToMillis(delta);
+            if(returnTime <= 0) {
+                Gdx.app.debug("FLOYD", "> returning to " + previousState.name());
+                doll.set(previousState);
+            }
         }
     }
     
-    static class FloydPunchLeft implements Behaviour {
-        private static final Animation fistAnimation = new Animation(animationSpeed,
-                Array.with(textureRegions[FloydFrameType.PUNCH_SIDE_L.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
+    static class FloydPunchRight extends FloydPunch {
 
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug("FLOYD", "init PunchLeft");
-            stateTime = 0f;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = fistAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
+        FloydPunchRight() {
+            super(FloydFrameType.PUNCH_SIDE_R, "PunchRight");
         }
     }
+    
+    static class FloydPunchLeft extends FloydPunch {
+        
+        public FloydPunchLeft() {
+            super(FloydFrameType.PUNCH_SIDE_L, "PunchLeft");
+        }
+    }
+    
+    /* ***********************************************************************
+     * KICK
+     */
     
     static class FloydKickRight implements Behaviour {
         private static final Animation kickAnimation = new Animation(animationSpeed,

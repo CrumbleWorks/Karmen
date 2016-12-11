@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class MenuScreen implements Screen {
     
@@ -59,7 +60,7 @@ public class MenuScreen implements Screen {
         floydAnimationStateTime = 0f;
         initLoydAnimation();
         
-        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Rolemu_-_Neoishiki.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Menumusic (Loop).ogg"));
         music.setLooping(true);
     }
     
@@ -99,7 +100,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
-//        music.play();
+        music.play();
     }
 
     @Override
@@ -128,7 +129,7 @@ public class MenuScreen implements Screen {
             }
             buttons.get(selectedButton).selected = true;
             buttons.get(selectedButton).on = true;
-            buttons.get(selectedButton).nextDraw = System.currentTimeMillis() - MenuButton.DRAW_PAUSE;
+            buttons.get(selectedButton).nextDraw = TimeUtils.millis() - MenuButton.DRAW_PAUSE;
         }
         else if(Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
             buttons.get(selectedButton).selected = false;
@@ -140,7 +141,7 @@ public class MenuScreen implements Screen {
             }
             buttons.get(selectedButton).selected = true;
             buttons.get(selectedButton).on = true;
-            buttons.get(selectedButton).nextDraw = System.currentTimeMillis() - MenuButton.DRAW_PAUSE;
+            buttons.get(selectedButton).nextDraw = TimeUtils.millis() - MenuButton.DRAW_PAUSE;
         }
         
         //chk for input
@@ -231,7 +232,7 @@ public class MenuScreen implements Screen {
         game.getBatch().end();
         
         if(button.selected) {
-            if(System.currentTimeMillis() > button.nextDraw) {
+            if(TimeUtils.millis() > button.nextDraw) {
                 if(button.on) {
                     button.on = false;
                     button.nextDraw += MenuButton.DRAW_PAUSE;
@@ -295,7 +296,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void hide() {
-//        music.stop();
+        music.stop();
     }
 
     @Override
@@ -316,7 +317,7 @@ public class MenuScreen implements Screen {
         /* render information */
         boolean selected;
         boolean on;
-        long nextDraw = System.currentTimeMillis() + DRAW_PAUSE;
+        long nextDraw = TimeUtils.millis() + DRAW_PAUSE;
 
         public MenuButton(String text, char key, Color color, boolean selected, Runnable callback) {
             this.text = text;

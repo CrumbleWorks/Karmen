@@ -210,7 +210,7 @@ public abstract class StatefulDoll {
         return psv;
     }
     
-    protected void set(Supplier<State> supplier) {
+    private void set(Supplier<State> supplier) {
         if(supplier != null) {
             Behaviour newBehaviour = behaviours.get(supplier.get());
             if(newBehaviour != null) {
@@ -221,7 +221,7 @@ public abstract class StatefulDoll {
     }
     
     protected void set(State state) {
-        
+        set(()->{return state;});
     }
     
     private void set(Action action) {

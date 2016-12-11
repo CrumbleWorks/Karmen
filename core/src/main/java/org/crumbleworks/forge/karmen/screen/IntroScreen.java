@@ -6,10 +6,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class IntroScreen implements Screen {
     
@@ -18,7 +17,7 @@ public class IntroScreen implements Screen {
     
     private final Karmen game;
     
-    private long currTime = System.currentTimeMillis();
+    private long currTime = TimeUtils.millis();
     private boolean flashing = false;
     private int flashCount = 0;
     private final long flash = currTime + 800;
@@ -77,7 +76,7 @@ public class IntroScreen implements Screen {
         game.getBatch().end();
 
         //LOGIC
-        currTime = System.currentTimeMillis();
+        currTime = TimeUtils.millis();
         if(currTime >= introEnd) { //zeit abarbeiten gross bis kleinstes
             game.setScreen(game.menuScreen);
         } else if(currTime >= redEyes) {

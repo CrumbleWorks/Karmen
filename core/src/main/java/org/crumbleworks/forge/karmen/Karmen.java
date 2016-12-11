@@ -4,6 +4,7 @@ import org.crumbleworks.forge.karmen.screen.AboutScreen;
 import org.crumbleworks.forge.karmen.screen.IntroScreen;
 import org.crumbleworks.forge.karmen.screen.MenuScreen;
 import org.crumbleworks.forge.karmen.screen.PlayScreen;
+import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.asset.SoundLibrary;
 import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
 
@@ -12,9 +13,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 public class Karmen extends Game {
 
@@ -27,6 +31,7 @@ public class Karmen extends Game {
 
     private BitmapFont fontMedium;
     private BitmapFont fontLarge;
+    private BitmapFont debugFont;
 
     private TextureLibrary texureLibrary;
     private SoundLibrary soundLibrary;
@@ -47,6 +52,7 @@ public class Karmen extends Game {
 
         fontMedium = new BitmapFont(Gdx.files.internal("fnt/NNPH_30.fnt"));
         fontLarge = new BitmapFont(Gdx.files.internal("fnt/NNPH_40.fnt"));
+        debugFont = new BitmapFont();
 
         texureLibrary = new TextureLibrary();
         soundLibrary = new SoundLibrary();
@@ -65,6 +71,43 @@ public class Karmen extends Game {
         batch.setProjectionMatrix(camera.combined);
 
         super.render();
+        
+        /* DEBUG INFOS */
+        if(isDebug) {
+            if(debugShaper == null) {
+                debugShaper = new ShapeRenderer();
+            }
+            renderDebug();
+        }
+    }
+    
+    public static final boolean isDebug = true; //TODO turn off
+    private ShapeRenderer debugShaper;
+    
+    private long oneSecondMillis = 1000;
+    private long deltaAccumulator = 0;
+    private int frameCount = 0;
+    private int fps = 0;
+    
+    private void renderDebug() {
+        debugShaper.begin(ShapeType.Filled);
+        debugShaper.setColor(Color.WHITE);
+        debugShaper.box(0, 0, 0, 60, 30, 0);
+        debugShaper.end();
+        
+        //fps calc
+        deltaAccumulator += Calc.gdxDeltaToMillis(Gdx.graphics.getDeltaTime());
+        if(deltaAccumulator >= oneSecondMillis) {
+            deltaAccumulator -= oneSecondMillis;
+            fps = frameCount;
+            frameCount = 0;
+        }
+        frameCount++;
+        
+        batch.begin();
+        debugFont.setColor(Color.RED);
+        debugFont.draw(batch, "FPS: " + fps, 10, 20);
+        batch.end();
     }
 
     @Override
