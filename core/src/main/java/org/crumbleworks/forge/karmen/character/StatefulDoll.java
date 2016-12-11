@@ -214,7 +214,7 @@ public abstract class StatefulDoll {
         if(supplier != null) {
             Behaviour newBehaviour = behaviours.get(supplier.get());
             if(newBehaviour != null) {
-                newBehaviour.init(supplier.get());
+                newBehaviour.init(behaviourToState.get(currentBehaviour.getClass()));
                 currentBehaviour = newBehaviour;
             }
         }

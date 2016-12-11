@@ -20,9 +20,21 @@ public class IntroScreen implements Screen {
     private long currTime = TimeUtils.millis();
     private boolean flashing = false;
     private int flashCount = 0;
-    private final long flash = currTime + 800;
-    private final long redEyes = currTime + 1800;
-    private final long introEnd = currTime + 3800;
+    private final long flash;
+    private final long redEyes;
+    private final long introEnd;
+    
+    {
+        if(Karmen.isDebug) {
+            flash = currTime + 100;
+            redEyes = currTime + 200;
+            introEnd = currTime + 300;
+        } else {
+            flash = currTime + 800;
+            redEyes = currTime + 1800;
+            introEnd = currTime = 3800;
+        }
+    }
     
     private boolean displayGDX = false;
     
