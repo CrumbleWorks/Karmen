@@ -59,7 +59,7 @@ public class MenuScreen implements Screen {
         floydAnimationStateTime = 0f;
         initLoydAnimation();
         
-        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Rolemu_-_Neoishiki.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/Menumusic (Loop).ogg"));
         music.setLooping(true);
     }
     
@@ -99,7 +99,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
-//        music.play();
+        music.play();
     }
 
     @Override
@@ -295,7 +295,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void hide() {
-//        music.stop();
+        music.stop();
     }
 
     @Override
