@@ -1,7 +1,10 @@
 package org.crumbleworks.forge.karmen.util.asset;
 
+import org.crumbleworks.forge.karmen.character.FloydFrameType;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class TextureLibrary {
 
@@ -35,6 +38,21 @@ public class TextureLibrary {
     
     public Texture getFloydTexture() {
         return floydTexture;
+    }
+    
+    /* REGIONS */
+    
+    public TextureRegion[] getFloydRegions() {
+        int FRAME_WIDTH = 16;
+        int FRAME_HEIGHT = 32;
+        
+        TextureRegion[] regions = new TextureRegion[28];
+        
+        for(FloydFrameType type : FloydFrameType.values()) {
+            regions[type.ordinal()] = new TextureRegion(getFloydTexture(), type.getX() * FRAME_WIDTH, type.getY() * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
+        }
+        
+        return regions;
     }
     
     public void dispose() {

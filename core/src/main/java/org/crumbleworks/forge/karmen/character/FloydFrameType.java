@@ -1,6 +1,8 @@
 package org.crumbleworks.forge.karmen.character;
 
-public enum FloydFrameType {
+import org.crumbleworks.forge.karmen.util.asset.FrameType;
+
+public enum FloydFrameType implements FrameType {
     
     STILL_FRONT_A(0, 0),
     STILL_FRONT_B(1, 0),
@@ -39,5 +41,4 @@ public enum FloydFrameType {
     public int getY() {
         return y;
     }
-    
 }
