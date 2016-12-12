@@ -1,4 +1,4 @@
-package org.crumbleworks.forge.karmen.util;
+package org.crumbleworks.forge.karmen.debugstuff;
 
 import org.crumbleworks.forge.karmen.Karmen;
 

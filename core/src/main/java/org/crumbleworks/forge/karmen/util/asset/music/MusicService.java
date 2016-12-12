@@ -95,6 +95,17 @@ public class MusicService {
     }
     
     /* ***********************************************************************
+     * INFO STUFF
+     */
+    
+    /**
+     * @return the {@link MusicType} currently playing
+     */
+    public MusicType playing() {
+        return playingMusic;
+    }
+    
+    /* ***********************************************************************
      * ON COMPLETION LISTENER
      */
     

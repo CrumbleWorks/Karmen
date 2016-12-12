@@ -1,5 +1,8 @@
 package org.crumbleworks.forge.karmen;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.crumbleworks.forge.karmen.screen.AboutScreen;
 import org.crumbleworks.forge.karmen.screen.IntroScreen;
 import org.crumbleworks.forge.karmen.screen.MenuScreen;
@@ -7,12 +10,14 @@ import org.crumbleworks.forge.karmen.screen.PlayScreen;
 import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
 import org.crumbleworks.forge.karmen.util.asset.music.MusicService;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
 import org.crumbleworks.forge.karmen.util.asset.sound.SoundService;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -97,6 +102,28 @@ public class Karmen extends Game {
         }
         
         musicService.update();
+        if(isDebug) {
+            debugMusicSwitcherCheck();
+        }
+    }
+    
+    private final List<MusicType> mt = new ArrayList<MusicType>() {{
+        for(MusicType musicType : MusicType.values()) {
+            add(musicType);
+        }
+    }};
+    private void debugMusicSwitcherCheck() {
+        if(Gdx.input.isKeyJustPressed(Keys.UP)) {
+            int nextIndex = mt.indexOf(this.getMusicService().playing()) + 1;
+            if(nextIndex < mt.size()) {
+                this.getMusicService().play(mt.get(nextIndex));
+            }
+        } else if(Gdx.input.isKeyJustPressed(Keys.DOWN)) {
+            int nextIndex = mt.indexOf(this.getMusicService().playing()) - 1;
+            if(nextIndex >= 0) {
+                this.getMusicService().play(mt.get(nextIndex));
+            }
+        }
     }
     
     private ShapeRenderer debugShaper;
