@@ -50,7 +50,7 @@ public class Karmen extends Game {
     public Screen aboutScreen;
 
     //DEBUG FLAG
-    public static final boolean isDebug = false; //TODO turn off
+    public static final boolean isDebug = true; //TODO turn off
 
     @Override
     public void create() {
