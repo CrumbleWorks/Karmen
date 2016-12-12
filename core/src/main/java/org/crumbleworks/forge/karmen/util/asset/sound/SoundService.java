@@ -3,10 +3,14 @@ package org.crumbleworks.forge.karmen.util.asset.sound;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
+
 public class SoundService {
 
     private SoundLibrary soundLibrary;
     private Set<SoundType> playingSounds;
+    
+    private boolean muted;
     
     public SoundService() {
         soundLibrary = new SoundLibrary();
@@ -19,8 +23,10 @@ public class SoundService {
      * @param type Soundtype
      */
     public void play(SoundType type) {
-        playingSounds.add(type);
-        soundLibrary.getSound(type).play();
+        if(!muted) {
+            playingSounds.add(type);
+            soundLibrary.getSound(type).play();
+        }
     }
     
     /**
@@ -39,6 +45,13 @@ public class SoundService {
     public void stop(SoundType type) {
         soundLibrary.getSound(type).stop();
         playingSounds.remove(type);
+    }
+    
+    /**
+     * Toggles mute state on all sounds.
+     */
+    public void toggleMute() {
+        muted = !muted;
     }
     
     public void dispose() {

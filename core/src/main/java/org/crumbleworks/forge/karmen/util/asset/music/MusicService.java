@@ -6,12 +6,18 @@ import java.util.stream.Collectors;
 
 public class MusicService {
 
+    private final float DEFAULT_VOLUME = 1.0f;
+    
     private MusicLibrary musicLibrary;
     private Set<MusicType> playingMusic;
+    
+    private float globalVolume;
     
     public MusicService() {
         musicLibrary = new MusicLibrary();
         playingMusic = new HashSet<>();
+        
+        globalVolume = DEFAULT_VOLUME;
     }
     
     /**
@@ -65,6 +71,7 @@ public class MusicService {
         
         playingMusic.add(type);
         musicLibrary.getMusic(type).setLooping(loop);
+        musicLibrary.getMusic(type).setVolume(globalVolume);
         musicLibrary.getMusic(type).play();
     }
     
@@ -84,6 +91,26 @@ public class MusicService {
     public void stop(MusicType type) {
         musicLibrary.getMusic(type).stop();
         playingMusic.remove(type);
+    }
+    
+    /**
+     * Toggles mute state on all music.
+     */
+    public void toggleMute() {
+        if(globalVolume == 0f) {
+            applyVolumeOnAll(DEFAULT_VOLUME);
+            globalVolume = DEFAULT_VOLUME;
+        }
+        else {
+            applyVolumeOnAll(0f);
+            globalVolume = 0f;
+        }
+    }
+    
+    private void applyVolumeOnAll(float volume) {
+        for(MusicType type : MusicType.values()) {
+            musicLibrary.getMusic(type).setVolume(volume);
+        }
     }
     
     public void update() {

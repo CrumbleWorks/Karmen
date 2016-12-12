@@ -45,7 +45,8 @@ public class MenuScreen extends KarmenScreen {
         super(game,
                 new int[]{Keys.M},
                 new String[]{"M"},
-                new Runnable[]{()->{/*TODO TOGGLE_MUTE*/}},
+                new Runnable[]{()->{game.getMusicService().toggleMute();
+                                    game.getSoundService().toggleMute();}},
                 new Texture[]{game.getTextureLibrary().OPT_NOTE},
                 new Texture[]{game.getTextureLibrary().OPT_NOTE_STRIKE}
              );

@@ -44,7 +44,8 @@ public class AboutScreen extends KarmenScreen {
             new int[]{Keys.ESCAPE, Keys.M},
             new String[]{"ESC", "M"},
             new Runnable[]{()->{game.setScreen(game.menuScreen);},
-                           ()->{/*TODO TOGGLE_MUTE*/}},
+                           ()->{game.getMusicService().toggleMute();
+                                game.getSoundService().toggleMute();}},
             new Texture[]{game.getTextureLibrary().OPT_RET,
                           game.getTextureLibrary().OPT_NOTE},
             new Texture[]{game.getTextureLibrary().OPT_RET_INV,
