@@ -1,4 +1,4 @@
-package org.crumbleworks.forge.karmen.character;
+package org.crumbleworks.forge.karmen.objects;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 /**
@@ -20,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.World;
  * 
  * @author Michael Stocker
  */
-public abstract class StatefulDoll {
+public abstract class StatefulDoll implements Thing {
     
     public static enum State {
         STILL_FRONT, STILL_RIGHT, STILL_LEFT,
@@ -209,18 +210,18 @@ public abstract class StatefulDoll {
     private final Map<Class<? extends Behaviour>, State> behaviourToState; 
     
     //contant data
-    private final float PHYS_DENSITY = 0.5f;
-    private final float PHYS_FRICTION = 0.4f;
-    private final float PHYS_RESTITUTION = 0.6f; //bouncyness
+    private final float PHYS_DENSITY = 1.0f;
+    private final float PHYS_FRICTION = 1.0f;
+    private final float PHYS_RESTITUTION = 0.0f; //bouncyness
     //runtime data
     private Behaviour currentBehaviour;
     private final PSV psv;
     private final Body body;
     
     //constructor
-    public StatefulDoll(Karmen game, World world, PSV psv, State initState, final Map<State, Behaviour> behaviours) {
+    public StatefulDoll(Karmen game, World inWorld, PSV psv, State initState, final Map<State, Behaviour> behaviours) {
         this.game = game;
-        this.world = world;
+        this.world = inWorld;
         this.psv = psv;
         
         this.currentBehaviour = behaviours.get(initState);
@@ -235,29 +236,30 @@ public abstract class StatefulDoll {
         //MAKE ME A NEW BODY, MORTAL!
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
-        bodyDef.position.set(psv.position.x,
-                             psv.position.y
+        bodyDef.position.set(psv.position.x + psv.size.x / 2,
+                             psv.position.y + psv.size.y / 2
                              ); //set start pos
         
         body = world.createBody(bodyDef);
         
-        CircleShape circle = new CircleShape();
-        circle.setRadius(psv.size.y / 2);
+        PolygonShape boundingBox = new PolygonShape();
+        boundingBox.setAsBox(psv.size.x, psv.size.y);
         
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
+        fixtureDef.shape = boundingBox;
         fixtureDef.density = PHYS_DENSITY;
         fixtureDef.friction = PHYS_FRICTION;
         fixtureDef.restitution = PHYS_RESTITUTION;
         
-        Fixture fixture = body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef);
         
-        circle.dispose();
+        boundingBox.dispose();
     }
     
     /**
      * Call this method to process state logic
      */
+    @Override
     public final void update(float delta) {
         currentBehaviour.update(this, delta);
     }
@@ -284,7 +286,7 @@ public abstract class StatefulDoll {
         }
     }
     
-    protected void set(State state) {
+    public void set(State state) {
         set(()->{return state;});
     }
     

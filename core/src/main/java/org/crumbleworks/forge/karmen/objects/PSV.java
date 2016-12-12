@@ -1,4 +1,4 @@
-package org.crumbleworks.forge.karmen.character;
+package org.crumbleworks.forge.karmen.objects;
 
 import com.badlogic.gdx.math.Vector2;
 

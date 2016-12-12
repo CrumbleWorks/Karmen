@@ -1,45 +1,51 @@
-package org.crumbleworks.forge.karmen.character;
+package org.crumbleworks.forge.karmen.objects;
 
 import com.badlogic.gdx.Input.Keys;
+
+import org.crumbleworks.forge.karmen.objects.character.Floyd;
+
 import com.badlogic.gdx.InputAdapter;
 
-public class FloydInputAdapter extends InputAdapter {
+/**
+ * Controls a {@link StatefulDoll}
+ */
+public class DollInputAdapter extends InputAdapter {
     
-    private Floyd floyd;
+    private StatefulDoll doll;
 
-    public FloydInputAdapter(Floyd floyd) {
-        this.floyd = floyd;
+    public DollInputAdapter(StatefulDoll doll) {
+        this.doll = doll;
     }
     
     @Override
     public boolean keyDown(int keyCode) {
         if(keyCode == Keys.A) {
-            floyd.goLeft();
+            doll.goLeft();
             return true;
         }
         if(keyCode == Keys.D) {
-            floyd.goRight();
+            doll.goRight();
             return true;
         }
         if(keyCode == Keys.S) {
-            floyd.face();
+            doll.face();
             return true;
         }
         if(keyCode == Keys.SPACE) {
-            floyd.jump();
+            doll.jump();
             return true;
         }
         
         if(keyCode == Keys.J) {
-            floyd.punch();
+            doll.punch();
             return true;
         }
         if(keyCode == Keys.K) {
-            floyd.block();
+            doll.block();
             return true;
         }
         if(keyCode == Keys.L) {
-            floyd.kick();
+            doll.kick();
             return true;
         }
         
@@ -49,15 +55,15 @@ public class FloydInputAdapter extends InputAdapter {
     @Override
     public boolean keyUp(int keyCode) {
         if(keyCode == Keys.A) {
-            floyd.stopLeft();
+            doll.stopLeft();
             return true;
         }
         if(keyCode == Keys.D) {
-            floyd.stopRight();
+            doll.stopRight();
             return true;
         }
         if(keyCode == Keys.K) {
-            floyd.stopBlock();
+            doll.stopBlock();
             return true;
         }
         

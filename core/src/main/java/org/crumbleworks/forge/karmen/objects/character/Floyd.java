@@ -1,9 +1,11 @@
-package org.crumbleworks.forge.karmen.character;
+package org.crumbleworks.forge.karmen.objects.character;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.objects.PSV;
+import org.crumbleworks.forge.karmen.objects.StatefulDoll;
 import org.crumbleworks.forge.karmen.util.AnimationConstants;
 import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;

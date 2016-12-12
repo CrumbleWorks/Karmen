@@ -1,42 +1,45 @@
 package org.crumbleworks.forge.karmen.screen;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.crumbleworks.forge.karmen.Karmen;
-import org.crumbleworks.forge.karmen.character.Floyd;
-import org.crumbleworks.forge.karmen.character.FloydInputAdapter;
-import org.crumbleworks.forge.karmen.util.AnimationConstants;
+import org.crumbleworks.forge.karmen.objects.DollInputAdapter;
+import org.crumbleworks.forge.karmen.objects.StatefulDoll;
+import org.crumbleworks.forge.karmen.objects.Thing;
+import org.crumbleworks.forge.karmen.objects.character.Floyd;
+import org.crumbleworks.forge.karmen.screen.arena.DanceFloor;
 import org.crumbleworks.forge.karmen.util.PhysicsConstants;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
-import com.badlogic.gdx.utils.Array;
 
 public class PlayScreen extends KarmenScreen {
 
     private final Karmen game;
     
-    private Floyd floyd;
-    
     private InputMultiplexer inputMultiplexer;
-    
-    /* ANIMATIONS */
-    private Animation danceFloorAnimation;
-    private float danceFloorAnimationStateTime;
     
     /* BOX2D */
     private final World world;
-    private final Box2DDebugRenderer debugR;
+    private Box2DDebugRenderer debugR;
     
+    /* SCENE */
+    private final int GRAPHICS_FACTOR = 4;
+    
+    private final List<Thing> sceneObjects;
+    
+    //constructor
     public PlayScreen(final Karmen game) {
         super(game,
                 new int[]{Keys.ESCAPE, Keys.M},
@@ -58,13 +61,35 @@ public class PlayScreen extends KarmenScreen {
             debugR = new Box2DDebugRenderer();
         }
         
+        /* SCENE */
+        this.sceneObjects = new ArrayList<Thing>();
+        
+        /* DANCE FLOOR */
+        int danceFloorOffset = 2;
+        float danceFloorBottomLeftX = (Karmen.SCREEN_WIDTH / 16) + danceFloorOffset;
+        float danceFloorBottomLeftY = 12 * GRAPHICS_FACTOR;
+        DanceFloor df = new DanceFloor(
+                game, GRAPHICS_FACTOR,
+                danceFloorBottomLeftX,
+                danceFloorBottomLeftY);
+        sceneObjects.add(df);
+        
+        BodyDef groundDef = new BodyDef();
+        groundDef.position.set(new Vector2((Karmen.SCREEN_WIDTH / 2),
+                                         40));
+        Body groundBody = world.createBody(groundDef);
+        PolygonShape groundBox = new PolygonShape();
+        groundBox.setAsBox(Karmen.SCREEN_WIDTH, 10);
+        groundBody.createFixture(groundBox, 0.0f);
+        groundBox.dispose();
+        
+        /* DANCE COMMANDER (aka DJ Ynor9) */
+        
+        /* ACTORS */
         /* FLOYD */
-        this.floyd = new Floyd(Karmen.SCREEN_WIDTH / 2, 50, 64, 128, game, world);
-        
-        inputMultiplexer = new InputMultiplexer(new FloydInputAdapter(floyd));
-//        renderer = new PlayScreenDebugRenderer();
-        
-        danceFloorAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH, Array.with(game.getTextureLibrary().getDanceFloorRegions()), PlayMode.LOOP);
+        StatefulDoll floyd = new Floyd((Karmen.SCREEN_WIDTH / 2) - 32, 100, 64, 128, game, world);
+        sceneObjects.add(floyd);
+        inputMultiplexer = new InputMultiplexer(new DollInputAdapter(floyd));
     }
     
     @Override
@@ -83,8 +108,9 @@ public class PlayScreen extends KarmenScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.getBatch().begin();
         
-        drawDanceFloor(delta);
-        floyd.update(delta);
+        for(Thing so : sceneObjects) {
+            so.update(delta);
+        }
         
         game.getBatch().end();
         
@@ -112,16 +138,4 @@ public class PlayScreen extends KarmenScreen {
             accumulator -= PhysicsConstants.WORLD_STEP;
         }
     }
-    
-    private void drawDanceFloor(float delta) {
-        danceFloorAnimationStateTime += delta;
-        TextureRegion currentAnimationFrame = danceFloorAnimation.getKeyFrame(danceFloorAnimationStateTime);
-        
-        int danceFloorOffset = 2;
-        float danceFloorBottomLeftX = (Karmen.SCREEN_WIDTH / 16) + danceFloorOffset;
-        float danceFloorBottomLeftY = 100;
-        
-        game.getBatch().draw(currentAnimationFrame, danceFloorBottomLeftX, danceFloorBottomLeftY, currentAnimationFrame.getRegionWidth() * 4, currentAnimationFrame.getRegionHeight() * 4);
-    }
-    
 }
