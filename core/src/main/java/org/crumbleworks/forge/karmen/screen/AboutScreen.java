@@ -39,7 +39,8 @@ public class AboutScreen extends KarmenScreen {
     private int maxAmountConcurrentExplosionAnimations;
     private float explosionAnimationStateTime;
     
-    public AboutScreen(final Karmen game) {super(game,
+    public AboutScreen(final Karmen game) {
+        super(game,
             new int[]{Keys.ESCAPE, Keys.M},
             new String[]{"ESC", "M"},
             new Runnable[]{()->{game.setScreen(game.menuScreen);},

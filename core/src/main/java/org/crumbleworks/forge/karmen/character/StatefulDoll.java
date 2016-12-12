@@ -6,7 +6,14 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.crumbleworks.forge.karmen.Karmen;
-import org.crumbleworks.forge.karmen.character.StatefulDoll.State;
+
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 
 /**
  * A StatefulDoll
@@ -73,6 +80,7 @@ public abstract class StatefulDoll {
             /* RUNNING */
             put(State.RUN_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.STOP_RIGHT, ()->{return State.STILL_RIGHT;});
+                put(Action.LEFT, ()->{return State.RUN_LEFT;});
                 put(Action.BLOCK, ()->{return State.BLOCK_RIGHT;});
                 put(Action.PUNCH, ()->{return State.PUNCH_RIGHT;});
                 put(Action.KICK, ()->{return State.KICK_RIGHT;});
@@ -81,6 +89,7 @@ public abstract class StatefulDoll {
 
             put(State.RUN_LEFT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.STOP_LEFT, ()->{return State.STILL_LEFT;});
+                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
                 put(Action.BLOCK, ()->{return State.BLOCK_LEFT;});
                 put(Action.KICK, ()->{return State.KICK_LEFT;});
                 put(Action.PUNCH, ()->{return State.PUNCH_LEFT;});
@@ -98,6 +107,10 @@ public abstract class StatefulDoll {
                             return State.RUN_RIGHT;
                         }
                         
+                        if(runLeft) {
+                            return State.RUN_LEFT;
+                        }
+                        
                         return State.STILL_RIGHT;
                     });
             }});
@@ -108,21 +121,33 @@ public abstract class StatefulDoll {
                         return State.RUN_LEFT;
                     }
                     
+                    if(runRight) {
+                        return State.RUN_RIGHT;
+                    }
+                    
                     return State.STILL_LEFT;
                 });
             }});
 
             /* FIGHTING */
             put(State.PUNCH_RIGHT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
+                put(Action.LEFT, ()->{return State.RUN_LEFT;});
             }});
 
             put(State.KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
+                put(Action.LEFT, ()->{return State.RUN_LEFT;});
             }});
 
             put(State.PUNCH_LEFT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
+                put(Action.LEFT, ()->{return State.RUN_LEFT;});
             }});
 
             put(State.KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
+                put(Action.LEFT, ()->{return State.RUN_LEFT;});
             }});
 
             /* AIR FRONT*/
@@ -173,16 +198,29 @@ public abstract class StatefulDoll {
      * NON STATICS
      */
     
+    //game ref
     private final Karmen game;
     
+    //world
+    private final World world;
+    
+    //behaviours
     private final Map<State, Behaviour> behaviours;
     private final Map<Class<? extends Behaviour>, State> behaviourToState; 
     
+    //contant data
+    private final float PHYS_DENSITY = 0.5f;
+    private final float PHYS_FRICTION = 0.4f;
+    private final float PHYS_RESTITUTION = 0.6f; //bouncyness
+    //runtime data
     private Behaviour currentBehaviour;
     private final PSV psv;
+    private final Body body;
     
-    public StatefulDoll(Karmen game, PSV psv, State initState, final Map<State, Behaviour> behaviours) {
+    //constructor
+    public StatefulDoll(Karmen game, World world, PSV psv, State initState, final Map<State, Behaviour> behaviours) {
         this.game = game;
+        this.world = world;
         this.psv = psv;
         
         this.currentBehaviour = behaviours.get(initState);
@@ -193,6 +231,28 @@ public abstract class StatefulDoll {
         for(Entry<State, Behaviour> behaviour : behaviours.entrySet()) {
             behaviourToState.put(behaviour.getValue().getClass(), behaviour.getKey());
         }
+        
+        //MAKE ME A NEW BODY, MORTAL!
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.position.set(psv.position.x,
+                             psv.position.y
+                             ); //set start pos
+        
+        body = world.createBody(bodyDef);
+        
+        CircleShape circle = new CircleShape();
+        circle.setRadius(psv.size.y / 2);
+        
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circle;
+        fixtureDef.density = PHYS_DENSITY;
+        fixtureDef.friction = PHYS_FRICTION;
+        fixtureDef.restitution = PHYS_RESTITUTION;
+        
+        Fixture fixture = body.createFixture(fixtureDef);
+        
+        circle.dispose();
     }
     
     /**
@@ -208,6 +268,10 @@ public abstract class StatefulDoll {
     
     public final PSV psv() {
         return psv;
+    }
+    
+    public final Body body() {
+        return body;
     }
     
     private void set(Supplier<State> supplier) {
