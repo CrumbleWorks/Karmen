@@ -253,7 +253,10 @@ public abstract class StatefulDoll implements Thing {
         fixtureDef.friction = PHYS_FRICTION;
         fixtureDef.restitution = PHYS_RESTITUTION;
         
-        body.createFixture(fixtureDef);
+        Fixture f = body.createFixture(fixtureDef);
+        f.setUserData(FixtureType.DOLL);
+        
+        body.setUserData(this);
         
         boundingBox.dispose();
     }
@@ -264,19 +267,29 @@ public abstract class StatefulDoll implements Thing {
     
     private String horizontalDeltaString = "Horizontal Speed: ";
     private float hsaSpeedAve = 0;
+    private String verticalDeltaString =   "Vertical Speed:   ";
+    private float vsaSpeedAve = 0;
     
     @Override
     public final void update(float delta) {
+        psv().position.x = body().getPosition().x - psv.size.x / 2;
+        psv().position.y = body().getPosition().y - psv.size.y / 2;
+
         currentBehaviour.update(this, delta);
         
         if(Karmen.isDebug) {
             hsaSpeedAve = (hsaSpeedAve + body.getLinearVelocity().x) / 2.0f;
+            vsaSpeedAve = (vsaSpeedAve + body.getLinearVelocity().y) / 2.0f;
 
             game.getArial().setColor(Color.CYAN);
             game.getArial().draw(game.getBatch(),
                     horizontalDeltaString + hsaSpeedAve,
                     60,
                     Karmen.SCREEN_HEIGHT - 20);
+            game.getArial().draw(game.getBatch(),
+                    verticalDeltaString + vsaSpeedAve,
+                    60,
+                    Karmen.SCREEN_HEIGHT - 60);
         }
     }
     
@@ -294,6 +307,10 @@ public abstract class StatefulDoll implements Thing {
     
     public final Body body() {
         return body;
+    }
+    
+    public final Behaviour activeBehaviour() {
+        return currentBehaviour;
     }
     
     private void set(Supplier<State> supplier) {
@@ -379,5 +396,7 @@ public abstract class StatefulDoll implements Thing {
     public static interface Behaviour {
         abstract void init(State previousState);
         abstract void update(StatefulDoll doll, float delta);
+        
+        abstract void finish(StatefulDoll doll);
     }
 }

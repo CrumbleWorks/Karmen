@@ -37,7 +37,7 @@ public class PlayScreen extends KarmenScreen {
     /* SCENE */
     private final int GRAPHICS_FACTOR = 4;
     
-    private final List<Thing> sceneObjects;
+    private List<Thing> sceneObjects;
     
     //constructor
     public PlayScreen(final Karmen game) {
@@ -62,6 +62,11 @@ public class PlayScreen extends KarmenScreen {
             debugR = new Box2DDebugRenderer();
         }
         
+        initArena();
+    }
+    
+    //FIXME need to RESET when returning from menu after leaving scene
+    private final void initArena() {
         /* ARENA BORDERS */
         final int DISTANCE_FROM_WALLS = 80;
         final int DISTANCE_FROM_BOTTOM = 80;
@@ -108,6 +113,7 @@ public class PlayScreen extends KarmenScreen {
         /* FLOYD */
         StatefulDoll floyd = new Floyd((Karmen.SCREEN_WIDTH / 2) - 32, 100, 64, 128, game, world);
         sceneObjects.add(floyd);
+        
         inputMultiplexer = new InputMultiplexer(new DollInputAdapter(floyd));
     }
     
