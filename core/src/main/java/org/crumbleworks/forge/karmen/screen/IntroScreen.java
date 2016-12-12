@@ -32,7 +32,7 @@ public class IntroScreen implements Screen {
         } else {
             flash = currTime + 800;
             redEyes = currTime + 1800;
-            introEnd = currTime = 3800;
+            introEnd = currTime + 3800;
         }
     }
     
