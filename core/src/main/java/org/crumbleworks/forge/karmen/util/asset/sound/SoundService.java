@@ -4,15 +4,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SoundService {
+    
+    private final float DEFAULT_VOLUME = 1f;
 
     private SoundLibrary soundLibrary;
     private Set<SoundType> playingSounds;
     
+    private float globalVolume;
     private boolean muted;
     
     public SoundService() {
         soundLibrary = new SoundLibrary();
         playingSounds = new HashSet<>();
+        
+        globalVolume = DEFAULT_VOLUME;
     }
     
     /**
@@ -36,6 +41,7 @@ public class SoundService {
         if(!muted) {
             playingSounds.add(type);
             long soundId = soundLibrary.getSound(type).play();
+            soundLibrary.getSound(type).setVolume(soundId, globalVolume);
             soundLibrary.getSound(type).setLooping(soundId, loop);
         }
     }
