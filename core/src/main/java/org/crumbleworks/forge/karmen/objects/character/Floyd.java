@@ -480,7 +480,7 @@ public class Floyd extends StatefulDoll {
     static abstract class FloydJump extends BaseSwitchRendering {
         private State previousState;
         private boolean hasSwitched;
-        private long jumpTime;
+        private boolean jumpFlag;
         
         public FloydJump(Animation upAnimation, Animation downAnimation, String debugName) {
             super(upAnimation, downAnimation, debugName);
@@ -491,20 +491,18 @@ public class Floyd extends StatefulDoll {
             this.previousState = previousState;
             
             hasSwitched = false;
-            jumpTime = 600;
+            jumpFlag = false;
         }
 
         @Override
         public void logic(StatefulDoll doll, float delta) {
-            if(jumpTime > 0) {
-                doll.body().applyLinearImpulse(
-                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE),
-                        doll.body().getPosition(),
-                        true);
-                jumpTime -= Calc.gdxDeltaToMillis(delta);
+            if(!jumpFlag) {
+                doll.body().setLinearVelocity(
+                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE));
+                jumpFlag = true;
             }
             
-            if(!hasSwitched && doll.body().getLinearVelocity().y < 0.0f) { //aka going down again
+            if(!hasSwitched && doll.body().getLinearVelocity().y <= 0.0f) { //aka going down again
                 switchAnimations();
                 hasSwitched = true;
             }
