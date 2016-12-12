@@ -318,6 +318,7 @@ public abstract class StatefulDoll implements Thing {
         if(supplier != null) {
             Behaviour newBehaviour = behaviours.get(supplier.get());
             if(newBehaviour != null) {
+                currentBehaviour.finish(this);
                 newBehaviour._init(this, behaviourToState.get(currentBehaviour.getClass()));
                 currentBehaviour = newBehaviour;
             }

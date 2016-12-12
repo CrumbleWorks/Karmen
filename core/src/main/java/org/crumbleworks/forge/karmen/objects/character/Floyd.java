@@ -292,44 +292,51 @@ public class Floyd extends StatefulDoll {
      */
     
     static abstract class FloydBlock extends BaseRendering {
-         private final float drag;
-         
-         private State previousState;
-         
-         FloydBlock(Animation animation, String debugName, float drag) {
-             super(animation, debugName);
-             this.drag = drag;
-         }
+        private final float drag;
+        
+        private State previousState;
+        
+        FloydBlock(Animation animation, String debugName, float drag) {
+            super(animation, debugName);
+            this.drag = drag;
+        }
 
-         private long delayAcc;
+        private long delayAcc;
 
-         @Override
-         public void init(StatefulDoll doll, State previousState) {
-             this.previousState = previousState;
-             delayAcc = 0;
-         }
+        @Override
+        public void init(StatefulDoll doll, State previousState) {
+            this.previousState = previousState;
+            delayAcc = 0;
+            
+            doll.game().getSoundService().play(SoundType.BLOCK, true);
+        }
          
-         @Override
-         public void logic(StatefulDoll doll, float delta) {
-             delayAcc += Calc.gdxDeltaToMillis(delta);
-             if(delayAcc >= PhysicsConstants.BLOCK_DELAY_MS) {
-                 doll.body().setLinearVelocity(0.0f, 0.0f);
-             }
-             
-             //block = (almost)instastop!
-             float xVelo = doll.body().getLinearVelocity().x;
-             if(xVelo > 0.0f) { //movement nach rechts
-                 doll.body().applyLinearImpulse(
-                         new Vector2(-drag, 0.0f),
-                         doll.body().getPosition(),
-                         true);
-             } else if(xVelo < 0.0f) { //movement nach links
-                 doll.body().applyLinearImpulse(
-                         new Vector2(drag, 0.0f),
-                         doll.body().getPosition(),
-                         true);
-             }
-         }
+        @Override
+        public void logic(StatefulDoll doll, float delta) {
+            delayAcc += Calc.gdxDeltaToMillis(delta);
+            if(delayAcc >= PhysicsConstants.BLOCK_DELAY_MS) {
+                doll.body().setLinearVelocity(0.0f, 0.0f);
+            }
+            
+            //block = (almost)instastop!
+            float xVelo = doll.body().getLinearVelocity().x;
+            if(xVelo > 0.0f) { //movement nach rechts
+                doll.body().applyLinearImpulse(
+                        new Vector2(-drag, 0.0f),
+                        doll.body().getPosition(),
+                        true);
+            } else if(xVelo < 0.0f) { //movement nach links
+                doll.body().applyLinearImpulse(
+                        new Vector2(drag, 0.0f),
+                        doll.body().getPosition(),
+                        true);
+            }
+        }
+         
+        @Override
+        public void finish(StatefulDoll doll) {
+            doll.game().getSoundService().stop();
+        }
      }
     
     static class FloydBlockFront extends FloydBlock {
