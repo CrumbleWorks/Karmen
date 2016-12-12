@@ -15,7 +15,7 @@ public class MusicLibrary {
     private Music gameOver;
     
     public MusicLibrary() {
-        menu = loadMusic("sfx/music/Menumusic (Loop).ogg");
+        menu = loadMusic("sfx/music/menumusic.ogg");
         arenaIntro = loadMusic("sfx/music/intro.ogg");
         arenaLevel1 = loadMusic("sfx/music/level1.ogg");
         arenaLevel2 = loadMusic("sfx/music/level2.ogg");
