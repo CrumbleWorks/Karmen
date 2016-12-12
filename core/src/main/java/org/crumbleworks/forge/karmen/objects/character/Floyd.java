@@ -85,17 +85,17 @@ public class Floyd extends StatefulDoll {
         }
         
         @Override
-        public final void init(State previousState) {
+        public final void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init " + debugName);
             stateTime = 0f;
             
-            clean(previousState);
+            init(doll, previousState);
         }
         
-        protected abstract void clean(State previousState);
+        protected abstract void init(StatefulDoll doll, State previousState);
 
         @Override
-        public final void update(StatefulDoll doll, float delta) {
+        public final void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             
             TextureRegion currentAnimationFrame = animation.getKeyFrame(stateTime);
@@ -133,17 +133,17 @@ public class Floyd extends StatefulDoll {
         }
         
         @Override
-        public final void init(State previousState) {
+        public final void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init " + debugName);
             stateTime = 0f;
             
-            clean(previousState);
+            init(doll, previousState);
         }
         
-        protected abstract void clean(State previousState);
+        protected abstract void init(StatefulDoll doll, State previousState);
 
         @Override
-        public final void update(StatefulDoll doll, float delta) {
+        public final void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             
             TextureRegion currentAnimationFrame = animation[animationIndex].getKeyFrame(stateTime);
@@ -179,7 +179,7 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void clean(State previousState) {
+        public void init(StatefulDoll doll, State previousState) {
             this.previousState = previousState;
         }
 
@@ -248,7 +248,7 @@ public class Floyd extends StatefulDoll {
         }
         
         @Override
-        protected void clean(State previousState) {
+        protected void init(StatefulDoll doll, State previousState) {
         }
         
         @Override
@@ -273,7 +273,7 @@ public class Floyd extends StatefulDoll {
         }
         
         @Override
-        protected void clean(State previousState) {
+        protected void init(StatefulDoll doll, State previousState) {
         }
         
         @Override
@@ -304,7 +304,7 @@ public class Floyd extends StatefulDoll {
          private long delayAcc;
 
          @Override
-         public void clean(State previousState) {
+         public void init(StatefulDoll doll, State previousState) {
              this.previousState = previousState;
              delayAcc = 0;
          }
@@ -385,7 +385,7 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void clean(State previousState) {
+        public void init(StatefulDoll doll, State previousState) {
             this.previousState = previousState;
             returnTime = AnimationConstants.DUR_MS_PUNCH;
             soundPlayed = false;
@@ -438,7 +438,7 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void clean(State previousState) {
+        public void init(StatefulDoll doll, State previousState) {
             this.previousState = previousState;
             returnTime = AnimationConstants.DUR_MS_KICK;
             soundPlayed = false;
@@ -487,7 +487,7 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void clean(State previousState) {
+        public void init(StatefulDoll doll, State previousState) {
             this.previousState = previousState;
             
             hasSwitched = false;
@@ -579,14 +579,14 @@ public class Floyd extends StatefulDoll {
         private boolean soundPlayed;
 
         @Override
-        public void init(State previousState) {
+        public void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init JumpKickRight");
             stateTime = 0f;
             soundPlayed = false;
         }
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
@@ -618,14 +618,14 @@ public class Floyd extends StatefulDoll {
         private boolean soundPlayed;
         
         @Override
-        public void init(State previousState) {
+        public void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init JumpKickLeft");
             stateTime = 0f;
             soundPlayed = false;
         }
         
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
@@ -672,14 +672,14 @@ public class Floyd extends StatefulDoll {
         private boolean soundPlayed;
 
         @Override
-        public void init(State previousState) {
+        public void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init ArcJumpRight");
             stateTime = 0f;
             soundPlayed = false;
         }
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
@@ -720,14 +720,14 @@ public class Floyd extends StatefulDoll {
         private boolean soundPlayed;
         
         @Override
-        public void init(State previousState) {
+        public void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init ArcJumpLeft");
             stateTime = 0f;
             soundPlayed = false;
         }
         
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
@@ -763,14 +763,14 @@ public class Floyd extends StatefulDoll {
         private boolean soundPlayed;
 
         @Override
-        public void init(State previousState) {
+        public void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init ArcKickRight");
             stateTime = 0f;
             soundPlayed = false;
         }
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
@@ -803,14 +803,14 @@ public class Floyd extends StatefulDoll {
         private boolean soundPlayed;
 
         @Override
-        public void init(State previousState) {
+        public void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init ArcKickLeft");
             stateTime = 0f;
             soundPlayed = false;
         }
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public void _update(StatefulDoll doll, float delta) {
             stateTime += delta;
             TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(

@@ -276,7 +276,7 @@ public abstract class StatefulDoll implements Thing {
         psv().position.x = body().getPosition().x - psv.size.x / 2;
         psv().position.y = body().getPosition().y - psv.size.y / 2;
 
-        currentBehaviour.update(this, delta);
+        currentBehaviour._update(this, delta);
         
         if(Karmen.isDebug) {
             hsaSpeedAve = (hsaSpeedAve + body.getLinearVelocity().x) / 2.0f;
@@ -318,7 +318,7 @@ public abstract class StatefulDoll implements Thing {
         if(supplier != null) {
             Behaviour newBehaviour = behaviours.get(supplier.get());
             if(newBehaviour != null) {
-                newBehaviour.init(behaviourToState.get(currentBehaviour.getClass()));
+                newBehaviour._init(this, behaviourToState.get(currentBehaviour.getClass()));
                 currentBehaviour = newBehaviour;
             }
         }
@@ -395,8 +395,8 @@ public abstract class StatefulDoll implements Thing {
      */
     
     public static interface Behaviour {
-        abstract void init(State previousState);
-        abstract void update(StatefulDoll doll, float delta);
+        abstract void _init(StatefulDoll doll, State previousState);
+        abstract void _update(StatefulDoll doll, float delta);
         
         abstract void finish(StatefulDoll doll);
     }
