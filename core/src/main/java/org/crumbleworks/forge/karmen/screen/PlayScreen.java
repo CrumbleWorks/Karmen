@@ -57,6 +57,7 @@ public class PlayScreen extends KarmenScreen {
         /* BOX2D */
         Box2D.init();
         world = new World(new Vector2(PhysicsConstants.HORIZONTAL_GRAVITY, PhysicsConstants.HORIZONTAL_GRAVITY), true);
+        world.setVelocityThreshold(5.0f);
         if(Karmen.isDebug) {
             debugR = new Box2DDebugRenderer();
         }
@@ -85,7 +86,7 @@ public class PlayScreen extends KarmenScreen {
         leftWall.createFixture(gbox, 0.0f);
         rightWall.createFixture(gbox, 0.0f);
         
-        
+        //get rid of shape
         gbox.dispose();
         
         /* SCENE */

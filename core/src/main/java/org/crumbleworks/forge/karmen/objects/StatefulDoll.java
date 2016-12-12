@@ -6,7 +6,9 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.util.Calc;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -256,13 +258,31 @@ public abstract class StatefulDoll implements Thing {
         boundingBox.dispose();
     }
     
-    /**
-     * Call this method to process state logic
+    /* ********************************
+     * UPDATE
      */
+    
+    private String horizontalDeltaString = "Horizontal Speed: ";
+    private float hsaSpeedAve = 0;
+    
     @Override
     public final void update(float delta) {
         currentBehaviour.update(this, delta);
+        
+        if(Karmen.isDebug) {
+            hsaSpeedAve = (hsaSpeedAve + body.getLinearVelocity().x) / 2.0f;
+
+            game.getArial().setColor(Color.CYAN);
+            game.getArial().draw(game.getBatch(),
+                    horizontalDeltaString + hsaSpeedAve,
+                    60,
+                    Karmen.SCREEN_HEIGHT - 20);
+        }
     }
+    
+    /* *********************
+     * GETTERS
+     */
     
     public final Karmen game() {
         return game;

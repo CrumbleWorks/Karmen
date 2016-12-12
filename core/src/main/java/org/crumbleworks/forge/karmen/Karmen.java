@@ -90,7 +90,6 @@ public class Karmen extends Game {
     
     private ShapeRenderer debugShaper;
     
-    private long oneSecondMillis = 1000;
     private long deltaAccumulator = 0;
     private int frameCount = 0;
     private int fps = 0;
@@ -103,8 +102,8 @@ public class Karmen extends Game {
         
         //fps calc
         deltaAccumulator += Calc.gdxDeltaToMillis(Gdx.graphics.getDeltaTime());
-        if(deltaAccumulator >= oneSecondMillis) {
-            deltaAccumulator -= oneSecondMillis;
+        if(deltaAccumulator >= Calc.ONE_SECOND_MS) {
+            deltaAccumulator -= Calc.ONE_SECOND_MS;
             fps = frameCount;
             frameCount = 0;
         }
