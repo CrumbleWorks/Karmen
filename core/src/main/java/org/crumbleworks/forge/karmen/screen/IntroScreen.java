@@ -1,6 +1,7 @@
 package org.crumbleworks.forge.karmen.screen;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -53,7 +54,7 @@ public class IntroScreen implements Screen {
 
     @Override
     public void show() {
-
+        game.getMusicService().play(MusicType.MENU, true, false);
     }
 
     @Override
