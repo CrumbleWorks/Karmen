@@ -291,7 +291,6 @@ public class MenuScreen extends KarmenScreen {
 
     @Override
     public void show() {
-        game.getMusicService().play(MusicType.MENU, true, false);
         game.getSoundService().play(SoundType.LIGHT);
     }
     
