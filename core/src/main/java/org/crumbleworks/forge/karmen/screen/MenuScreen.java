@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.util.NeonColors;
+import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,7 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class MenuScreen implements Screen {
+public class MenuScreen extends KarmenScreen {
     
     private final Karmen game;
     
@@ -41,6 +42,14 @@ public class MenuScreen implements Screen {
     private Music music;
 
     public MenuScreen(Karmen game) {
+        super(game,
+                new int[]{Keys.M},
+                new String[]{"M"},
+                new Runnable[]{()->{/*TODO TOGGLE_MUTE*/}},
+                new Texture[]{game.getTextureLibrary().OPT_NOTE},
+                new Texture[]{game.getTextureLibrary().OPT_NOTE_STRIKE}
+             );
+        
         this.game = game;
         
         shapeRenderer = new ShapeRenderer();
@@ -97,15 +106,11 @@ public class MenuScreen implements Screen {
         
         floydAnimation = new Animation(floydFrameDuration, Array.with(textureRegions), PlayMode.LOOP);
     }
+    
+    /* ******************************************************************** */
 
     @Override
-    public void show() {
-        music.play();
-        game.getSoundLibrary().getLightSound().play();
-    }
-
-    @Override
-    public void render(float delta) {
+    void krender(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
@@ -118,7 +123,7 @@ public class MenuScreen implements Screen {
         
         checkInput();
     }
-    
+
     private void checkInput() {
         if(Gdx.input.isKeyJustPressed(Keys.LEFT)) {
             buttons.get(selectedButton).selected = false;
@@ -285,24 +290,17 @@ public class MenuScreen implements Screen {
         game.getBatch().draw(animationFrame, Karmen.SCREEN_WIDTH - 125, Karmen.SCREEN_HEIGHT / 15, animationFrame.getRegionWidth() * 5, animationFrame.getRegionHeight() * 5);
         game.getBatch().end();
     }
-    
-    @Override
-    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
+    public void show() {
+        music.play();
+        game.getSoundLibrary().getLightSound().play();
     }
-
-    @Override
-    public void resume() {}
-
+    
     @Override
     public void hide() {
         music.stop();
     }
-
-    @Override
-    public void dispose() {}
     
     /*
      * INNER SHTUFF

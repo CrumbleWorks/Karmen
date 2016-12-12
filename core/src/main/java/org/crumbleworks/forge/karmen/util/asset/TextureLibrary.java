@@ -13,6 +13,14 @@ public class TextureLibrary {
     private Texture explosionTexture;
     private Texture danceFloorTexture;
     
+    /* OPTIONS */
+    public final Texture OPT_NOTE;
+    public final Texture OPT_NOTE_STRIKE;
+    public final Texture OPT_DOOR;
+    public final Texture OPT_DOOR_OPEN;
+    public final Texture OPT_RET;
+    public final Texture OPT_RET_INV;
+    
     public TextureLibrary() {
         crumbleWorksLogo = loadTexture("gfx/GrpLogo3x32x32.png");
         libGdxLogo = loadTexture("gfx/libGdxLogo.png");
@@ -20,6 +28,13 @@ public class TextureLibrary {
         floydTexture = loadTexture("gfx/Hero_9x4_16x32_CHARAKTER.png");
         explosionTexture = loadTexture("gfx/effects/explosion.png");
         danceFloorTexture = loadTexture("gfx/dance_floor_animation.png");
+        
+        OPT_NOTE = loadTexture("gfx/options/note.png");
+        OPT_NOTE_STRIKE = loadTexture("gfx/options/note_striked.png");
+        OPT_DOOR = loadTexture("gfx/options/door.png");
+        OPT_DOOR_OPEN = loadTexture("gfx/options/door_open.png");
+        OPT_RET = loadTexture("gfx/options/ret.png");
+        OPT_RET_INV = loadTexture("gfx/options/ret_inv.png");
     }
     
     private Texture loadTexture(String textureFileName) {
