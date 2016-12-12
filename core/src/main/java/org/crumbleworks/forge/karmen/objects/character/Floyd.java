@@ -10,6 +10,8 @@ import org.crumbleworks.forge.karmen.util.AnimationConstants;
 import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.PhysicsConstants;
 import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
+import org.crumbleworks.forge.karmen.util.asset.sound.SoundType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -257,9 +259,7 @@ public class Floyd extends StatefulDoll {
                      doll.psv().size.x,
                      doll.psv().size.y);
              
-             if(!doll.game().getSoundLibrary().getBlockSound().isPlaying()) {
-                 doll.game().getSoundLibrary().getBlockSound().play();
-             }
+             doll.game().getMusicService().play(MusicType.BLOCK, false, false);
              
              //block = (almost)instastop!
              float xVelo = doll.body().getLinearVelocity().x;
@@ -364,7 +364,7 @@ public class Floyd extends StatefulDoll {
             }
             
             if(!soundPlayed) {
-                doll.game().getSoundLibrary().getPunchSound().play();
+                doll.game().getSoundService().play(SoundType.PUNCH);
                 soundPlayed = true;
             }
         }
@@ -434,7 +434,7 @@ public class Floyd extends StatefulDoll {
             }
             
             if(!soundPlayed) {
-                doll.game().getSoundLibrary().getKickSound().play();
+                doll.game().getSoundService().play(SoundType.KICK);
                 soundPlayed = true;
             }
         }
@@ -522,7 +522,7 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.y);
             
             if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
+//                doll.game().getSoundService().play(SoundType.JUMP); TODO uncomment
                 soundPlayed = true;
             }
         }
@@ -554,12 +554,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-
-            
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
     }
     
@@ -599,7 +597,7 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.y);
             
             if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
+//                doll.game().getSoundService().play(SoundType.JUMP); TODO uncomment
                 soundPlayed = true;
             }
         }
@@ -630,12 +628,11 @@ public class Floyd extends StatefulDoll {
                     doll.psv().position.y,
                     doll.psv().size.x,
                     doll.psv().size.y);
-
             
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
     }
     
@@ -670,7 +667,7 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.y);
             
             if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
+//                doll.game().getSoundService().play(SoundType.JUMP); TODO uncomment
                 soundPlayed = true;
             }
         }
@@ -702,12 +699,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-
-            
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
     }
     
@@ -747,7 +742,7 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.y);
             
             if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
+//                doll.game().getSoundService().play(SoundType.JUMP); TODO uncomment
                 soundPlayed = true;
             }
         }
@@ -779,12 +774,11 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-
-            
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
     }
+    
 }

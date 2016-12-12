@@ -5,8 +5,9 @@ import org.crumbleworks.forge.karmen.screen.IntroScreen;
 import org.crumbleworks.forge.karmen.screen.MenuScreen;
 import org.crumbleworks.forge.karmen.screen.PlayScreen;
 import org.crumbleworks.forge.karmen.util.Calc;
-import org.crumbleworks.forge.karmen.util.asset.SoundLibrary;
 import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicService;
+import org.crumbleworks.forge.karmen.util.asset.sound.SoundService;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
@@ -40,7 +41,8 @@ public class Karmen extends Game {
     private BitmapFont fontArial;
 
     private TextureLibrary texureLibrary;
-    private SoundLibrary soundLibrary;
+    private SoundService soundService;
+    private MusicService musicService;
 
     public Screen introScreen;
     public Screen menuScreen;
@@ -68,7 +70,8 @@ public class Karmen extends Game {
         fontArial = new BitmapFont();
 
         texureLibrary = new TextureLibrary();
-        soundLibrary = new SoundLibrary();
+        soundService = new SoundService();
+        musicService = new MusicService();
 
         introScreen = new IntroScreen(this);
         menuScreen = new MenuScreen(this);
@@ -92,6 +95,8 @@ public class Karmen extends Game {
             }
             renderDebug();
         }
+        
+        musicService.update();
     }
     
     private ShapeRenderer debugShaper;
@@ -129,7 +134,8 @@ public class Karmen extends Game {
         aboutScreen.dispose();
 
         texureLibrary.dispose();
-        soundLibrary.dispose();
+        soundService.dispose();
+        musicService.dispose();
 
         batch.dispose();
         fontMedium.dispose();
@@ -160,8 +166,12 @@ public class Karmen extends Game {
         return texureLibrary;
     }
 
-    public SoundLibrary getSoundLibrary() {
-        return soundLibrary;
+    public SoundService getSoundService() {
+        return soundService;
+    }
+    
+    public MusicService getMusicService() {
+        return musicService;
     }
 
     public void changeScreen(Screen nextScreen) {

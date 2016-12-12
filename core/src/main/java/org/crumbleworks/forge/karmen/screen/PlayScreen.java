@@ -113,6 +113,7 @@ public class PlayScreen extends KarmenScreen {
     
     @Override
     public void show() {
+        game.getMusicService().stop();
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 

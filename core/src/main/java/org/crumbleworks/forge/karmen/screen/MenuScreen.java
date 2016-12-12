@@ -6,6 +6,8 @@ import java.util.List;
 import org.crumbleworks.forge.karmen.Karmen;
 import org.crumbleworks.forge.karmen.util.NeonColors;
 import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
+import org.crumbleworks.forge.karmen.util.asset.sound.SoundType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -39,8 +41,6 @@ public class MenuScreen extends KarmenScreen {
     private float floydAnimationStateTime;
     private float floydFrameDuration;
     
-    private Music music;
-
     public MenuScreen(Karmen game) {
         super(game,
                 new int[]{Keys.M},
@@ -68,9 +68,6 @@ public class MenuScreen extends KarmenScreen {
         floydFrameDuration = 0.25f;
         floydAnimationStateTime = 0f;
         initFloydAnimation();
-        
-        music = Gdx.audio.newMusic(Gdx.files.internal("sfx/music/Menumusic (Loop).ogg"));
-        music.setLooping(true);
     }
     
     private void initLampAnimation() {
@@ -293,14 +290,12 @@ public class MenuScreen extends KarmenScreen {
 
     @Override
     public void show() {
-        music.play();
-        game.getSoundLibrary().getLightSound().play();
+        game.getMusicService().play(MusicType.MENU, true, false);
+        game.getSoundService().play(SoundType.LIGHT);
     }
     
     @Override
-    public void hide() {
-        music.stop();
-    }
+    public void hide() {}
     
     /*
      * INNER SHTUFF
