@@ -311,8 +311,6 @@ public class Floyd extends StatefulDoll {
          
          @Override
          public void logic(StatefulDoll doll, float delta) {
-             doll.game().getMusicService().play(MusicType.BLOCK, false, false);
-             
              delayAcc += Calc.gdxDeltaToMillis(delta);
              if(delayAcc >= PhysicsConstants.BLOCK_DELAY_MS) {
                  doll.body().setLinearVelocity(0.0f, 0.0f);
