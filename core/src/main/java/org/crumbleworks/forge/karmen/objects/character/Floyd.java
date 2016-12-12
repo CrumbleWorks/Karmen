@@ -16,6 +16,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
@@ -67,32 +71,32 @@ public class Floyd extends StatefulDoll {
      * BEHAVIOURS
      */
     
-    static abstract class FloydStill implements Behaviour {
-        private final Animation idleAnimation;
+    static abstract class BaseRendering implements Behaviour {
+        private final Animation animation;
         private final String debugName;
-        private final float drag;
-        
+
         private float stateTime;
-        private State previousState;
         
-        FloydStill(Animation animation, String debugName, float drag) {
-            this.idleAnimation = animation;
+        public BaseRendering(Animation animation, String debugName) {
+            this.animation = animation;
             this.debugName = debugName;
-            this.drag = drag;
         }
-
+        
         @Override
-        public void init(State previousState) {
+        public final void init(State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init " + debugName);
-            
-            this.previousState = previousState;
             stateTime = 0f;
+            
+            clean(previousState);
         }
+        
+        protected abstract void clean(State previousState);
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
+        public final void update(StatefulDoll doll, float delta) {
             stateTime += delta;
-            TextureRegion currentAnimationFrame = idleAnimation.getKeyFrame(stateTime);
+            
+            TextureRegion currentAnimationFrame = animation.getKeyFrame(stateTime);
             doll.game().getBatch().draw(
                     currentAnimationFrame,
                     doll.psv().position.x,
@@ -100,6 +104,85 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
+            logic(doll, delta);
+        }
+        
+        public abstract void logic(StatefulDoll doll, float delta);
+        
+        @Override
+        public void finish(StatefulDoll doll) {
+        }
+    }
+    
+    static abstract class BaseSwitchRendering implements Behaviour {
+        private final Animation[] animation;
+        private int animationIndex = 0;
+        private final String debugName;
+
+        private float stateTime;
+        
+        public BaseSwitchRendering(Animation animationA, Animation animationB, String debugName) {
+            this.animation = new Animation[]{animationA, animationB};
+            this.debugName = debugName;
+        }
+        
+        protected final void switchAnimations() {
+            this.animationIndex = Math.abs(animationIndex * -1);
+        }
+        
+        @Override
+        public final void init(State previousState) {
+            Gdx.app.debug(FLOYD_TAG, "init " + debugName);
+            stateTime = 0f;
+            
+            clean(previousState);
+        }
+        
+        protected abstract void clean(State previousState);
+
+        @Override
+        public final void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            
+            TextureRegion currentAnimationFrame = animation[animationIndex].getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+            
+            logic(doll, delta);
+        }
+        
+        public abstract void logic(StatefulDoll doll, float delta);
+        
+        @Override
+        public void finish(StatefulDoll doll) {
+        }
+    }
+    
+    /* ***********************************************************************
+     * STILL
+     */
+    
+    static abstract class FloydStill extends BaseRendering {
+        private final float drag;
+        
+        private State previousState;
+        
+        FloydStill(Animation animation, String debugName, float drag) {
+            super(animation, debugName);
+            this.drag = drag;
+        }
+
+        @Override
+        public void clean(State previousState) {
+            this.previousState = previousState;
+        }
+
+        @Override
+        public void logic(StatefulDoll doll, float delta) {
             float xVelo = doll.body().getLinearVelocity().x;
             if(xVelo > 0.0f) { //movement nach rechts
                 doll.body().applyLinearImpulse(
@@ -152,65 +235,47 @@ public class Floyd extends StatefulDoll {
      * RUNNING
      */
     
-    static class FloydRunRight implements Behaviour {
+    static class FloydRunRight extends BaseRendering {
         private static final Animation runAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA.ordinal()],
                         textureRegions[FloydFrameType.MOVE_SIDE_RB.ordinal()]),
              PlayMode.LOOP);
         
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init RunRight");
-            stateTime = 0f;
+        public FloydRunRight() {
+            super(runAnimation, "RunRight");
         }
-
+        
         @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = runAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
+        protected void clean(State previousState) {
+        }
+        
+        @Override
+        public void logic(StatefulDoll doll, float delta) {
             if(doll.body().getLinearVelocity().x < PhysicsConstants.RUNNING_SPEED_MAX) {
-                doll.body().applyLinearImpulse(
-                        new Vector2(PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
-                        doll.body().getPosition(),
-                        true);
+            doll.body().applyLinearImpulse(
+                    new Vector2(PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
+                    doll.body().getPosition(),
+                    true);
             }
         }
     }
     
-    static class FloydRunLeft implements Behaviour {
+    static class FloydRunLeft extends BaseRendering {
         private static final Animation runAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA.ordinal()],
                         textureRegions[FloydFrameType.MOVE_SIDE_LB.ordinal()]),
              PlayMode.LOOP);
         
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init RunLeft");
-            stateTime = 0f;
+        public FloydRunLeft() {
+            super(runAnimation, "RunRight");
         }
-
+        
         @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = runAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
+        protected void clean(State previousState) {
+        }
+        
+        @Override
+        public void logic(StatefulDoll doll, float delta) {
             if(doll.body().getLinearVelocity().x > -PhysicsConstants.RUNNING_SPEED_MAX) {
                 doll.body().applyLinearImpulse(
                         new Vector2(-PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
@@ -224,50 +289,38 @@ public class Floyd extends StatefulDoll {
      * BLOCK
      */
     
-    static abstract class FloydBlock implements Behaviour {
-         private final Animation idleAnimation;
-         private final String debugName;
+    static abstract class FloydBlock extends BaseRendering {
          private final float drag;
          
-         private float stateTime;
          private State previousState;
          
          FloydBlock(Animation animation, String debugName, float drag) {
-             this.idleAnimation = animation;
-             this.debugName = debugName;
+             super(animation, debugName);
              this.drag = drag;
          }
 
-         @Override
-         public void init(State previousState) {
-             Gdx.app.debug(FLOYD_TAG, "init " + debugName);
-             
-             this.previousState = previousState;
-             stateTime = 0f;
-         }
+         private long delayAcc;
 
          @Override
-         public void update(StatefulDoll doll, float delta) {
-             stateTime += delta;
-             TextureRegion currentAnimationFrame = idleAnimation.getKeyFrame(stateTime);
-             doll.game().getBatch().draw(
-                     currentAnimationFrame,
-                     doll.psv().position.x,
-                     doll.psv().position.y,
-                     doll.psv().size.x,
-                     doll.psv().size.y);
-             
+         public void clean(State previousState) {
+             this.previousState = previousState;
+             delayAcc = 0;
+         }
+         
+         @Override
+         public void logic(StatefulDoll doll, float delta) {
              if(!doll.game().getSoundLibrary().getBlockSound().isPlaying()) {
                  doll.game().getSoundLibrary().getBlockSound().play();
+             }
+
+             delayAcc += Calc.gdxDeltaToMillis(delta);
+             if(delayAcc >= PhysicsConstants.BLOCK_DELAY_MS) {
+                 doll.body().setLinearVelocity(0.0f, 0.0f);
              }
              
              //block = (almost)instastop!
              float xVelo = doll.body().getLinearVelocity().x;
-             if(Math.abs((double)xVelo) < 20.0d) {
-                 doll.body().setLinearVelocity(
-                         0.0f,
-                         0.0f);
-             } else if(xVelo > 0.0f) { //movement nach rechts
+             if(xVelo > 0.0f) { //movement nach rechts
                  doll.body().applyLinearImpulse(
                          new Vector2(-drag, 0.0f),
                          doll.body().getPosition(),
@@ -318,45 +371,28 @@ public class Floyd extends StatefulDoll {
      * PUNCH
      */
     
-    static abstract class FloydPunch implements Behaviour {
-        private final Animation punchAnimation;
-        private final String debugName;
-        
+    static abstract class FloydPunch extends BaseRendering {
         private long returnTime;
-        private float stateTime;
         private boolean soundPlayed;
         
         private State previousState;
         
         FloydPunch(FloydFrameType animation, String debugName) {
-            punchAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                     Array.with(textureRegions[animation.ordinal()]),
-                    PlayMode.NORMAL);
-            this.debugName = debugName;
+                    PlayMode.NORMAL),
+                    debugName);
         }
 
         @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init " + debugName);
-            
+        public void clean(State previousState) {
             this.previousState = previousState;
-            stateTime = 0f;
             returnTime = AnimationConstants.DUR_MS_PUNCH;
             soundPlayed = false;
         }
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = punchAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            //logic
+        public void logic(StatefulDoll doll, float delta) {
             returnTime -= Calc.gdxDeltaToMillis(delta);
             if(returnTime <= 0) {
                 Gdx.app.debug(FLOYD_TAG, "> returning to " + previousState.name());
@@ -388,45 +424,28 @@ public class Floyd extends StatefulDoll {
      * KICK
      */
     
-    static abstract class FloydKick implements Behaviour {
-        private final Animation kickAnimation;
-        private final String debugName;
-        
+    static abstract class FloydKick extends BaseRendering {
         private long returnTime;
-        private float stateTime;
         private boolean soundPlayed;
         
         private State previousState;
         
         FloydKick(FloydFrameType animation, String debugName) {
-            kickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                     Array.with(textureRegions[animation.ordinal()]),
-                    PlayMode.NORMAL);
-            this.debugName = debugName;
+                    PlayMode.NORMAL),
+                    debugName);
         }
 
         @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init " + debugName);
-            
+        public void clean(State previousState) {
             this.previousState = previousState;
-            stateTime = 0f;
             returnTime = AnimationConstants.DUR_MS_KICK;
             soundPlayed = false;
         }
 
         @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = kickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            //logic
+        public void logic(StatefulDoll doll, float delta) {
             returnTime -= Calc.gdxDeltaToMillis(delta);
             if(returnTime <= 0) {
                 Gdx.app.debug(FLOYD_TAG, "> returning to " + previousState.name());
@@ -454,7 +473,39 @@ public class Floyd extends StatefulDoll {
         }
     }
     
-    static class FloydJumpFront implements Behaviour {
+    /* ***********************************************************************
+     * JUMP
+     */
+    
+    static abstract class FloydJump extends BaseSwitchRendering {
+        private State previousState;
+        private boolean hasSwitched = false;
+        private boolean hasJumped = false;
+        
+        public FloydJump(Animation upAnimation, Animation downAnimation, String debugName) {
+            super(upAnimation, downAnimation, debugName);
+        }
+
+        @Override
+        public void clean(State previousState) {
+            this.previousState = previousState;
+        }
+
+        @Override
+        public void logic(StatefulDoll doll, float delta) {
+            if(!hasJumped) {
+                doll.body().applyAngularImpulse(
+                        PhysicsConstants.JUMP_SPEED, true); //FIXME MAKE THIS WORK
+            }
+            
+            if(!hasSwitched && doll.body().getLinearVelocity().y < 0.0f) { //aka going down again
+                switchAnimations();
+                hasSwitched = true;
+            }
+        }
+    }
+    
+    static class FloydJumpFront extends FloydJump {
         private static final Animation animUp = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()]),
                 PlayMode.NORMAL);
@@ -463,35 +514,17 @@ public class Floyd extends StatefulDoll {
                 Array.with(textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]),
                 PlayMode.NORMAL);
         
-        private float stateTime;
-        private boolean soundPlayed;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init JumpFront");
-            stateTime = 0f;
-            soundPlayed = false;
+        public FloydJumpFront() {
+            super(animUp, animDown, "FrontJump");
         }
-
+        
         @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = animUp.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
-                soundPlayed = true;
-            }
+        public void finish(StatefulDoll doll) {
+            doll.set(State.STILL_FRONT);
         }
     }
     
-    static class FloydJumpRight implements Behaviour {
+    static class FloydJumpRight extends FloydJump {
         private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RUP.ordinal()]),
                 PlayMode.NORMAL);
@@ -500,33 +533,38 @@ public class Floyd extends StatefulDoll {
                 Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RDOWN.ordinal()]),
                 PlayMode.NORMAL);
         
-        private float stateTime;
-        private boolean soundPlayed;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init JumpRight");
-            stateTime = 0f;
-            soundPlayed = false;
+        public FloydJumpRight() {
+            super(jumpSideUpAnimation, jumpSideDownAnimation, "RightJump");
         }
-
+        
         @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
-                soundPlayed = true;
-            }
+        public void finish(StatefulDoll doll) {
+            doll.set(State.STILL_RIGHT);
         }
     }
+    
+    static class FloydJumpLeft extends FloydJump {
+        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        public FloydJumpLeft() {
+            super(jumpSideUpAnimation, jumpSideDownAnimation, "LeftJump");
+        }
+        
+        @Override
+        public void finish(StatefulDoll doll) {
+            doll.set(State.STILL_LEFT);
+        }
+    }
+    
+    /* ***********************************************************************
+     * JUMPKICK
+     */
     
     static class FloydJumpKickRight implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
@@ -561,7 +599,58 @@ public class Floyd extends StatefulDoll {
                           soundPlayed = true;
                       }
         }
+
+        @Override
+        public void finish(StatefulDoll doll) {
+            // TODO Auto-generated method stub
+            
+        }
     }
+    
+    static class FloydJumpKickLeft implements Behaviour {
+        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private float stateTime;
+        private boolean soundPlayed;
+        
+        @Override
+        public void init(State previousState) {
+            Gdx.app.debug(FLOYD_TAG, "init JumpKickLeft");
+            stateTime = 0f;
+            soundPlayed = false;
+        }
+        
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+            
+            
+            
+            if(!soundPlayed) {
+                doll.game().getSoundLibrary().getKickSound().play();
+                soundPlayed = true;
+            }
+        }
+
+        @Override
+        public void finish(StatefulDoll doll) {
+            // TODO Auto-generated method stub
+            
+        }
+    }
+    
+    /* ***********************************************************************
+     * ARC
+     */
     
     static class FloydArcJumpRight implements Behaviour {
         private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
@@ -603,7 +692,65 @@ public class Floyd extends StatefulDoll {
                 soundPlayed = true;
             }
         }
+
+        @Override
+        public void finish(StatefulDoll doll) {
+            // TODO Auto-generated method stub
+            
+        }
     }
+    
+    static class FloydArcJumpLeft implements Behaviour {
+        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
+                PlayMode.NORMAL);
+        
+        private static final Animation jumpSideMoveAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA_AIR.ordinal()],
+                        textureRegions[FloydFrameType.MOVE_SIDE_LB_AIR.ordinal()]),
+                PlayMode.LOOP);
+        
+        private float stateTime;
+        private boolean soundPlayed;
+        
+        @Override
+        public void init(State previousState) {
+            Gdx.app.debug(FLOYD_TAG, "init ArcJumpLeft");
+            stateTime = 0f;
+            soundPlayed = false;
+        }
+        
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+            
+            if(!soundPlayed) {
+                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
+                soundPlayed = true;
+            }
+        }
+
+        @Override
+        public void finish(StatefulDoll doll) {
+            // TODO Auto-generated method stub
+            
+        }
+    }
+    
+    /* ***********************************************************************
+     * ARC KICK
+     */
     
     static class FloydArcKickRight implements Behaviour {
         private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
@@ -637,119 +784,11 @@ public class Floyd extends StatefulDoll {
                           soundPlayed = true;
                       }
         }
-    }
-    
-    static class FloydJumpLeft implements Behaviour {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
-                PlayMode.NORMAL);
-
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
-        private boolean soundPlayed;
 
         @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init JumpLeft");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
+        public void finish(StatefulDoll doll) {
+            // TODO Auto-generated method stub
             
-            if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
-                soundPlayed = true;
-            }
-        }
-    }
-    
-    static class FloydJumpKickLeft implements Behaviour {
-        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
-        private boolean soundPlayed;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init JumpKickLeft");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-
-            
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
-        }
-    }
-    
-    static class FloydArcJumpLeft implements Behaviour {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
-                PlayMode.NORMAL);
-
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private static final Animation jumpSideMoveAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA_AIR.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_LB_AIR.ordinal()]),
-             PlayMode.LOOP);
-        
-        private float stateTime;
-        private boolean soundPlayed;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init ArcJumpLeft");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
-                soundPlayed = true;
-            }
         }
     }
     
@@ -785,6 +824,12 @@ public class Floyd extends StatefulDoll {
                           doll.game().getSoundLibrary().getKickSound().play();
                           soundPlayed = true;
                       }
+        }
+
+        @Override
+        public void finish(StatefulDoll doll) {
+            // TODO Auto-generated method stub
+            
         }
     }
 }
