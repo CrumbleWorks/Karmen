@@ -213,7 +213,7 @@ public abstract class StatefulDoll implements Thing {
     
     //contant data
     private final float PHYS_DENSITY = 1.0f;
-    private final float PHYS_FRICTION = 1.0f;
+    private final float PHYS_FRICTION = 0.0f;
     private final float PHYS_RESTITUTION = 0.0f; //bouncyness
     //runtime data
     private Behaviour currentBehaviour;

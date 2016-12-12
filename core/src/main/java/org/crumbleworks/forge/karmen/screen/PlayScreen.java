@@ -56,8 +56,8 @@ public class PlayScreen extends KarmenScreen {
 
         /* BOX2D */
         Box2D.init();
-        world = new World(new Vector2(PhysicsConstants.HORIZONTAL_GRAVITY, PhysicsConstants.HORIZONTAL_GRAVITY), true);
-        world.setVelocityThreshold(5.0f);
+        world = new World(new Vector2(PhysicsConstants.HORIZONTAL_GRAVITY, PhysicsConstants.VERTICAL_GRAVITY), true);
+        world.setVelocityThreshold(1.0f);
         if(Karmen.isDebug) {
             debugR = new Box2DDebugRenderer();
         }

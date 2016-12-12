@@ -67,84 +67,69 @@ public class Floyd extends StatefulDoll {
      * BEHAVIOURS
      */
     
-    static class FloydStillFront implements Behaviour {
+    static abstract class FloydStill implements Behaviour {
+        private final Animation idleAnimation;
+        private final String debugName;
+        
+        private float stateTime;
+        private State previousState;
+        
+        FloydStill(Animation animation, String debugName) {
+            this.idleAnimation = animation;
+            this.debugName = debugName;
+        }
+
+        @Override
+        public void init(State previousState) {
+            Gdx.app.debug(FLOYD_TAG, "init " + debugName);
+            
+            this.previousState = previousState;
+            stateTime = 0f;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            stateTime += delta;
+            TextureRegion currentAnimationFrame = idleAnimation.getKeyFrame(stateTime);
+            doll.game().getBatch().draw(
+                    currentAnimationFrame,
+                    doll.psv().position.x,
+                    doll.psv().position.y,
+                    doll.psv().size.x,
+                    doll.psv().size.y);
+        }
+    }
+    
+    static class FloydStillFront extends FloydStill {
         private static final Animation stillFrontAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()],
                            textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]),
              PlayMode.LOOP);
         
-        private float stateTime;
-        
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init StillFront");
-            stateTime = 0f;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = stillFrontAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
+        public FloydStillFront() {
+            super(stillFrontAnimation, "StillFront");
         }
     }
     
-    static class FloydStillRight implements Behaviour {
+    static class FloydStillRight extends FloydStill {
         private static final Animation stillSideAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.STILL_SIDE_RA.ordinal()],
                         textureRegions[FloydFrameType.STILL_SIDE_RB.ordinal()]),
              PlayMode.LOOP);
         
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init StillRight");
-            stateTime = 0f;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = stillSideAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
+        public FloydStillRight() {
+            super(stillSideAnimation, "StillRight");
         }
     }
     
-    static class FloydStillLeft implements Behaviour {
+    static class FloydStillLeft extends FloydStill {
         private static final Animation stillSideAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
                 Array.with(textureRegions[FloydFrameType.STILL_SIDE_LA.ordinal()],
                         textureRegions[FloydFrameType.STILL_SIDE_LB.ordinal()]),
              PlayMode.LOOP);
         
-        private float stateTime;
-
-        @Override
-        public void init(State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init StillLeft");
-            stateTime = 0f;
-        }
-
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = stillSideAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
+        public FloydStillLeft() {
+            super(stillSideAnimation, "StillLeft");
         }
     }
     

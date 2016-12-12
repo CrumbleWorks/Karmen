@@ -22,6 +22,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 public class Karmen extends Game {
 
+    /*
+     * !WARNING: SCREEN WIDTH/HEIGHT MUST NOT BE CHANGED,
+     * THESE VALUES ARE USED FOR THE CAMERA AND SUBSEQUENTLY FOR THE PHYSICS
+     * 
+     * IF YOU NEED A BIGGER SCREEN, CHANGE WINDOW MEASUREMENTS SEPARATELY
+     */
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 480;
 
