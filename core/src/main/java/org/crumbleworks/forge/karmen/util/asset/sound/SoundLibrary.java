@@ -11,6 +11,7 @@ public class SoundLibrary {
     private Sound kick;
     private Sound punch;
     private Sound shieldPunch;
+    private Sound block;
     
     public SoundLibrary() {
         light = loadSound("sfx/effects/light.ogg");
@@ -19,6 +20,7 @@ public class SoundLibrary {
         kick = loadSound("sfx/effects/kick.ogg");
         punch = loadSound("sfx/effects/punch.ogg");
         shieldPunch = loadSound("sfx/effects/shieldpunch.ogg");
+        block = loadSound("sfx/effects/block.ogg");
     }
     
     private Sound loadSound(String soundFileName) {
@@ -39,8 +41,8 @@ public class SoundLibrary {
             return punch;
         case SHIELD_PUNCH:
             return shieldPunch;
-//        case BLOCK:
-//            return blockSound; TODO BLOCK als Sound und nicht als Music verwenden
+        case BLOCK:
+            return block;
         default:
             Gdx.app.log("SoundLibrary", "SoundType " + type + " is not mapped to a file.");
             return null;
@@ -54,6 +56,7 @@ public class SoundLibrary {
         kick.dispose();
         punch.dispose();
         shieldPunch.dispose();
+        block.dispose();
     }
     
 }

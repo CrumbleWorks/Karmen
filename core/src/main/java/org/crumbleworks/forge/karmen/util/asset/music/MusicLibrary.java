@@ -14,8 +14,6 @@ public class MusicLibrary {
     private Music arenaLevel5;
     private Music gameOver;
     
-    private Music block; // TODO BLOCK als Sound und nicht als Music verwenden
-    
     public MusicLibrary() {
         menu = loadMusic("sfx/music/Menumusic (Loop).ogg");
         arenaIntro = loadMusic("sfx/music/intro.ogg");
@@ -25,8 +23,6 @@ public class MusicLibrary {
         arenaLevel4 = loadMusic("sfx/music/level4.ogg");
         arenaLevel5 = loadMusic("sfx/music/level5.ogg");
         gameOver = loadMusic("sfx/music/gameover.ogg");
-        
-        block = loadMusic("sfx/effects/block.ogg");
     }
     
     private Music loadMusic(String musicFileName) {
@@ -51,8 +47,6 @@ public class MusicLibrary {
             return arenaLevel5;
         case GAME_OVER:
             return gameOver;
-        case BLOCK: // TODO BLOCK als Sound und nicht als Music verwenden
-            return block;
         default:
             Gdx.app.log("MusicLibrary", "MusicType " + type + " is not mapped to a file.");
             return null;
@@ -68,8 +62,6 @@ public class MusicLibrary {
         arenaLevel4.dispose();
         arenaLevel5.dispose();
         gameOver.dispose();
-        
-        block.dispose();
     }
     
 }

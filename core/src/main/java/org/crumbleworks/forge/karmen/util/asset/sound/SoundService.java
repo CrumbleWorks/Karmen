@@ -3,8 +3,6 @@ package org.crumbleworks.forge.karmen.util.asset.sound;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
-
 public class SoundService {
 
     private SoundLibrary soundLibrary;
@@ -18,14 +16,27 @@ public class SoundService {
     }
     
     /**
-     * Plays a specific sound.
+     * Plays a specific sound once.
      * 
      * @param type Soundtype
      */
     public void play(SoundType type) {
         if(!muted) {
+            play(type, false);
+        }
+    }
+    
+    /**
+     * Plays a specific sound.
+     * 
+     * @param type Soundtype
+     * @param Whether to loop the sound or not
+     */
+    public void play(SoundType type, boolean loop) {
+        if(!muted) {
             playingSounds.add(type);
-            soundLibrary.getSound(type).play();
+            long soundId = soundLibrary.getSound(type).play();
+            soundLibrary.getSound(type).setLooping(soundId, loop);
         }
     }
     
