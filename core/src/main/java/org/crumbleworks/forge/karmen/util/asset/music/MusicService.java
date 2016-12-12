@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Music.OnCompletionListener;
 
 public class MusicService {
 
-    private final float DEFAULT_VOLUME = 1.0f;
+    private final float DEFAULT_VOLUME = 0.5f;
     
     private MusicLibrary musicLibrary;
     private MusicType playingMusic;
