@@ -243,7 +243,7 @@ public abstract class StatefulDoll implements Thing {
         body = world.createBody(bodyDef);
         
         PolygonShape boundingBox = new PolygonShape();
-        boundingBox.setAsBox(psv.size.x, psv.size.y);
+        boundingBox.setAsBox(psv.size.x / 2, psv.size.y / 2);
         
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = boundingBox;

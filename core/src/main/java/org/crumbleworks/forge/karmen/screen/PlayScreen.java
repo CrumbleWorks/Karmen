@@ -61,6 +61,33 @@ public class PlayScreen extends KarmenScreen {
             debugR = new Box2DDebugRenderer();
         }
         
+        /* ARENA BORDERS */
+        final int DISTANCE_FROM_WALLS = 80;
+        final int DISTANCE_FROM_BOTTOM = 80;
+        
+        BodyDef groundDef = new BodyDef();
+        groundDef.position.set(new Vector2((Karmen.SCREEN_WIDTH / 2), DISTANCE_FROM_BOTTOM));
+        Body groundBody = world.createBody(groundDef);
+        
+        BodyDef leftWallDef = new BodyDef();
+        leftWallDef.position.set(new Vector2(DISTANCE_FROM_WALLS, 0));
+        Body leftWall = world.createBody(leftWallDef);
+        
+        BodyDef rightWallDef = new BodyDef();
+        rightWallDef.position.set(new Vector2(Karmen.SCREEN_WIDTH - DISTANCE_FROM_WALLS, 0));
+        Body rightWall = world.createBody(rightWallDef);
+
+        PolygonShape gbox = new PolygonShape();
+
+        gbox.setAsBox(Karmen.SCREEN_WIDTH, 10);
+        groundBody.createFixture(gbox, 0.0f);
+        gbox.setAsBox(10, Karmen.SCREEN_HEIGHT);
+        leftWall.createFixture(gbox, 0.0f);
+        rightWall.createFixture(gbox, 0.0f);
+        
+        
+        gbox.dispose();
+        
         /* SCENE */
         this.sceneObjects = new ArrayList<Thing>();
         
@@ -73,15 +100,6 @@ public class PlayScreen extends KarmenScreen {
                 danceFloorBottomLeftX,
                 danceFloorBottomLeftY);
         sceneObjects.add(df);
-        
-        BodyDef groundDef = new BodyDef();
-        groundDef.position.set(new Vector2((Karmen.SCREEN_WIDTH / 2),
-                                         40));
-        Body groundBody = world.createBody(groundDef);
-        PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(Karmen.SCREEN_WIDTH, 10);
-        groundBody.createFixture(groundBox, 0.0f);
-        groundBox.dispose();
         
         /* DANCE COMMANDER (aka DJ Ynor9) */
         
@@ -126,8 +144,6 @@ public class PlayScreen extends KarmenScreen {
     
     private void doPhysicsStep(float deltaTime) {
         // fixed time step
-        
-        
         // max frame time to avoid spiral of death (on slow devices)
         float frameTime = Math.min(deltaTime, 0.25f);
         accumulator += frameTime;
