@@ -1,5 +1,7 @@
 package org.crumbleworks.forge.karmen.objects;
 
+import org.crumbleworks.forge.karmen.physics.FixtureType;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -24,6 +26,7 @@ public class DollContactListener implements ContactListener {
             }
             
             if(actor.getUserData() == FixtureType.DOLL) {
+                Gdx.app.debug("COLLISION", " twas a DOLL!");
                 StatefulDoll sd = ((StatefulDoll)actor.getBody().getUserData());
                 sd.activeBehaviour().finish(sd);
             }

@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.physics.FixtureType;
 import org.crumbleworks.forge.karmen.util.Calc;
 
 import com.badlogic.gdx.graphics.Color;
@@ -265,9 +266,9 @@ public abstract class StatefulDoll implements Thing {
      * UPDATE
      */
     
-    private String horizontalDeltaString = "Horizontal Speed: ";
+    private String horizontalDeltaString = "HS: ";
     private float hsaSpeedAve = 0;
-    private String verticalDeltaString =   "Vertical Speed:   ";
+    private String verticalDeltaString =   "VS: ";
     private float vsaSpeedAve = 0;
     
     @Override
@@ -289,7 +290,7 @@ public abstract class StatefulDoll implements Thing {
             game.getArial().draw(game.getBatch(),
                     verticalDeltaString + vsaSpeedAve,
                     60,
-                    Karmen.SCREEN_HEIGHT - 60);
+                    Karmen.SCREEN_HEIGHT - 40);
         }
     }
     

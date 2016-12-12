@@ -1,4 +1,4 @@
-package org.crumbleworks.forge.karmen.objects;
+package org.crumbleworks.forge.karmen.physics;
 
 
 public enum FixtureType {

@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.objects.DollContactListener;
 import org.crumbleworks.forge.karmen.objects.DollInputAdapter;
 import org.crumbleworks.forge.karmen.objects.StatefulDoll;
 import org.crumbleworks.forge.karmen.objects.Thing;
 import org.crumbleworks.forge.karmen.objects.character.Floyd;
+import org.crumbleworks.forge.karmen.physics.FixtureType;
 import org.crumbleworks.forge.karmen.screen.arena.DanceFloor;
 import org.crumbleworks.forge.karmen.util.PhysicsConstants;
 
@@ -21,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -67,6 +70,9 @@ public class PlayScreen extends KarmenScreen {
     
     //FIXME need to RESET when returning from menu after leaving scene
     private final void initArena() {
+        /* COLLISION STUFF */
+        world.setContactListener(new DollContactListener());
+        
         /* ARENA BORDERS */
         final int DISTANCE_FROM_WALLS = 80;
         final int DISTANCE_FROM_BOTTOM = 80;
@@ -86,7 +92,8 @@ public class PlayScreen extends KarmenScreen {
         PolygonShape gbox = new PolygonShape();
 
         gbox.setAsBox(Karmen.SCREEN_WIDTH, 10);
-        groundBody.createFixture(gbox, 0.0f);
+        Fixture gb = groundBody.createFixture(gbox, 0.0f);
+        gb.setUserData(FixtureType.FLOOR);
         gbox.setAsBox(10, Karmen.SCREEN_HEIGHT);
         leftWall.createFixture(gbox, 0.0f);
         rightWall.createFixture(gbox, 0.0f);
@@ -119,6 +126,7 @@ public class PlayScreen extends KarmenScreen {
     
     @Override
     public void show() {
+        game.getMusicService().stop();
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 

@@ -10,6 +10,8 @@ import org.crumbleworks.forge.karmen.util.AnimationConstants;
 import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.PhysicsConstants;
 import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
+import org.crumbleworks.forge.karmen.util.asset.sound.SoundType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -309,10 +311,8 @@ public class Floyd extends StatefulDoll {
          
          @Override
          public void logic(StatefulDoll doll, float delta) {
-             if(!doll.game().getSoundLibrary().getBlockSound().isPlaying()) {
-                 doll.game().getSoundLibrary().getBlockSound().play();
-             }
-
+             doll.game().getMusicService().play(MusicType.BLOCK, false, false);
+             
              delayAcc += Calc.gdxDeltaToMillis(delta);
              if(delayAcc >= PhysicsConstants.BLOCK_DELAY_MS) {
                  doll.body().setLinearVelocity(0.0f, 0.0f);
@@ -400,7 +400,7 @@ public class Floyd extends StatefulDoll {
             }
             
             if(!soundPlayed) {
-                doll.game().getSoundLibrary().getPunchSound().play();
+                doll.game().getSoundService().play(SoundType.PUNCH);
                 soundPlayed = true;
             }
         }
@@ -453,7 +453,7 @@ public class Floyd extends StatefulDoll {
             }
             
             if(!soundPlayed) {
-                doll.game().getSoundLibrary().getKickSound().play();
+                doll.game().getSoundService().play(SoundType.KICK);
                 soundPlayed = true;
             }
         }
@@ -479,8 +479,8 @@ public class Floyd extends StatefulDoll {
     
     static abstract class FloydJump extends BaseSwitchRendering {
         private State previousState;
-        private boolean hasSwitched = false;
-        private boolean hasJumped = false;
+        private boolean hasSwitched;
+        private long jumpTime;
         
         public FloydJump(Animation upAnimation, Animation downAnimation, String debugName) {
             super(upAnimation, downAnimation, debugName);
@@ -489,13 +489,19 @@ public class Floyd extends StatefulDoll {
         @Override
         public void clean(State previousState) {
             this.previousState = previousState;
+            
+            hasSwitched = false;
+            jumpTime = 600;
         }
 
         @Override
         public void logic(StatefulDoll doll, float delta) {
-            if(!hasJumped) {
-                doll.body().applyAngularImpulse(
-                        PhysicsConstants.JUMP_SPEED, true); //FIXME MAKE THIS WORK
+            if(jumpTime > 0) {
+                doll.body().applyLinearImpulse(
+                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE),
+                        doll.body().getPosition(),
+                        true);
+                jumpTime -= Calc.gdxDeltaToMillis(delta);
             }
             
             if(!hasSwitched && doll.body().getLinearVelocity().y < 0.0f) { //aka going down again
@@ -592,12 +598,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-
-            
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
 
         @Override
@@ -636,7 +640,7 @@ public class Floyd extends StatefulDoll {
             
             
             if(!soundPlayed) {
-                doll.game().getSoundLibrary().getKickSound().play();
+                doll.game().getSoundService().play(SoundType.KICK);
                 soundPlayed = true;
             }
         }
@@ -779,10 +783,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.y);
 
             
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
 
         @Override
@@ -818,12 +822,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-
-            
-                      if(!soundPlayed) {
-                          doll.game().getSoundLibrary().getKickSound().play();
-                          soundPlayed = true;
-                      }
+            if(!soundPlayed) {
+                doll.game().getSoundService().play(SoundType.KICK);
+                soundPlayed = true;
+            }
         }
 
         @Override
