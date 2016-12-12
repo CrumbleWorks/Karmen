@@ -1,21 +1,22 @@
 package org.crumbleworks.forge.karmen.util.asset.music;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Music.OnCompletionListener;
 
 public class MusicService {
 
     private final float DEFAULT_VOLUME = 1.0f;
     
     private MusicLibrary musicLibrary;
-    private Set<MusicType> playingMusic;
+    private MusicType playingMusic;
+    private MusicType nextMusic;
     
     private float globalVolume;
     
     public MusicService() {
         musicLibrary = new MusicLibrary();
-        playingMusic = new HashSet<>();
+        playingMusic = null;
+        nextMusic = null;
         
         globalVolume = DEFAULT_VOLUME;
     }
@@ -37,60 +38,32 @@ public class MusicService {
     /**
      * Plays a specific music.
      * 
-     * <li>If the Music is already running, nothing will happen
-     * 
      * @param type Musictype
      * @param loop Whether to loop the music or not
-     * 
-     * @see #play(MusicType)
-     * @see #play(MusicType, boolean, boolean)
-     */
-    public void play(MusicType type, boolean loop) {
-        play(type, loop, true);
-    }
-    
-    /**
-     * Plays a specific music.
-     * 
-     * @param type Musictype
-     * @param loop Whether to loop the music or not
-     * @param stopRunning Whether a running instance of <code>type</code> is to be stopped
      * 
      * @see #play(MusicType)
      * @see #play(MusicType, boolean)
      */
-    public void play(MusicType type, boolean loop, boolean stopRunning) {
-        if(playingMusic.contains(type)) {
-            if(stopRunning) {
-                stop(type);
-            }
-            else {
-                return;
-            }
+    public void play(MusicType type, boolean loop) {
+        if(playingMusic != null) {
+                stop();
         }
         
-        playingMusic.add(type);
+        playingMusic = type;
         musicLibrary.getMusic(type).setLooping(loop);
         musicLibrary.getMusic(type).setVolume(globalVolume);
         musicLibrary.getMusic(type).play();
+    }
+    
+    public void schedule(MusicType type, boolean loop) {
+        musicLibrary.getMusic(type).setOnCompletionListener(new OnCompListener(type, loop, this));
     }
     
     /**
      * Stops all currently playing music.
      */
     public void stop() {
-        playingMusic.forEach(m -> musicLibrary.getMusic(m).stop());
-        playingMusic.clear();
-    }
-    
-    /**
-     * Stops a specific music.
-     * 
-     * @param type Musictype
-     */
-    public void stop(MusicType type) {
-        musicLibrary.getMusic(type).stop();
-        playingMusic.remove(type);
+        playingMusic = null;
     }
     
     /**
@@ -114,11 +87,30 @@ public class MusicService {
     }
     
     public void update() {
-        playingMusic = playingMusic.stream().filter(m -> musicLibrary.getMusic(m).isPlaying()).collect(Collectors.toSet());
     }
     
     public void dispose() {
         musicLibrary.dispose();
     }
     
+    /* ***********************************************************************
+     * ON COMPLETION LISTENER
+     */
+    
+    static final class OnCompListener implements OnCompletionListener {
+        private final MusicType type;
+        private final boolean loop;
+        private final MusicService service;
+        
+        public OnCompListener(MusicType type, boolean loop, MusicService service) {
+            this.type = type;
+            this.loop = loop;
+            this.service = service;
+        }
+        
+        @Override
+        public void onCompletion(Music music) {
+            service.play(type, loop);
+        }
+    }
 }

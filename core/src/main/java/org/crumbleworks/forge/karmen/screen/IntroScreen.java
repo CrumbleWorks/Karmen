@@ -54,7 +54,7 @@ public class IntroScreen implements Screen {
 
     @Override
     public void show() {
-        game.getMusicService().play(MusicType.MENU, true, false);
+        game.getMusicService().play(MusicType.MENU, true);
     }
 
     @Override

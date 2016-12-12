@@ -12,6 +12,7 @@ import org.crumbleworks.forge.karmen.objects.character.Floyd;
 import org.crumbleworks.forge.karmen.physics.FixtureType;
 import org.crumbleworks.forge.karmen.screen.arena.DanceFloor;
 import org.crumbleworks.forge.karmen.util.PhysicsConstants;
+import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -127,7 +128,8 @@ public class PlayScreen extends KarmenScreen {
     
     @Override
     public void show() {
-        game.getMusicService().stop();
+        game.getMusicService().play(MusicType.ARENA_INTRO, false);
+        game.getMusicService().schedule(MusicType.ARENA_LEVEL_1, true);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
