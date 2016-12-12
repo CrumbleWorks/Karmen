@@ -4,6 +4,7 @@ import org.crumbleworks.forge.karmen.Karmen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,37 +19,36 @@ public abstract class KarmenScreen implements Screen {
     
     private final Karmen game;
     
+    private static boolean isInited = false;
     //screen commands
-    private final int[] keys;
-    private final String[] lbl;
-    private final Runnable[] func;
-    private final Texture[] texDef;
-    private final Texture[] texAct;
-    private boolean[] act;
+    static private int[] keys;
+    static private String[] lbl;
+    static private Runnable[] func;
+    static private Texture[] texDef;
+    static private Texture[] texAct;
+    static private boolean[] act;
+    
+    private final boolean[] active;
     
     /**
-     * Allows setting various quick keys for <code>muting</code>, etc.; The logic will take the index of <code>keys[]</code> as reference
-     * <p>Textures should be 8*8px
-     *
-     * @param game
-     * @param keys
-     * @param desc
-     * @param func
-     * @param texDef
-     * @param texAct
+     * the boolean 
      */
-    public KarmenScreen(Karmen game, int[] keys, String[] lbl, Runnable[] func, Texture[] texDef, Texture[] texAct) {
+    public KarmenScreen(Karmen game, boolean[] active) {
         this.game = game;
+        this.active = active;
         
-        this.keys = keys;
-        this.lbl = lbl;
-        this.func = func;
-        this.texDef = texDef;
-        this.texAct = texAct;
-        
-        act = new boolean[keys.length];
-        for(int i = 0 ; i < act.length ; i++) {
-            act[i] = false;
+        if(!isInited) {
+            isInited = true;
+            keys = new int[]{Keys.ESCAPE, Keys.M};
+            lbl = new String[]{"ESC", "M"};
+            func = new Runnable[]{()->{game.setScreen(game.menuScreen);},
+                                       ()->{game.getMusicService().toggleMute();
+                                       game.getSoundService().toggleMute();}};
+            texDef = new Texture[]{game.getTextureLibrary().OPT_RET,
+                                   game.getTextureLibrary().OPT_NOTE};
+            texAct = new Texture[]{game.getTextureLibrary().OPT_RET,
+                                   game.getTextureLibrary().OPT_NOTE_STRIKE};
+            act = new boolean[]{false, false};
         }
     }
 
@@ -77,29 +77,33 @@ public abstract class KarmenScreen implements Screen {
         batch.begin();
         
         for(int i = 0 ; i < keys.length ; i++) {
-            //symbol
-            Texture texTmp = null;
-            if(act[i]) {
-                texTmp = texAct[i];
-            } else {
-                texTmp = texDef[i];
+            if(active[i]) {
+                //symbol
+                Texture texTmp = null;
+                if(act[i]) {
+                    texTmp = texAct[i];
+                } else {
+                    texTmp = texDef[i];
+                }
+                batch.draw(texTmp, SCREEN_WIDTH - elementCursor , SCREEN_BORDER_PADDING, TEXTURE_WH, TEXTURE_WH);
+                
+                //name
+                font.setColor(Color.WHITE);
+                font.draw(batch, "" + lbl[i], SCREEN_WIDTH - elementCursor + ELEMENT_BOX_OFFSET, ELEMENT_BOX_HEIGHT - SCREEN_BORDER_PADDING);
+                
+                elementCursor -= ELEMENT_BOX_LENGTH;
             }
-            batch.draw(texTmp, SCREEN_WIDTH - elementCursor , SCREEN_BORDER_PADDING, TEXTURE_WH, TEXTURE_WH);
-
-            //name
-            font.setColor(Color.WHITE);
-            font.draw(batch, "" + lbl[i], SCREEN_WIDTH - elementCursor + ELEMENT_BOX_OFFSET, ELEMENT_BOX_HEIGHT - SCREEN_BORDER_PADDING);
-            
-            elementCursor -= ELEMENT_BOX_LENGTH;
         }
         batch.end();
     }
 
     private void checkInput() {
         for(int i = 0; keys.length > i; i++) {
-            if(Gdx.input.isKeyJustPressed(keys[i])) {
-                act[i] = !act[i];
-                func[i].run();
+            if(active[i]) {
+                if(Gdx.input.isKeyJustPressed(keys[i])) {
+                    act[i] = !act[i];
+                    func[i].run();
+                }
             }
         }
     }

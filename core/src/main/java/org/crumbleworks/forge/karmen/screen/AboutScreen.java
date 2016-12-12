@@ -40,17 +40,7 @@ public class AboutScreen extends KarmenScreen {
     private float explosionAnimationStateTime;
     
     public AboutScreen(final Karmen game) {
-        super(game,
-            new int[]{Keys.ESCAPE, Keys.M},
-            new String[]{"ESC", "M"},
-            new Runnable[]{()->{game.setScreen(game.menuScreen);},
-                           ()->{game.getMusicService().toggleMute();
-                                game.getSoundService().toggleMute();}},
-            new Texture[]{game.getTextureLibrary().OPT_RET,
-                          game.getTextureLibrary().OPT_NOTE},
-            new Texture[]{game.getTextureLibrary().OPT_RET_INV,
-                          game.getTextureLibrary().OPT_NOTE_STRIKE}
-         );
+        super(game, new boolean[]{true, true});
         this.game = game;
         
         arialFont = new BitmapFont();

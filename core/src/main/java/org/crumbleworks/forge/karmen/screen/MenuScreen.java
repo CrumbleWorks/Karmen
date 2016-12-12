@@ -42,14 +42,7 @@ public class MenuScreen extends KarmenScreen {
     private float floydFrameDuration;
     
     public MenuScreen(Karmen game) {
-        super(game,
-                new int[]{Keys.M},
-                new String[]{"M"},
-                new Runnable[]{()->{game.getMusicService().toggleMute();
-                                    game.getSoundService().toggleMute();}},
-                new Texture[]{game.getTextureLibrary().OPT_NOTE},
-                new Texture[]{game.getTextureLibrary().OPT_NOTE_STRIKE}
-             );
+        super(game, new boolean[]{false, true});
         
         this.game = game;
         
