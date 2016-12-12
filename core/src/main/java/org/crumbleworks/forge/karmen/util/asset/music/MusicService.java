@@ -56,13 +56,14 @@ public class MusicService {
     }
     
     public void schedule(MusicType type, boolean loop) {
-        musicLibrary.getMusic(type).setOnCompletionListener(new OnCompListener(type, loop, this));
+        musicLibrary.getMusic(playingMusic).setOnCompletionListener(new OnCompListener(type, loop, this));
     }
     
     /**
      * Stops all currently playing music.
      */
     public void stop() {
+        musicLibrary.getMusic(playingMusic).stop();
         playingMusic = null;
     }
     
