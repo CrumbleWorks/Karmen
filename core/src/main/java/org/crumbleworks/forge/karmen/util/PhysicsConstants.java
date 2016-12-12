@@ -13,6 +13,10 @@ public class PhysicsConstants {
     public static final float RUNNING_SPEED_ACCELERATION = 80 * 1000f;
     
     public static final float STANDING_DRAG = RUNNING_SPEED_ACCELERATION / 2;
+    public static final float BLOCKING_DRAG = RUNNING_SPEED_ACCELERATION * 4;
+    
+    public static final float PUNCH_FORCE = 2000.0f;
+    public static final float KICK_FORCE = 4000.0f;
     
     /* BOX2D Settings */
     public static final float WORLD_STEP = 1/ (10 * 1000.0f); //DO NOT GO HIGHER, SHTUFF BREAKS IF HIGHER
