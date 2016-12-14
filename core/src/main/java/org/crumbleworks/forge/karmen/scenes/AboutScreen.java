@@ -1,4 +1,4 @@
-package org.crumbleworks.forge.karmen.screen;
+package org.crumbleworks.forge.karmen.scenes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scenes;
 import org.crumbleworks.forge.karmen.util.NeonColors;
 
 import com.badlogic.gdx.Gdx;
@@ -25,8 +26,6 @@ public class AboutScreen extends KarmenScreen {
 
     private final Karmen game;
     
-    private BitmapFont arialFont;
-    
     private List<String> creditLines;
     private int currentTopCreditLineIndex;
     private int creditLinesOffset;
@@ -43,8 +42,6 @@ public class AboutScreen extends KarmenScreen {
         super(game, new boolean[]{true, true});
         this.game = game;
         
-        arialFont = new BitmapFont();
-        
         currentTopCreditLineIndex = 0;
         creditLinesOffset = 30;
         relatvieCreditPosition = 0f;
@@ -57,6 +54,15 @@ public class AboutScreen extends KarmenScreen {
         
         readAboutFile("about/NNPH.about");
         initExplosionAnimation();
+    }
+
+    @Override
+    public void enter() {
+        //FIXME RESET CREDITS ROLL
+    }
+
+    @Override
+    public void leave() {
     }
     
     private void readAboutFile(String aboutFileName) {
@@ -91,7 +97,7 @@ public class AboutScreen extends KarmenScreen {
     }
 
     private void drawCredits() {
-        arialFont.setColor(NeonColors.Orange);
+        game.getFontLibrary().ARIAL.setColor(NeonColors.Orange);
         
         if(currentTopCreditLineIndex < creditLines.size()) {
             currentTopCreditLineIndex = (int) (relatvieCreditPosition / creditLinesOffset);
@@ -109,10 +115,10 @@ public class AboutScreen extends KarmenScreen {
             float fontX = Karmen.SCREEN_WIDTH / 4;
             float fontY = relatvieCreditPosition - (i * creditLinesOffset);
             
-            arialFont.draw(game.getBatch(), creditLines.get(i), fontX, fontY, Karmen.SCREEN_WIDTH / 2, Align.center, true);
+            game.getFontLibrary().ARIAL.draw(game.getBatch(), creditLines.get(i), fontX, fontY, Karmen.SCREEN_WIDTH / 2, Align.center, true);
             
             if((i == (creditLines.size() - 1)) && fontY > Karmen.SCREEN_HEIGHT + creditLinesOffset) {
-                game.setScreen(game.menuScreen);
+                game.getSceneManager().changeScene(Scenes.MENU);;
             }
         }
     }
@@ -128,9 +134,4 @@ public class AboutScreen extends KarmenScreen {
 //    private Animation getRandomExplosionAnimation() {
 //        return explosionAnimations.get(new Random().nextInt(explosionAnimations.size()));
 //    }
-
-    @Override
-    public void dispose() {
-        arialFont.dispose();
-    }
 }

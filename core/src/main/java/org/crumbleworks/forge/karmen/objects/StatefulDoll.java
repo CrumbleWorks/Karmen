@@ -329,12 +329,12 @@ public abstract class StatefulDoll implements Thing {
             hsaSpeedAve = (hsaSpeedAve + body.getLinearVelocity().x) / 2.0f;
             vsaSpeedAve = (vsaSpeedAve + body.getLinearVelocity().y) / 2.0f;
 
-            game.getArial().setColor(Color.CYAN);
-            game.getArial().draw(game.getBatch(),
+            game.getFontLibrary().ARIAL.setColor(Color.CYAN);
+            game.getFontLibrary().ARIAL.draw(game.getBatch(),
                     horizontalDeltaString + hsaSpeedAve,
                     60,
                     Karmen.SCREEN_HEIGHT - 20);
-            game.getArial().draw(game.getBatch(),
+            game.getFontLibrary().ARIAL.draw(game.getBatch(),
                     verticalDeltaString + vsaSpeedAve,
                     60,
                     Karmen.SCREEN_HEIGHT - 40);

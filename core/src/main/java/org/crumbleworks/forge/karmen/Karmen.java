@@ -3,11 +3,14 @@ package org.crumbleworks.forge.karmen;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.crumbleworks.forge.karmen.screen.AboutScreen;
-import org.crumbleworks.forge.karmen.screen.IntroScreen;
-import org.crumbleworks.forge.karmen.screen.MenuScreen;
-import org.crumbleworks.forge.karmen.screen.PlayScreen;
+import org.crumbleworks.forge.karmen.scenes.AboutScreen;
+import org.crumbleworks.forge.karmen.scenes.IntroScreen;
+import org.crumbleworks.forge.karmen.scenes.MenuScreen;
+import org.crumbleworks.forge.karmen.scenes.PlayScreen;
+import org.crumbleworks.forge.karmen.scenes.SceneManager;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scenes;
 import org.crumbleworks.forge.karmen.util.Calc;
+import org.crumbleworks.forge.karmen.util.asset.FontLibrary;
 import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
 import org.crumbleworks.forge.karmen.util.asset.music.MusicService;
 import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
@@ -16,12 +19,11 @@ import org.crumbleworks.forge.karmen.util.asset.sound.SoundService;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -41,18 +43,12 @@ public class Karmen extends Game {
 
     private SpriteBatch batch;
 
-    private BitmapFont fontMedium;
-    private BitmapFont fontLarge;
-    private BitmapFont fontArial;
-
+    private SceneManager sceneManager;
+    
     private TextureLibrary texureLibrary;
+    private FontLibrary fontLibrary;
     private SoundService soundService;
     private MusicService musicService;
-
-    public Screen introScreen;
-    public Screen menuScreen;
-    public Screen playScreen;
-    public Screen aboutScreen;
 
     //DEBUG FLAG
     public static final boolean isDebug = true; //TODO turn off
@@ -70,20 +66,15 @@ public class Karmen extends Game {
 
         batch = new SpriteBatch();
 
-        fontMedium = new BitmapFont(Gdx.files.internal("fnt/NNPH_30.fnt"));
-        fontLarge = new BitmapFont(Gdx.files.internal("fnt/NNPH_40.fnt"));
-        fontArial = new BitmapFont();
-
         texureLibrary = new TextureLibrary();
+        fontLibrary = new FontLibrary();
         soundService = new SoundService();
         musicService = new MusicService();
-
-        introScreen = new IntroScreen(this);
-        menuScreen = new MenuScreen(this);
-        playScreen = new PlayScreen(this);
-        aboutScreen = new AboutScreen(this);
-
-        setScreen(introScreen);
+        
+        sceneManager = new SceneManager(this);
+        
+        //BEGIN
+        sceneManager.changeScene(Scenes.INTRO);
     }
 
     @Override
@@ -92,26 +83,73 @@ public class Karmen extends Game {
         batch.setProjectionMatrix(camera.combined);
 
         super.render();
+        musicService.update();
         
         /* DEBUG INFOS */
         if(isDebug) {
             if(debugShaper == null) {
                 debugShaper = new ShapeRenderer();
             }
+            
             renderDebug();
-        }
-        
-        musicService.update();
-        if(isDebug) {
             debugMusicSwitcherCheck();
         }
     }
+    
+    @Override
+    public void dispose() {
+        sceneManager.dispose();
+
+        texureLibrary.dispose();
+        fontLibrary.dispose();
+        soundService.dispose();
+        musicService.dispose();
+
+        batch.dispose();
+    }
+    
+    /* ***********************************************************************
+     * FANCY GETTERS
+     */
+    
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public SpriteBatch getBatch() {
+        return batch;
+    }
+    
+    public SceneManager getSceneManager() {
+        return sceneManager;
+    }
+
+    public TextureLibrary getTextureLibrary() {
+        return texureLibrary;
+    }
+    
+    public FontLibrary getFontLibrary() {
+        return fontLibrary;
+    }
+
+    public SoundService getSoundService() {
+        return soundService;
+    }
+    
+    public MusicService getMusicService() {
+        return musicService;
+    }
+
+    /* ***********************************************************************
+     * DEBUGGERY
+     */
     
     private final List<MusicType> mt = new ArrayList<MusicType>() {{
         for(MusicType musicType : MusicType.values()) {
             add(musicType);
         }
     }};
+    
     private void debugMusicSwitcherCheck() {
         if(Gdx.input.isKeyJustPressed(Keys.UP)) {
             int nextIndex = mt.indexOf(this.getMusicService().playing()) + 1;
@@ -148,61 +186,8 @@ public class Karmen extends Game {
         frameCount++;
         
         batch.begin();
-        fontArial.setColor(Color.RED);
-        fontArial.draw(batch, "FPS: " + fps, 10, 20);
+        fontLibrary.ARIAL.setColor(Color.RED);
+        fontLibrary.ARIAL.draw(batch, "FPS: " + fps, 10, 20);
         batch.end();
     }
-
-    @Override
-    public void dispose() {
-        introScreen.dispose();
-        menuScreen.dispose();
-        playScreen.dispose();
-        aboutScreen.dispose();
-
-        texureLibrary.dispose();
-        soundService.dispose();
-        musicService.dispose();
-
-        batch.dispose();
-        fontMedium.dispose();
-        fontLarge.dispose();
-    }
-
-    public Camera getCamera() {
-        return camera;
-    }
-
-    public SpriteBatch getBatch() {
-        return batch;
-    }
-
-    public BitmapFont getFontMedium() {
-        return fontMedium;
-    }
-
-    public BitmapFont getFontLarge() {
-        return fontLarge;
-    }
-    
-    public BitmapFont getArial() {
-        return fontArial;
-    }
-
-    public TextureLibrary getTextureLibrary() {
-        return texureLibrary;
-    }
-
-    public SoundService getSoundService() {
-        return soundService;
-    }
-    
-    public MusicService getMusicService() {
-        return musicService;
-    }
-
-    public void changeScreen(Screen nextScreen) {
-        setScreen(nextScreen);
-    }
-
 }

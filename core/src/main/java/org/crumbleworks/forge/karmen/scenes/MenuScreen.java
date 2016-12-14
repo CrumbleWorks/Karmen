@@ -1,9 +1,10 @@
-package org.crumbleworks.forge.karmen.screen;
+package org.crumbleworks.forge.karmen.scenes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scenes;
 import org.crumbleworks.forge.karmen.util.NeonColors;
 import org.crumbleworks.forge.karmen.util.asset.TextureLibrary;
 import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
@@ -49,8 +50,8 @@ public class MenuScreen extends KarmenScreen {
         shapeRenderer = new ShapeRenderer();
         
         buttons = new ArrayList<MenuButton>() {{
-            add(new MenuButton("PLAY", 'P', NeonColors.Green, true, ()->{game.setScreen(game.playScreen);}));
-            add(new MenuButton("ABOUT", 'A', NeonColors.Pink, false, ()->{game.setScreen(game.aboutScreen);}));
+            add(new MenuButton("PLAY", 'P', NeonColors.Green, true, ()->{game.getSceneManager().changeScene(Scenes.PLAY);}));
+            add(new MenuButton("ABOUT", 'A', NeonColors.Pink, false, ()->{game.getSceneManager().changeScene(Scenes.ABOUT);;}));
             add(new MenuButton("QUIT", 'Q', NeonColors.Blue, false, ()->{Gdx.app.exit();}));
         }};
         selectedButton = 0;
@@ -62,6 +63,14 @@ public class MenuScreen extends KarmenScreen {
         floydFrameDuration = 0.25f;
         floydAnimationStateTime = 0f;
         initFloydAnimation();
+    }
+
+    @Override
+    public void enter() {
+    }
+
+    @Override
+    public void leave() {
     }
     
     private void initLampAnimation() {
@@ -149,8 +158,8 @@ public class MenuScreen extends KarmenScreen {
     
     private void drawTitle() {
         game.getBatch().begin();
-        game.getFontLarge().setColor(NeonColors.Orange);
-        game.getFontLarge().draw(game.getBatch(), "NEWCOMER NINJA PARTY HATER", 50, Karmen.SCREEN_HEIGHT - 100);
+        game.getFontLibrary().NNPH_LARGE.setColor(NeonColors.Orange);
+        game.getFontLibrary().NNPH_LARGE.draw(game.getBatch(), "NEWCOMER NINJA PARTY HATER", 50, Karmen.SCREEN_HEIGHT - 100);
         game.getBatch().end();
     }
     
@@ -223,8 +232,8 @@ public class MenuScreen extends KarmenScreen {
         
         game.getBatch().begin();
         
-        game.getFontMedium().setColor(NeonColors.Orange);
-        game.getFontMedium().draw(game.getBatch(), button.text, buttonXPos, buttonYPos);
+        game.getFontLibrary().NNPH_MEDIUM.setColor(NeonColors.Orange);
+        game.getFontLibrary().NNPH_MEDIUM.draw(game.getBatch(), button.text, buttonXPos, buttonYPos);
         
         game.getBatch().end();
         
@@ -233,13 +242,11 @@ public class MenuScreen extends KarmenScreen {
                 if(button.on) {
                     button.on = false;
                     button.nextDraw += MenuButton.DRAW_PAUSE;
-                }
-                else {
+                } else {
                     button.on = true;
                     button.nextDraw += MenuButton.DRAW_PAUSE;
                 }
-            }
-            else {
+            } else {
                 if(button.on) {
                     drawRectangle(new Vector2(buttonXPos, underlinePosY), labelWidth, labelHeight, NeonColors.Orange, 0f);
                 }

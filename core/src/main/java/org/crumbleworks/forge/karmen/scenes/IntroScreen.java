@@ -1,17 +1,18 @@
-package org.crumbleworks.forge.karmen.screen;
+package org.crumbleworks.forge.karmen.scenes;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scene;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scenes;
 import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class IntroScreen implements Screen {
+public class IntroScreen implements Scene {
     
     private static final float CRUMBLEWORKS_LOGO_SCALE = 8f;
     private static final float LIBGDX_LOGO_SCALE = 1.25f;
@@ -53,6 +54,18 @@ public class IntroScreen implements Screen {
     }
 
     @Override
+    public void enter() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void leave() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
     public void show() {
         game.getMusicService().play(MusicType.MENU, true);
     }
@@ -81,8 +94,8 @@ public class IntroScreen implements Screen {
             int libGdxLogoWidth = game.getTextureLibrary().getLibGdxLogo().getWidth();
             int libGdxLogoHeight = game.getTextureLibrary().getLibGdxLogo().getHeight();
             
-            game.getFontMedium().setColor(Color.BLACK);
-            game.getFontMedium().draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogoWidth * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogoHeight * LIBGDX_LOGO_SCALE) / 2) + 100);
+            game.getFontLibrary().NNPH_MEDIUM.setColor(Color.BLACK);
+            game.getFontLibrary().NNPH_MEDIUM.draw(game.getBatch(), "POWERED BY", middleOfRightLogoBox.x - ((libGdxLogoWidth * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogoHeight * LIBGDX_LOGO_SCALE) / 2) + 100);
             game.getBatch().draw(game.getTextureLibrary().getLibGdxLogo(), middleOfRightLogoBox.x - ((libGdxLogoWidth * LIBGDX_LOGO_SCALE) / 2), middleOfRightLogoBox.y - ((libGdxLogoHeight * LIBGDX_LOGO_SCALE) / 2), libGdxLogoWidth * LIBGDX_LOGO_SCALE, libGdxLogoHeight * LIBGDX_LOGO_SCALE);
         }
         
@@ -91,7 +104,7 @@ public class IntroScreen implements Screen {
         //LOGIC
         currTime = TimeUtils.millis();
         if(currTime >= introEnd) { //zeit abarbeiten gross bis kleinstes
-            game.setScreen(game.menuScreen);
+            game.getSceneManager().changeScene(Scenes.MENU);
         } else if(currTime >= redEyes) {
             regionIndex = 2;
             displayGDX = true;
@@ -150,5 +163,4 @@ public class IntroScreen implements Screen {
 
     @Override
     public void dispose() {}
-
 }

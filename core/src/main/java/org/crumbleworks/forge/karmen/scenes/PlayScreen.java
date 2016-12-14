@@ -1,4 +1,4 @@
-package org.crumbleworks.forge.karmen.screen;
+package org.crumbleworks.forge.karmen.scenes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +57,6 @@ public class PlayScreen extends KarmenScreen {
             debugR = new Box2DDebugRenderer();
         }
         
-        initArena();
-    }
-    
-    //FIXME need to RESET when returning from menu after leaving scene
-    private final void initArena() {
-        /* COLLISION STUFF */
-        world.setContactListener(new DollContactListener());
-        
         /* ARENA BORDERS */
         final int DISTANCE_FROM_WALLS = 80;
         final int DISTANCE_FROM_BOTTOM = 80;
@@ -99,6 +91,15 @@ public class PlayScreen extends KarmenScreen {
         
         //get rid of shape
         gbox.dispose();
+    }
+
+    @Override
+    public void enter() {
+        game.getMusicService().play(MusicType.ARENA_INTRO, false);
+        game.getMusicService().schedule(MusicType.ARENA_LEVEL_1, true);
+        
+        /* COLLISION STUFF */
+        world.setContactListener(new DollContactListener());
         
         /* SCENE */
         this.sceneObjects = new ArrayList<Thing>();
@@ -122,11 +123,14 @@ public class PlayScreen extends KarmenScreen {
         
         inputMultiplexer = new InputMultiplexer(new DollInputAdapter(floyd));
     }
+
+    @Override
+    public void leave() {
+        Gdx.input.setInputProcessor(null);
+    }
     
     @Override
     public void show() {
-        game.getMusicService().play(MusicType.ARENA_INTRO, false);
-        game.getMusicService().schedule(MusicType.ARENA_LEVEL_1, true);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 

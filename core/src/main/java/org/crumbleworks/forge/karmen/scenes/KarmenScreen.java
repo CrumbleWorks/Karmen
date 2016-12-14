@@ -1,19 +1,19 @@
-package org.crumbleworks.forge.karmen.screen;
+package org.crumbleworks.forge.karmen.scenes;
 
 import org.crumbleworks.forge.karmen.Karmen;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scene;
+import org.crumbleworks.forge.karmen.scenes.SceneManager.Scenes;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * A SUPER SCREEN FOR KARMEN
  */
-public abstract class KarmenScreen implements Screen {
+public abstract class KarmenScreen implements Scene {
     
     private final int TEXTURE_WH = 32;
     
@@ -41,8 +41,8 @@ public abstract class KarmenScreen implements Screen {
             isInited = true;
             keys = new int[]{Keys.ESCAPE, Keys.M};
             lbl = new String[]{"ESC", "M"};
-            func = new Runnable[]{()->{game.setScreen(game.menuScreen);},
-                                       ()->{game.getMusicService().toggleMute();
+            func = new Runnable[]{()->{game.getSceneManager().changeScene(Scenes.MENU);},
+                                  ()->{game.getMusicService().toggleMute();
                                        game.getSoundService().toggleMute();}};
             texDef = new Texture[]{game.getTextureLibrary().OPT_RET,
                                    game.getTextureLibrary().OPT_NOTE};
@@ -64,7 +64,6 @@ public abstract class KarmenScreen implements Screen {
     
     private void drawStuff() {
         SpriteBatch batch = game.getBatch();
-        BitmapFont font = game.getArial();
         
         final int ELEMENT_BOX_LENGTH = 64;
         final int ELEMENT_BOX_HEIGHT = 32;
@@ -88,8 +87,8 @@ public abstract class KarmenScreen implements Screen {
                 batch.draw(texTmp, SCREEN_WIDTH - elementCursor , SCREEN_BORDER_PADDING, TEXTURE_WH, TEXTURE_WH);
                 
                 //name
-                font.setColor(Color.WHITE);
-                font.draw(batch, "" + lbl[i], SCREEN_WIDTH - elementCursor + ELEMENT_BOX_OFFSET, ELEMENT_BOX_HEIGHT - SCREEN_BORDER_PADDING);
+                game.getFontLibrary().ARIAL.setColor(Color.WHITE);
+                game.getFontLibrary().ARIAL.draw(batch, "" + lbl[i], SCREEN_WIDTH - elementCursor + ELEMENT_BOX_OFFSET, ELEMENT_BOX_HEIGHT - SCREEN_BORDER_PADDING);
                 
                 elementCursor -= ELEMENT_BOX_LENGTH;
             }
