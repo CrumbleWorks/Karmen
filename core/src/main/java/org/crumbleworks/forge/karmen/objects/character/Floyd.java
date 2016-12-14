@@ -10,7 +10,6 @@ import org.crumbleworks.forge.karmen.util.AnimationConstants;
 import org.crumbleworks.forge.karmen.util.Calc;
 import org.crumbleworks.forge.karmen.util.PhysicsConstants;
 import org.crumbleworks.forge.karmen.util.asset.FloydFrameType;
-import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
 import org.crumbleworks.forge.karmen.util.asset.sound.SoundType;
 
 import com.badlogic.gdx.Gdx;
@@ -18,12 +17,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.sun.accessibility.internal.resources.accessibility;
 
 public class Floyd extends StatefulDoll {
 
@@ -172,8 +168,6 @@ public class Floyd extends StatefulDoll {
     static abstract class FloydStill extends BaseRendering {
         private final float drag;
         
-        private State previousState;
-        
         FloydStill(Animation animation, String debugName, float drag) {
             super(animation, debugName);
             this.drag = drag;
@@ -181,7 +175,6 @@ public class Floyd extends StatefulDoll {
 
         @Override
         public void init(StatefulDoll doll, State previousState) {
-            this.previousState = previousState;
         }
 
         @Override
@@ -202,35 +195,35 @@ public class Floyd extends StatefulDoll {
     }
     
     static class FloydStillFront extends FloydStill {
-        private static final Animation stillFrontAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()],
-                           textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]),
-             PlayMode.LOOP);
-        
         public FloydStillFront() {
-            super(stillFrontAnimation, "StillFront", PhysicsConstants.STANDING_DRAG * 2);
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.STILL_FRONT_A.ordinal()],
+                               textureRegions[FloydFrameType.STILL_FRONT_B.ordinal()]),
+                    PlayMode.LOOP),
+                    "StillFront",
+                    PhysicsConstants.STANDING_DRAG * 2);
         }
     }
     
     static class FloydStillRight extends FloydStill {
-        private static final Animation stillSideAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.STILL_SIDE_RA.ordinal()],
-                        textureRegions[FloydFrameType.STILL_SIDE_RB.ordinal()]),
-             PlayMode.LOOP);
-        
         public FloydStillRight() {
-            super(stillSideAnimation, "StillRight", PhysicsConstants.STANDING_DRAG);
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.STILL_SIDE_RA.ordinal()],
+                               textureRegions[FloydFrameType.STILL_SIDE_RB.ordinal()]),
+                    PlayMode.LOOP),
+                    "StillRight",
+                    PhysicsConstants.STANDING_DRAG);
         }
     }
     
     static class FloydStillLeft extends FloydStill {
-        private static final Animation stillSideAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.STILL_SIDE_LA.ordinal()],
-                        textureRegions[FloydFrameType.STILL_SIDE_LB.ordinal()]),
-             PlayMode.LOOP);
-        
         public FloydStillLeft() {
-            super(stillSideAnimation, "StillLeft", PhysicsConstants.STANDING_DRAG);
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.STILL_SIDE_LA.ordinal()],
+                               textureRegions[FloydFrameType.STILL_SIDE_LB.ordinal()]),
+                    PlayMode.LOOP),
+                    "StillLeft",
+                    PhysicsConstants.STANDING_DRAG);
         }
     }
     
@@ -238,14 +231,13 @@ public class Floyd extends StatefulDoll {
      * RUNNING
      */
     
-    static class FloydRunRight extends BaseRendering {
-        private static final Animation runAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_RB.ordinal()]),
-             PlayMode.LOOP);
+    static class FloydRun extends BaseRendering {
+        private final float acceleration;
         
-        public FloydRunRight() {
-            super(runAnimation, "RunRight");
+        public FloydRun(Animation runAnimation, String debugName, float acceleration) {
+            super(runAnimation, debugName);
+            
+            this.acceleration = acceleration;
         }
         
         @Override
@@ -255,36 +247,33 @@ public class Floyd extends StatefulDoll {
         @Override
         public void update(StatefulDoll doll, float delta) {
             if(doll.body().getLinearVelocity().x < PhysicsConstants.RUNNING_SPEED_MAX) {
-            doll.body().applyLinearImpulse(
-                    new Vector2(PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
-                    doll.body().getPosition(),
-                    true);
-            }
-        }
-    }
-    
-    static class FloydRunLeft extends BaseRendering {
-        private static final Animation runAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_LB.ordinal()]),
-             PlayMode.LOOP);
-        
-        public FloydRunLeft() {
-            super(runAnimation, "RunRight");
-        }
-        
-        @Override
-        protected void init(StatefulDoll doll, State previousState) {
-        }
-        
-        @Override
-        public void update(StatefulDoll doll, float delta) {
-            if(doll.body().getLinearVelocity().x > -PhysicsConstants.RUNNING_SPEED_MAX) {
                 doll.body().applyLinearImpulse(
-                        new Vector2(-PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
+                        new Vector2(acceleration, 0.0f),
                         doll.body().getPosition(),
                         true);
             }
+        }
+    }
+
+    static class FloydRunRight extends FloydRun {
+        public FloydRunRight() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA.ordinal()],
+                               textureRegions[FloydFrameType.MOVE_SIDE_RB.ordinal()]),
+                    PlayMode.LOOP),
+                    "RunRight",
+                    PhysicsConstants.RUNNING_SPEED_ACCELERATION);
+        }
+    }
+    
+    static class FloydRunLeft extends FloydRun {
+        public FloydRunLeft() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA.ordinal()],
+                               textureRegions[FloydFrameType.MOVE_SIDE_LB.ordinal()]),
+                    PlayMode.LOOP),
+                    "RunRight",
+                    -PhysicsConstants.RUNNING_SPEED_ACCELERATION); //note the minus!!
         }
     }
     
@@ -295,8 +284,6 @@ public class Floyd extends StatefulDoll {
     static abstract class FloydBlock extends BaseRendering {
         private final float drag;
         
-        private State previousState;
-        
         FloydBlock(Animation animation, String debugName, float drag) {
             super(animation, debugName);
             this.drag = drag;
@@ -306,7 +293,6 @@ public class Floyd extends StatefulDoll {
 
         @Override
         public void init(StatefulDoll doll, State previousState) {
-            this.previousState = previousState;
             delayAcc = 0;
             
             doll.game().getSoundService().play(SoundType.BLOCK, true);
@@ -341,35 +327,35 @@ public class Floyd extends StatefulDoll {
      }
     
     static class FloydBlockFront extends FloydBlock {
-        private static final Animation blockFrontAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.BLOCK_FRONT_A.ordinal()],
-                        textureRegions[FloydFrameType.BLOCK_FRONT_B.ordinal()]),
-             PlayMode.LOOP);
-        
         public FloydBlockFront() {
-            super(blockFrontAnimation, "BlockFront", PhysicsConstants.BLOCKING_DRAG * 4);
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.BLOCK_FRONT_A.ordinal()],
+                               textureRegions[FloydFrameType.BLOCK_FRONT_B.ordinal()]),
+                    PlayMode.LOOP),
+                    "BlockFront",
+                    PhysicsConstants.BLOCKING_DRAG * 4);
         }
     }
     
     static class FloydBlockRight extends FloydBlock {
-        private static final Animation blockSideAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_RA.ordinal()],
-                        textureRegions[FloydFrameType.BLOCK_SIDE_RB.ordinal()]),
-             PlayMode.LOOP);
-        
         public FloydBlockRight() {
-            super(blockSideAnimation, "BlockRight", PhysicsConstants.BLOCKING_DRAG);
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_RA.ordinal()],
+                               textureRegions[FloydFrameType.BLOCK_SIDE_RB.ordinal()]),
+                    PlayMode.LOOP),
+                    "BlockRight",
+                    PhysicsConstants.BLOCKING_DRAG);
         }
     }
     
     static class FloydBlockLeft extends FloydBlock {
-        private static final Animation blockSideAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_LA.ordinal()],
-                        textureRegions[FloydFrameType.BLOCK_SIDE_LB.ordinal()]),
-             PlayMode.LOOP);
-        
         public FloydBlockLeft() {
-            super(blockSideAnimation, "BlockLeft", PhysicsConstants.BLOCKING_DRAG);
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.BLOCK_SIDE_LA.ordinal()],
+                               textureRegions[FloydFrameType.BLOCK_SIDE_LB.ordinal()]),
+                    PlayMode.LOOP),
+                    "BlockLeft",
+                    PhysicsConstants.BLOCKING_DRAG);
         }
     }
     
@@ -380,18 +366,12 @@ public class Floyd extends StatefulDoll {
     static abstract class FloydPunch extends BaseRendering {
         private long returnTime;
         
-        private State previousState;
-        
-        FloydPunch(FloydFrameType animation, String debugName) {
-            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                    Array.with(textureRegions[animation.ordinal()]),
-                    PlayMode.NORMAL),
-                    debugName);
+        FloydPunch(Animation animation, String debugName) {
+            super(animation, debugName);
         }
 
         @Override
         public void init(StatefulDoll doll, State previousState) {
-            this.previousState = previousState;
             returnTime = AnimationConstants.DUR_MS_PUNCH;
             doll.game().getSoundService().play(SoundType.PUNCH);
         }
@@ -400,23 +380,26 @@ public class Floyd extends StatefulDoll {
         public void update(StatefulDoll doll, float delta) {
             returnTime -= Calc.gdxDeltaToMillis(delta);
             if(returnTime <= 0) {
-                Gdx.app.debug(FLOYD_TAG, "> returning to " + previousState.name());
                 doll.done();
             }
         }
     }
     
     static class FloydPunchRight extends FloydPunch {
-
         FloydPunchRight() {
-            super(FloydFrameType.PUNCH_SIDE_R, "PunchRight");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.PUNCH_SIDE_R.ordinal()]),
+                    PlayMode.NORMAL),
+                    "PunchRight");
         }
     }
     
     static class FloydPunchLeft extends FloydPunch {
-        
         public FloydPunchLeft() {
-            super(FloydFrameType.PUNCH_SIDE_L, "PunchLeft");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.PUNCH_SIDE_L.ordinal()]),
+                    PlayMode.NORMAL),
+                    "PunchLeft");
         }
     }
     
@@ -428,18 +411,12 @@ public class Floyd extends StatefulDoll {
         private long returnTime;
         private boolean soundPlayed;
         
-        private State previousState;
-        
-        FloydKick(FloydFrameType animation, String debugName) {
-            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                    Array.with(textureRegions[animation.ordinal()]),
-                    PlayMode.NORMAL),
-                    debugName);
+        FloydKick(Animation animation, String debugName) {
+            super(animation, debugName);
         }
 
         @Override
         public void init(StatefulDoll doll, State previousState) {
-            this.previousState = previousState;
             returnTime = AnimationConstants.DUR_MS_KICK;
             soundPlayed = false;
         }
@@ -448,7 +425,6 @@ public class Floyd extends StatefulDoll {
         public void update(StatefulDoll doll, float delta) {
             returnTime -= Calc.gdxDeltaToMillis(delta);
             if(returnTime <= 0) {
-                Gdx.app.debug(FLOYD_TAG, "> returning to " + previousState.name());
                 doll.done();
             }
             
@@ -460,16 +436,20 @@ public class Floyd extends StatefulDoll {
     }
     
     static class FloydKickRight extends FloydKick {
-        
         FloydKickRight() {
-            super(FloydFrameType.KICK_SIDE_R, "KickRight");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.KICK_SIDE_R.ordinal()]),
+                    PlayMode.NORMAL),
+                    "KickRight");
         }
     }
     
     static class FloydKickLeft extends FloydKick {
-        
         FloydKickLeft() {
-            super(FloydFrameType.KICK_SIDE_L, "KickLeft");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.KICK_SIDE_L.ordinal()]),
+                    PlayMode.NORMAL),
+                    "KickLeft");
         }
     }
     
@@ -478,7 +458,6 @@ public class Floyd extends StatefulDoll {
      */
     
     static abstract class FloydJump extends BaseSwitchRendering {
-        private State previousState;
         private boolean hasSwitched;
         private boolean jumpFlag;
         
@@ -488,17 +467,18 @@ public class Floyd extends StatefulDoll {
 
         @Override
         public void init(StatefulDoll doll, State previousState) {
-            this.previousState = previousState;
-            
             hasSwitched = false;
-            jumpFlag = false;
+            
+            if(previousState != State.JUMP_FRONT
+            && previousState != State.JUMP_LEFT
+            && previousState != State.JUMP_RIGHT) {
+                jumpFlag = false;
+            }
         }
 
         @Override
         public void update(StatefulDoll doll, float delta) {
             if(!jumpFlag) {
-//                doll.body().setLinearVelocity(
-//                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE));
                 doll.body().applyLinearImpulse(
                         new Vector2(0.0f, PhysicsConstants.JUMP_FORCE),
                         doll.body().getPosition(),
@@ -514,59 +494,103 @@ public class Floyd extends StatefulDoll {
     }
     
     static class FloydJumpFront extends FloydJump {
-        private static final Animation animUp = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private static final Animation animDown = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
         public FloydJumpFront() {
-            super(animUp, animDown, "FrontJump");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.JUMP_FRONT_UP.ordinal()]),
+                    PlayMode.NORMAL),
+                    new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.JUMP_FRONT_DOWN.ordinal()]),
+                    PlayMode.NORMAL),
+                    "FrontJump");
         }
         
         @Override
         public void finish(StatefulDoll doll) {
-//            doll.switchState(State.STILL_FRONT);
         }
     }
     
     static class FloydJumpRight extends FloydJump {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RUP.ordinal()]),
-                PlayMode.NORMAL);
-
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
         public FloydJumpRight() {
-            super(jumpSideUpAnimation, jumpSideDownAnimation, "RightJump");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RUP.ordinal()]),
+                    PlayMode.NORMAL),
+                    new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RDOWN.ordinal()]),
+                    PlayMode.NORMAL),
+                    "RightJump");
         }
         
         @Override
         public void finish(StatefulDoll doll) {
-//            doll.switchState(State.STILL_RIGHT);
         }
     }
     
     static class FloydJumpLeft extends FloydJump {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
         public FloydJumpLeft() {
-            super(jumpSideUpAnimation, jumpSideDownAnimation, "LeftJump");
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
+                    PlayMode.NORMAL),
+                    new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
+                    PlayMode.NORMAL),
+                    "LeftJump");
         }
         
         @Override
         public void finish(StatefulDoll doll) {
-//            doll.switchState(State.STILL_LEFT);
+        }
+    }
+    
+    /* ***********************************************************************
+     * ARC
+     */
+    
+    static abstract class FloydArc extends BaseRendering {
+        private boolean jumpFlag;
+        private final float acceleration;
+        
+        public FloydArc(Animation flightAnimation, String debugName, float acceleration) {
+            super(flightAnimation, debugName);
+            
+            this.acceleration = acceleration;
+        }
+
+        @Override
+        public void init(StatefulDoll doll, State previousState) {
+            jumpFlag = false;
+        }
+
+        @Override
+        public void update(StatefulDoll doll, float delta) {
+            if(!jumpFlag) {
+                doll.body().applyLinearImpulse(
+                        new Vector2(acceleration, PhysicsConstants.JUMP_FORCE),
+                        doll.body().getPosition(),
+                        true);
+                jumpFlag = true;
+            }
+        }
+    }
+    
+    static class FloydArcJumpRight extends FloydArc {
+        public FloydArcJumpRight() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA_AIR.ordinal()],
+                               textureRegions[FloydFrameType.MOVE_SIDE_RB_AIR.ordinal()]),
+                    PlayMode.LOOP),
+                    "RightArc",
+                    PhysicsConstants.JUMP_FORCE);
+        }
+    }
+    
+    static class FloydArcJumpLeft extends FloydArc {
+        public FloydArcJumpLeft() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA_AIR.ordinal()],
+                               textureRegions[FloydFrameType.MOVE_SIDE_LB_AIR.ordinal()]),
+                    PlayMode.LOOP),
+                    "LeftArc",
+                    -PhysicsConstants.JUMP_FORCE); //note the minus!!
         }
     }
     
@@ -643,106 +667,6 @@ public class Floyd extends StatefulDoll {
             
             if(!soundPlayed) {
                 doll.game().getSoundService().play(SoundType.KICK);
-                soundPlayed = true;
-            }
-        }
-
-        @Override
-        public void finish(StatefulDoll doll) {
-            // TODO Auto-generated method stub
-            
-        }
-    }
-    
-    /* ***********************************************************************
-     * ARC
-     */
-    
-    static class FloydArcJumpRight implements Behaviour {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RUP.ordinal()]),
-                PlayMode.NORMAL);
-
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_RDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private static final Animation jumpSideMoveAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_RA_AIR.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_RB_AIR.ordinal()]),
-             PlayMode.LOOP);
-        
-        private float stateTime;
-        private boolean soundPlayed;
-
-        @Override
-        public void _init(StatefulDoll doll, State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init ArcJumpRight");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-
-        @Override
-        public void _update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
-                soundPlayed = true;
-            }
-        }
-
-        @Override
-        public void finish(StatefulDoll doll) {
-            // TODO Auto-generated method stub
-            
-        }
-    }
-    
-    static class FloydArcJumpLeft implements Behaviour {
-        private static final Animation jumpSideUpAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LUP.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private static final Animation jumpSideDownAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.JUMP_SIDE_LDOWN.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private static final Animation jumpSideMoveAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.MOVE_SIDE_LA_AIR.ordinal()],
-                        textureRegions[FloydFrameType.MOVE_SIDE_LB_AIR.ordinal()]),
-                PlayMode.LOOP);
-        
-        private float stateTime;
-        private boolean soundPlayed;
-        
-        @Override
-        public void _init(StatefulDoll doll, State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init ArcJumpLeft");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-        
-        @Override
-        public void _update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpSideUpAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            if(!soundPlayed) {
-                //doll.game().getSoundLibrary().getJumpSound().play(); TODO uncomment
                 soundPlayed = true;
             }
         }

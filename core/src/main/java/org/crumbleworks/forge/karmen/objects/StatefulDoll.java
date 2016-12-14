@@ -91,6 +91,7 @@ public abstract class StatefulDoll implements Thing {
                 put(Action.PUNCH, ()->{return State.PUNCH_RIGHT;});
                 put(Action.KICK, ()->{return State.KICK_RIGHT;});
                 put(Action.FACE, ()->{return State.STILL_FRONT;});
+                put(Action.JUMP, ()->{return State.ARC_JUMP_RIGHT;});
             }});
 
             put(State.RUN_LEFT, new HashMap<Action, Supplier<State>>() {{
@@ -100,6 +101,7 @@ public abstract class StatefulDoll implements Thing {
                 put(Action.KICK, ()->{return State.KICK_LEFT;});
                 put(Action.PUNCH, ()->{return State.PUNCH_LEFT;});
                 put(Action.FACE, ()->{return State.STILL_FRONT;});
+                put(Action.JUMP, ()->{return State.ARC_JUMP_LEFT;});
             }});
 
             /* BLOCKS */
@@ -109,11 +111,11 @@ public abstract class StatefulDoll implements Thing {
 
             put(State.BLOCK_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.STOP_BLOCK, ()->{
-                        if(runRight) {
+                        if(goRight) {
                             return State.RUN_RIGHT;
                         }
                         
-                        if(runLeft) {
+                        if(goLeft) {
                             return State.RUN_LEFT;
                         }
                         
@@ -123,11 +125,11 @@ public abstract class StatefulDoll implements Thing {
 
             put(State.BLOCK_LEFT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.STOP_BLOCK, ()->{
-                    if(runLeft) {
+                    if(goLeft) {
                         return State.RUN_LEFT;
                     }
                     
-                    if(runRight) {
+                    if(goRight) {
                         return State.RUN_RIGHT;
                     }
                     
@@ -138,11 +140,11 @@ public abstract class StatefulDoll implements Thing {
             /* PUNCH */
             put(State.PUNCH_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.DONE, ()->{
-                    if(runRight) {
+                    if(goRight) {
                         return State.RUN_RIGHT;
                     }
                     
-                    if(runLeft) {
+                    if(goLeft) {
                         return State.RUN_LEFT;
                     }
                     
@@ -152,11 +154,11 @@ public abstract class StatefulDoll implements Thing {
 
             put(State.PUNCH_LEFT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.DONE, ()->{
-                    if(runLeft) {
+                    if(goLeft) {
                         return State.RUN_LEFT;
                     }
                     
-                    if(runRight) {
+                    if(goRight) {
                         return State.RUN_RIGHT;
                     }
                     
@@ -167,11 +169,11 @@ public abstract class StatefulDoll implements Thing {
             /* KICK */
             put(State.KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.DONE, ()->{
-                    if(runRight) {
+                    if(goRight) {
                         return State.RUN_RIGHT;
                     }
                     
-                    if(runLeft) {
+                    if(goLeft) {
                         return State.RUN_LEFT;
                     }
                     
@@ -181,11 +183,11 @@ public abstract class StatefulDoll implements Thing {
             
             put(State.KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.DONE, ()->{
-                    if(runLeft) {
+                    if(goLeft) {
                         return State.RUN_LEFT;
                     }
                     
-                    if(runRight) {
+                    if(goRight) {
                         return State.RUN_RIGHT;
                     }
                     
@@ -225,11 +227,13 @@ public abstract class StatefulDoll implements Thing {
             put(State.ARC_JUMP_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.KICK, ()->{return State.ARC_KICK_RIGHT;});
                 put(Action.LEFT, ()->{return State.ARC_JUMP_LEFT;});
+                put(Action.LAND, ()->{return State.STILL_RIGHT;});
             }});
 
             put(State.ARC_JUMP_LEFT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.KICK, ()->{return State.ARC_KICK_LEFT;});
                 put(Action.RIGHT, ()->{return State.ARC_JUMP_RIGHT;});
+                put(Action.LAND, ()->{return State.STILL_LEFT;});
             }});
 
             /* ARC KICK */
@@ -376,8 +380,8 @@ public abstract class StatefulDoll implements Thing {
      * DOLL ACTIONS
      */
     
-    private boolean runRight = false;
-    private boolean runLeft = false;
+    private boolean goRight = false;
+    private boolean goLeft = false;
     
     public void face() {
         doAction(Action.FACE);
@@ -385,22 +389,22 @@ public abstract class StatefulDoll implements Thing {
     
     public void goLeft() {
         doAction(Action.LEFT);
-        runLeft = true;
+        goLeft = true;
     }
     
     public void stopLeft() {
         doAction(Action.STOP_LEFT);
-        runLeft = false;
+        goLeft = false;
     }
     
     public void goRight() {
         doAction(Action.RIGHT);
-        runRight = true;
+        goRight = true;
     }
     
     public void stopRight() {
         doAction(Action.STOP_RIGHT);
-        runRight = false;
+        goRight = false;
     }
     
     public void jump() {

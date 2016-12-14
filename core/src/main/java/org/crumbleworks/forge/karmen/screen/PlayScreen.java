@@ -69,9 +69,10 @@ public class PlayScreen extends KarmenScreen {
         final int DISTANCE_FROM_WALLS = 80;
         final int DISTANCE_FROM_BOTTOM = 80;
         
+        //DEFINITIONS
         BodyDef groundDef = new BodyDef();
-        groundDef.position.set(new Vector2((Karmen.SCREEN_WIDTH / 2), DISTANCE_FROM_BOTTOM));
-        Body groundBody = world.createBody(groundDef);
+        groundDef.position.set(new Vector2(Karmen.SCREEN_WIDTH / 2, DISTANCE_FROM_BOTTOM));
+        Body ground = world.createBody(groundDef);
         
         BodyDef leftWallDef = new BodyDef();
         leftWallDef.position.set(new Vector2(DISTANCE_FROM_WALLS, 0));
@@ -80,12 +81,18 @@ public class PlayScreen extends KarmenScreen {
         BodyDef rightWallDef = new BodyDef();
         rightWallDef.position.set(new Vector2(Karmen.SCREEN_WIDTH - DISTANCE_FROM_WALLS, 0));
         Body rightWall = world.createBody(rightWallDef);
-
+        
+        BodyDef roofDef = new BodyDef();
+        roofDef.position.set(new Vector2(Karmen.SCREEN_WIDTH / 2, Karmen.SCREEN_HEIGHT - DISTANCE_FROM_BOTTOM));
+        Body roof = world.createBody(roofDef);
+        
+        //PLACEMENT
         PolygonShape gbox = new PolygonShape();
 
         gbox.setAsBox(Karmen.SCREEN_WIDTH, 10);
-        Fixture gb = groundBody.createFixture(gbox, 0.0f);
-        gb.setUserData(FixtureType.FLOOR);
+        ground.createFixture(gbox, 0.0f).setUserData(FixtureType.FLOOR);
+        roof.createFixture(gbox, 0.0f);
+        
         gbox.setAsBox(10, Karmen.SCREEN_HEIGHT);
         leftWall.createFixture(gbox, 0.0f);
         rightWall.createFixture(gbox, 0.0f);
