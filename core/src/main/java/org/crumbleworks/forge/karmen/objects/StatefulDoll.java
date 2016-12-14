@@ -41,7 +41,9 @@ public abstract class StatefulDoll implements Thing {
         LEFT, STOP_LEFT, 
         RIGHT, STOP_RIGHT, 
         BLOCK, STOP_BLOCK,
-        FACE, JUMP, PUNCH, KICK;
+        FACE,
+        JUMP, LAND,
+        PUNCH, KICK, DONE;
     }
     
     /**
@@ -133,64 +135,105 @@ public abstract class StatefulDoll implements Thing {
                 });
             }});
 
-            /* FIGHTING */
+            /* PUNCH */
             put(State.PUNCH_RIGHT, new HashMap<Action, Supplier<State>>() {{
-                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
-                put(Action.LEFT, ()->{return State.RUN_LEFT;});
-            }});
-
-            put(State.KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
-                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
-                put(Action.LEFT, ()->{return State.RUN_LEFT;});
+                put(Action.DONE, ()->{
+                    if(runRight) {
+                        return State.RUN_RIGHT;
+                    }
+                    
+                    if(runLeft) {
+                        return State.RUN_LEFT;
+                    }
+                    
+                    return State.STILL_RIGHT;
+                });
             }});
 
             put(State.PUNCH_LEFT, new HashMap<Action, Supplier<State>>() {{
-                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
-                put(Action.LEFT, ()->{return State.RUN_LEFT;});
+                put(Action.DONE, ()->{
+                    if(runLeft) {
+                        return State.RUN_LEFT;
+                    }
+                    
+                    if(runRight) {
+                        return State.RUN_RIGHT;
+                    }
+                    
+                    return State.STILL_LEFT;
+                });
             }});
 
+            /* KICK */
+            put(State.KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.DONE, ()->{
+                    if(runRight) {
+                        return State.RUN_RIGHT;
+                    }
+                    
+                    if(runLeft) {
+                        return State.RUN_LEFT;
+                    }
+                    
+                    return State.STILL_RIGHT;
+                });
+            }});
+            
             put(State.KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
-                put(Action.RIGHT, ()->{return State.RUN_RIGHT;});
-                put(Action.LEFT, ()->{return State.RUN_LEFT;});
+                put(Action.DONE, ()->{
+                    if(runLeft) {
+                        return State.RUN_LEFT;
+                    }
+                    
+                    if(runRight) {
+                        return State.RUN_RIGHT;
+                    }
+                    
+                    return State.STILL_LEFT;
+                });
             }});
 
-            /* AIR FRONT*/
+            /* JUMP */
             put(State.JUMP_FRONT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.RIGHT, ()->{return State.JUMP_RIGHT;});
                 put(Action.LEFT, ()->{return State.JUMP_LEFT;});
+                put(Action.LAND, ()->{return State.STILL_FRONT;});
             }});
 
-            /* AIR RIGHT */
             put(State.JUMP_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.KICK, ()->{return State.JUMP_KICK_RIGHT;});
                 put(Action.LEFT, ()->{return State.JUMP_LEFT;});
                 put(Action.FACE, ()->{return State.JUMP_FRONT;});
+                put(Action.LAND, ()->{return State.STILL_RIGHT;});
             }});
-
+            
+            put(State.JUMP_LEFT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.KICK, ()->{return State.JUMP_KICK_LEFT;});
+                put(Action.RIGHT, ()->{return State.JUMP_RIGHT;});
+                put(Action.FACE, ()->{return State.JUMP_FRONT;});
+                put(Action.LAND, ()->{return State.STILL_LEFT;});
+            }});
+            
+            /* JUMP KICK */
             put(State.JUMP_KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
             }});
+            
+            put(State.JUMP_KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
+            }});
 
+            /* ARC */
             put(State.ARC_JUMP_RIGHT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.KICK, ()->{return State.ARC_KICK_RIGHT;});
                 put(Action.LEFT, ()->{return State.ARC_JUMP_LEFT;});
             }});
 
-            put(State.ARC_KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
-            }});
-
-            /* AIR LEFT */
-            put(State.JUMP_LEFT, new HashMap<Action, Supplier<State>>() {{
-                put(Action.KICK, ()->{return State.JUMP_KICK_LEFT;});
-                put(Action.RIGHT, ()->{return State.JUMP_RIGHT;});
-                put(Action.FACE, ()->{return State.JUMP_FRONT;});
-            }});
-
-            put(State.JUMP_KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
-            }});
-
             put(State.ARC_JUMP_LEFT, new HashMap<Action, Supplier<State>>() {{
                 put(Action.KICK, ()->{return State.ARC_KICK_LEFT;});
                 put(Action.RIGHT, ()->{return State.ARC_JUMP_RIGHT;});
+            }});
+
+            /* ARC KICK */
+            put(State.ARC_KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
             }});
 
             put(State.ARC_KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
@@ -325,11 +368,7 @@ public abstract class StatefulDoll implements Thing {
         }
     }
     
-    public void set(State state) {
-        set(()->{return state;});
-    }
-    
-    private void set(Action action) {
+    private void doAction(Action action) {
         set(stateMap.get(behaviourToState.get(currentBehaviour.getClass())).get(action));
     }
     
@@ -340,55 +379,56 @@ public abstract class StatefulDoll implements Thing {
     private boolean runRight = false;
     private boolean runLeft = false;
     
-    /** CONTINUOUS */
+    public void face() {
+        doAction(Action.FACE);
+    }
+    
     public void goLeft() {
-        set(Action.LEFT);
+        doAction(Action.LEFT);
         runLeft = true;
     }
     
     public void stopLeft() {
-        set(Action.STOP_LEFT);
+        doAction(Action.STOP_LEFT);
         runLeft = false;
     }
     
-    /** SINGLE */
-    public void face() {
-        set(Action.FACE);
-    }
-    
-    /** CONTINUOUS */
     public void goRight() {
-        set(Action.RIGHT);
+        doAction(Action.RIGHT);
         runRight = true;
     }
     
     public void stopRight() {
-        set(Action.STOP_RIGHT);
+        doAction(Action.STOP_RIGHT);
         runRight = false;
     }
     
-    /** SINGLE */
     public void jump() {
-        set(Action.JUMP);
+        doAction(Action.JUMP);
     }
     
-    /** SINGLE */
-    public void punch() {
-        set(Action.PUNCH);
+    public void land() {
+        doAction(Action.LAND);
     }
     
-    /** CONTINUOUS */
     public void block() {
-        set(Action.BLOCK);
+        doAction(Action.BLOCK);
     }
     
     public void stopBlock() {
-        set(Action.STOP_BLOCK);
+        doAction(Action.STOP_BLOCK);
     }
     
-    /** SINGLE */
+    public void punch() {
+        doAction(Action.PUNCH);
+    }
+    
     public void kick() {
-        set(Action.KICK);
+        doAction(Action.KICK);
+    }
+    
+    public void done() {
+        doAction(Action.DONE);
     }
     
     /* ***********************************************************************

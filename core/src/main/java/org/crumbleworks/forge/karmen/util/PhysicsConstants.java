@@ -17,7 +17,7 @@ public class PhysicsConstants {
     public static final float BLOCKING_DRAG = RUNNING_SPEED_ACCELERATION * 8;
     public static final long BLOCK_DELAY_MS = 280;
     
-    public static final float JUMP_FORCE = 600f;
+    public static final float JUMP_FORCE = 5000 * 1000f;
     
     public static final float PUNCH_FORCE = 2000.0f;
     public static final float KICK_FORCE = 4000.0f;

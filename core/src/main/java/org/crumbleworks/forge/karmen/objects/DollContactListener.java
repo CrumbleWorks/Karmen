@@ -28,7 +28,7 @@ public class DollContactListener implements ContactListener {
             if(actor.getUserData() == FixtureType.DOLL) {
                 Gdx.app.debug("COLLISION", " twas a DOLL!");
                 StatefulDoll sd = ((StatefulDoll)actor.getBody().getUserData());
-                sd.activeBehaviour().finish(sd);
+                sd.land();
             }
         }
     }

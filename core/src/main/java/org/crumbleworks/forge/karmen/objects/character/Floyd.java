@@ -106,10 +106,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-            logic(doll, delta);
+            update(doll, delta);
         }
         
-        public abstract void logic(StatefulDoll doll, float delta);
+        public abstract void update(StatefulDoll doll, float delta);
         
         @Override
         public void finish(StatefulDoll doll) {
@@ -118,7 +118,7 @@ public class Floyd extends StatefulDoll {
     
     static abstract class BaseSwitchRendering implements Behaviour {
         private final Animation[] animation;
-        private int animationIndex = 0;
+        private int animationIndex;
         private final String debugName;
 
         private float stateTime;
@@ -129,13 +129,14 @@ public class Floyd extends StatefulDoll {
         }
         
         protected final void switchAnimations() {
-            this.animationIndex = Math.abs(animationIndex * -1);
+            this.animationIndex = Math.abs(animationIndex - 1);
         }
         
         @Override
         public final void _init(StatefulDoll doll, State previousState) {
             Gdx.app.debug(FLOYD_TAG, "init " + debugName);
             stateTime = 0f;
+            animationIndex = 0;
             
             init(doll, previousState);
         }
@@ -154,10 +155,10 @@ public class Floyd extends StatefulDoll {
                     doll.psv().size.x,
                     doll.psv().size.y);
             
-            logic(doll, delta);
+            update(doll, delta);
         }
         
-        public abstract void logic(StatefulDoll doll, float delta);
+        public abstract void update(StatefulDoll doll, float delta);
         
         @Override
         public void finish(StatefulDoll doll) {
@@ -184,7 +185,7 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             float xVelo = doll.body().getLinearVelocity().x;
             if(xVelo > 0.0f) { //movement nach rechts
                 doll.body().applyLinearImpulse(
@@ -252,7 +253,7 @@ public class Floyd extends StatefulDoll {
         }
         
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             if(doll.body().getLinearVelocity().x < PhysicsConstants.RUNNING_SPEED_MAX) {
             doll.body().applyLinearImpulse(
                     new Vector2(PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
@@ -277,7 +278,7 @@ public class Floyd extends StatefulDoll {
         }
         
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             if(doll.body().getLinearVelocity().x > -PhysicsConstants.RUNNING_SPEED_MAX) {
                 doll.body().applyLinearImpulse(
                         new Vector2(-PhysicsConstants.RUNNING_SPEED_ACCELERATION, 0.0f),
@@ -312,7 +313,7 @@ public class Floyd extends StatefulDoll {
         }
          
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             delayAcc += Calc.gdxDeltaToMillis(delta);
             if(delayAcc >= PhysicsConstants.BLOCK_DELAY_MS) {
                 doll.body().setLinearVelocity(0.0f, 0.0f);
@@ -378,7 +379,6 @@ public class Floyd extends StatefulDoll {
     
     static abstract class FloydPunch extends BaseRendering {
         private long returnTime;
-        private boolean soundPlayed;
         
         private State previousState;
         
@@ -393,20 +393,15 @@ public class Floyd extends StatefulDoll {
         public void init(StatefulDoll doll, State previousState) {
             this.previousState = previousState;
             returnTime = AnimationConstants.DUR_MS_PUNCH;
-            soundPlayed = false;
+            doll.game().getSoundService().play(SoundType.PUNCH);
         }
 
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             returnTime -= Calc.gdxDeltaToMillis(delta);
             if(returnTime <= 0) {
                 Gdx.app.debug(FLOYD_TAG, "> returning to " + previousState.name());
-                doll.set(previousState);
-            }
-            
-            if(!soundPlayed) {
-                doll.game().getSoundService().play(SoundType.PUNCH);
-                soundPlayed = true;
+                doll.done();
             }
         }
     }
@@ -450,11 +445,11 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             returnTime -= Calc.gdxDeltaToMillis(delta);
             if(returnTime <= 0) {
                 Gdx.app.debug(FLOYD_TAG, "> returning to " + previousState.name());
-                doll.set(previousState);
+                doll.done();
             }
             
             if(!soundPlayed) {
@@ -500,10 +495,14 @@ public class Floyd extends StatefulDoll {
         }
 
         @Override
-        public void logic(StatefulDoll doll, float delta) {
+        public void update(StatefulDoll doll, float delta) {
             if(!jumpFlag) {
-                doll.body().setLinearVelocity(
-                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE));
+//                doll.body().setLinearVelocity(
+//                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE));
+                doll.body().applyLinearImpulse(
+                        new Vector2(0.0f, PhysicsConstants.JUMP_FORCE),
+                        doll.body().getPosition(),
+                        true);
                 jumpFlag = true;
             }
             
@@ -529,7 +528,7 @@ public class Floyd extends StatefulDoll {
         
         @Override
         public void finish(StatefulDoll doll) {
-            doll.set(State.STILL_FRONT);
+//            doll.switchState(State.STILL_FRONT);
         }
     }
     
@@ -548,7 +547,7 @@ public class Floyd extends StatefulDoll {
         
         @Override
         public void finish(StatefulDoll doll) {
-            doll.set(State.STILL_RIGHT);
+//            doll.switchState(State.STILL_RIGHT);
         }
     }
     
@@ -567,7 +566,7 @@ public class Floyd extends StatefulDoll {
         
         @Override
         public void finish(StatefulDoll doll) {
-            doll.set(State.STILL_LEFT);
+//            doll.switchState(State.STILL_LEFT);
         }
     }
     
