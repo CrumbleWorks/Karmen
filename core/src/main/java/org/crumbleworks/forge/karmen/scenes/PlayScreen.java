@@ -35,7 +35,7 @@ public class PlayScreen extends KarmenScreen {
     private InputMultiplexer inputMultiplexer;
     
     /* BOX2D */
-    private final World world;
+    private World world;
     private Box2DDebugRenderer debugR;
     
     /* SCENE */
@@ -48,9 +48,16 @@ public class PlayScreen extends KarmenScreen {
         super(game, new boolean[]{true, true});
         
         this.game = game;
+        
+        Box2D.init();
+    }
+
+    @Override
+    public void enter() {
+        game.getMusicService().play(MusicType.ARENA_INTRO, false);
+        game.getMusicService().schedule(MusicType.ARENA_LEVEL_1, true);
 
         /* BOX2D */
-        Box2D.init();
         world = new World(new Vector2(PhysicsConstants.HORIZONTAL_GRAVITY, PhysicsConstants.VERTICAL_GRAVITY), true);
         world.setVelocityThreshold(1.0f);
         if(Karmen.isDebug) {
@@ -91,12 +98,6 @@ public class PlayScreen extends KarmenScreen {
         
         //get rid of shape
         gbox.dispose();
-    }
-
-    @Override
-    public void enter() {
-        game.getMusicService().play(MusicType.ARENA_INTRO, false);
-        game.getMusicService().schedule(MusicType.ARENA_LEVEL_1, true);
         
         /* COLLISION STUFF */
         world.setContactListener(new DollContactListener());
@@ -127,6 +128,8 @@ public class PlayScreen extends KarmenScreen {
     @Override
     public void leave() {
         Gdx.input.setInputProcessor(null);
+        
+        world.dispose();
     }
     
     @Override
