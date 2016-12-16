@@ -145,7 +145,7 @@ public class Karmen extends Game {
      * DEBUGGERY
      */
     
-    private final List<MusicType> mt = new ArrayList<MusicType>(Arrays.asList(MusicType.values()));
+    private final List<MusicType> mt = new ArrayList<>(Arrays.asList(MusicType.values()));
     
     private void debugMusicSwitcherCheck() {
         if(Gdx.input.isKeyJustPressed(Keys.UP)) {
