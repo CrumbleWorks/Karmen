@@ -1,6 +1,7 @@
 package org.crumbleworks.forge.karmen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.crumbleworks.forge.karmen.scenes.AboutScreen;
@@ -144,11 +145,7 @@ public class Karmen extends Game {
      * DEBUGGERY
      */
     
-    private final List<MusicType> mt = new ArrayList<MusicType>() {{
-        for(MusicType musicType : MusicType.values()) {
-            add(musicType);
-        }
-    }};
+    private final List<MusicType> mt = new ArrayList<>(Arrays.asList(MusicType.values()));
     
     private void debugMusicSwitcherCheck() {
         if(Gdx.input.isKeyJustPressed(Keys.UP)) {
