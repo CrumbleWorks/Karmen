@@ -557,7 +557,10 @@ public class Floyd extends StatefulDoll {
 
         @Override
         public void init(StatefulDoll doll, State previousState) {
-            jumpFlag = false;
+            if(previousState != State.ARC_JUMP_LEFT
+            && previousState != State.ARC_JUMP_RIGHT) {
+                jumpFlag = false;
+            }
         }
 
         @Override
