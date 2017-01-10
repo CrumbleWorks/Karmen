@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.crumbleworks.forge.karmen.scenes.AboutScreen;
-import org.crumbleworks.forge.karmen.scenes.IntroScreen;
-import org.crumbleworks.forge.karmen.scenes.MenuScreen;
-import org.crumbleworks.forge.karmen.scenes.PlayScreen;
 import org.crumbleworks.forge.karmen.scenes.SceneManager;
 import org.crumbleworks.forge.karmen.scenes.SceneManager.Scenes;
 import org.crumbleworks.forge.karmen.util.Calc;
@@ -21,7 +17,6 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;

@@ -1,9 +1,6 @@
 package org.crumbleworks.forge.karmen.objects;
 
 import com.badlogic.gdx.Input.Keys;
-
-import org.crumbleworks.forge.karmen.objects.character.Floyd;
-
 import com.badlogic.gdx.InputAdapter;
 
 /**

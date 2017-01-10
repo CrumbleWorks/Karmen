@@ -9,14 +9,12 @@ public class MusicService {
     
     private MusicLibrary musicLibrary;
     private MusicType playingMusic;
-    private MusicType nextMusic;
     
     private float globalVolume;
     
     public MusicService() {
         musicLibrary = new MusicLibrary();
         playingMusic = null;
-        nextMusic = null;
         
         globalVolume = DEFAULT_VOLUME;
     }
@@ -24,9 +22,9 @@ public class MusicService {
     /**
      * Plays a specific music.
      * <li>Music is set to looping
-     * <li>If the Music is already running, nothing will happen
+     * <li>If the Music is already running, nothing will happen (as in: it will continue playing without interruption)
      * 
-     * @param type Musictype
+     * @param type {@link MusicType}
      * 
      * @see #play(MusicType, boolean)
      * @see #play(MusicType, boolean, boolean)
@@ -38,7 +36,7 @@ public class MusicService {
     /**
      * Plays a specific music.
      * 
-     * @param type Musictype
+     * @param type {@link MusicType}
      * @param loop Whether to loop the music or not
      * 
      * @see #play(MusicType)

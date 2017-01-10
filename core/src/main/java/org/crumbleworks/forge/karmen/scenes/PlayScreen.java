@@ -15,16 +15,13 @@ import org.crumbleworks.forge.karmen.util.PhysicsConstants;
 import org.crumbleworks.forge.karmen.util.asset.music.MusicType;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -59,7 +56,7 @@ public class PlayScreen extends KarmenScreen {
 
         /* BOX2D */
         world = new World(new Vector2(PhysicsConstants.HORIZONTAL_GRAVITY, PhysicsConstants.VERTICAL_GRAVITY), true);
-        world.setVelocityThreshold(1.0f);
+        World.setVelocityThreshold(1.0f);
         if(Karmen.isDebug) {
             debugR = new Box2DDebugRenderer();
         }
