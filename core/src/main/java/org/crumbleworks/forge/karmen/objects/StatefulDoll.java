@@ -216,9 +216,11 @@ public abstract class StatefulDoll implements Thing {
             
             /* JUMP KICK */
             put(State.JUMP_KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.LAND, ()->{return State.STILL_RIGHT;});
             }});
             
             put(State.JUMP_KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.LAND, ()->{return State.STILL_LEFT;});
             }});
 
             /* ARC */
@@ -236,9 +238,11 @@ public abstract class StatefulDoll implements Thing {
 
             /* ARC KICK */
             put(State.ARC_KICK_RIGHT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.LAND, ()->{return State.STILL_RIGHT;});
             }});
 
             put(State.ARC_KICK_LEFT, new HashMap<Action, Supplier<State>>() {{
+                put(Action.LAND, ()->{return State.STILL_LEFT;});
             }});
         }};
     }

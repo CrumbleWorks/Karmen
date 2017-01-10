@@ -601,83 +601,49 @@ public class Floyd extends StatefulDoll {
      * JUMPKICK
      */
     
-    static class FloydJumpKickRight implements Behaviour {
-        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
+    static abstract class FloydJumpKick extends BaseRendering {
+        private long returnTime;
         private boolean soundPlayed;
-
+        
+        public FloydJumpKick(Animation animation, String debugName) {
+            super(animation, debugName);
+        }
+        
         @Override
-        public void _init(StatefulDoll doll, State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init JumpKickRight");
-            stateTime = 0f;
+        public void init(StatefulDoll doll, State previousState) {
+            returnTime = AnimationConstants.DUR_MS_KICK;
             soundPlayed = false;
         }
-
+        
         @Override
-        public void _update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
+        public void update(StatefulDoll doll, float delta) {
+            returnTime -= Calc.gdxDeltaToMillis(delta);
+            if(returnTime <= 0) {
+                doll.done();
+            }
             
             if(!soundPlayed) {
                 doll.game().getSoundService().play(SoundType.KICK);
                 soundPlayed = true;
             }
         }
+    }
 
-        @Override
-        public void finish(StatefulDoll doll) {
-            // TODO Auto-generated method stub
-            
+    static class FloydJumpKickRight extends FloydJumpKick {
+        public FloydJumpKickRight() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
+                    PlayMode.NORMAL),
+                    "JumpKickRight");
         }
     }
     
-    static class FloydJumpKickLeft implements Behaviour {
-        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
-        private boolean soundPlayed;
-        
-        @Override
-        public void _init(StatefulDoll doll, State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init JumpKickLeft");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-        
-        @Override
-        public void _update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            
-            
-            if(!soundPlayed) {
-                doll.game().getSoundService().play(SoundType.KICK);
-                soundPlayed = true;
-            }
-        }
-
-        @Override
-        public void finish(StatefulDoll doll) {
-            // TODO Auto-generated method stub
-            
+    static class FloydJumpKickLeft extends FloydJumpKick {
+        public FloydJumpKickLeft() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                    Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
+                    PlayMode.NORMAL),
+                    "JumpKickLeft");
         }
     }
     
@@ -685,82 +651,51 @@ public class Floyd extends StatefulDoll {
      * ARC KICK
      */
     
-    static class FloydArcKickRight implements Behaviour {
-        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
-                PlayMode.NORMAL);
-        
-        private float stateTime;
+    static abstract class FloydArcKick extends BaseRendering {
+        private long returnTime;
         private boolean soundPlayed;
-
+        
+        public FloydArcKick(Animation animation, String debugName) {
+            super(animation, debugName);
+        }
+        
         @Override
-        public void _init(StatefulDoll doll, State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init ArcKickRight");
-            stateTime = 0f;
+        public void init(StatefulDoll doll, State previousState) {
+            returnTime = AnimationConstants.DUR_MS_KICK;
             soundPlayed = false;
         }
-
+        
         @Override
-        public void _update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-
+        public void update(StatefulDoll doll, float delta) {
+            returnTime -= Calc.gdxDeltaToMillis(delta);
+            if(returnTime <= 0) {
+                doll.done();
+            }
             
             if(!soundPlayed) {
                 doll.game().getSoundService().play(SoundType.KICK);
                 soundPlayed = true;
             }
-        }
-
-        @Override
-        public void finish(StatefulDoll doll) {
-            // TODO Auto-generated method stub
-            
         }
     }
     
-    static class FloydArcKickLeft implements Behaviour {
-        private static final Animation jumpKickAnimation = new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
-                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
-                PlayMode.NORMAL);
+    static class FloydArcKickRight extends FloydArcKick {
+        public FloydArcKickRight() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_R_AIR.ordinal()]),
+                PlayMode.NORMAL),
+                "ArcKickRight");
+        }
         
-        private float stateTime;
-        private boolean soundPlayed;
-
-        @Override
-        public void _init(StatefulDoll doll, State previousState) {
-            Gdx.app.debug(FLOYD_TAG, "init ArcKickLeft");
-            stateTime = 0f;
-            soundPlayed = false;
-        }
-
-        @Override
-        public void _update(StatefulDoll doll, float delta) {
-            stateTime += delta;
-            TextureRegion currentAnimationFrame = jumpKickAnimation.getKeyFrame(stateTime);
-            doll.game().getBatch().draw(
-                    currentAnimationFrame,
-                    doll.psv().position.x,
-                    doll.psv().position.y,
-                    doll.psv().size.x,
-                    doll.psv().size.y);
-            
-            if(!soundPlayed) {
-                doll.game().getSoundService().play(SoundType.KICK);
-                soundPlayed = true;
-            }
-        }
-
-        @Override
-        public void finish(StatefulDoll doll) {
-            // TODO Auto-generated method stub
-            
+    }
+    
+    static class FloydArcKickLeft extends FloydArcKick {
+        public FloydArcKickLeft() {
+            super(new Animation(AnimationConstants.DUR_FRACT_ANIMATION_FRAME_LENGTH,
+                Array.with(textureRegions[FloydFrameType.KICK_SIDE_L_AIR.ordinal()]),
+                PlayMode.NORMAL),
+                "ArcKickLeft");
         }
     }
+    
 }
