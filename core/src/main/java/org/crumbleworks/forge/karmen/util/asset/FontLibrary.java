@@ -2,6 +2,8 @@ package org.crumbleworks.forge.karmen.util.asset;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class FontLibrary {
 
@@ -10,9 +12,20 @@ public class FontLibrary {
     public final BitmapFont ARIAL;
     
     public FontLibrary() {
-        NNPH_MEDIUM = new BitmapFont(Gdx.files.internal("fnt/NNPH_30.fnt"));
-        NNPH_LARGE = new BitmapFont(Gdx.files.internal("fnt/NNPH_40.fnt"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fnt/NNPH.ttf"));
+        
+        NNPH_MEDIUM = generateFont(generator, 30);
+        NNPH_LARGE = generateFont(generator, 40);
         ARIAL = new BitmapFont();
+        
+        generator.dispose();
+    }
+    
+    private BitmapFont generateFont(FreeTypeFontGenerator generator, int size) {
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = (int) Math.ceil(size);
+        generator.scaleForPixelHeight((int) Math.ceil(size));
+        return generator.generateFont(parameter);
     }
     
     public void dispose() {

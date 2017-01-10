@@ -4,7 +4,7 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/main/java", "src/main/resources", "src/test/java", "src/test/resources" ]
 
 project.ext.mainClassName = "org.crumbleworks.forge.karmen.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../core/assets");
+project.ext.assetsDir = new File("../core/src/main/assets");
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
